@@ -11,14 +11,16 @@ export default function AuthenticatedLayout({ header, children }){
     const user = usePage().props.auth.user;
     const theme = useSelector((state) => state.theme) ; 
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false)
-    console.log(theme)
     return (
             <div className="min-h-screen "  
             //  style={{ background :theme.colors.primary }}
              >
 
-                //header
-                <main>{children}</main>
+                {/* navbar/ */}
+                <main>
+                    {children}
+
+                </main>
             </div>
         );
 }
