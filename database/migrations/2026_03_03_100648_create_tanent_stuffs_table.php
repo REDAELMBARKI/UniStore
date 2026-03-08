@@ -11,12 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('livres', function (Blueprint $table) {
+        Schema::create('tanent_stuffs', function (Blueprint $table) {
             $table->id();
-            $table->string('titre');
-            $table->year('annee_publication');
-            $table->integer('nombre_pages');
-            $table->foreignId('auteur_id')->constrained('auteurs')->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -26,6 +22,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('livres');
+        Schema::dropIfExists('tanent_stuffs');
     }
 };

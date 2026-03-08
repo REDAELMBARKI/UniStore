@@ -1,6 +1,7 @@
 import ApplicationLogo from '@/Components/ApplicationLogo';
+import { store } from '@/store/store';
 import { Link } from '@inertiajs/react';
-import { useSelector } from 'react-redux';
+import { Provider, useSelector } from 'react-redux';
 
 export default function GuestLayoutMaster({ header, children }) {
      return <Provider store={store}>
@@ -12,7 +13,7 @@ export default function GuestLayoutMaster({ header, children }) {
    const theme = useSelector((state) => state.theme) ; 
 
     return (
-        <div className="flex min-h-screen flex-col items-center bg-red-500 pt-6 sm:justify-center sm:pt-0">
+        <div className="flex min-h-screen flex-col items-center pt-6 sm:justify-center sm:pt-0">
             <div>
                 <Link href="/">
                     <ApplicationLogo className="h-20 w-20 fill-current text-gray-500" />

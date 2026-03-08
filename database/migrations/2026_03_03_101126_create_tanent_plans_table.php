@@ -11,11 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-       Schema::create('emprunts', function (Blueprint $table) {
+        Schema::create('tanent_plans', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('livre_id')->constrained('livres')->onDelete('cascade');
-            $table->date('date_emprunt');
-            $table->date('date_retour')->nullable();
             $table->timestamps();
         });
     }
@@ -25,6 +22,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('emprunts');
+        Schema::dropIfExists('tanent_plans');
     }
 };
