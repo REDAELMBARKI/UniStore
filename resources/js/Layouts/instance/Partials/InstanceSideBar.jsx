@@ -1,4 +1,3 @@
-import { menuItems } from './adminNavigationsLinks';
 import { useSelector } from 'react-redux';
 import { Link, usePage } from '@inertiajs/react';
 import {
@@ -10,6 +9,7 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 import { route } from 'ziggy-js';
+import { navigationLinks } from '../navigationLinks';
 
 export function InstanceSideBar() {
   const [collapsed, setCollapsed] = useState(false);
@@ -146,7 +146,7 @@ export function InstanceSideBar() {
         }}
       >
         <nav style={{ paddingBlock: '0 0.75rem' }}>
-          {menuItems.map((item, index) => {
+          {navigationLinks.map((item, index) => {
             // Section Header
             if (item.section) {
               return (

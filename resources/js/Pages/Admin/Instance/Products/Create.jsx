@@ -1,3 +1,4 @@
+import { InstanceAdminPanel } from '@/Layouts/instance/InstanceAdminPanel'
 import React from 'react'
 
 export default function Create() {
@@ -5,3 +6,4 @@ export default function Create() {
     <div>Create</div>
   )
 }
+Create.Layout = page => <InstanceAdminPanel children={page}/>

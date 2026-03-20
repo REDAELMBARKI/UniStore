@@ -1,9 +1,7 @@
 import { useSelector } from 'react-redux';
-import { useAuth } from '../../hooks/useAuth';
-import { Header } from './Header';
-import { AuthProvider } from '../../context/AuthContext';
-import { Sidebar } from './SideBar';
-import { ToastProvider } from '../../hooks/ToastProvider';
+import { ToastProvider  , AuthProvider } from '@/providers/ToastProvider';
+import { InstanceSideBar } from './Partials/InstanceSideBar';
+import { Header } from './Partials/Header';
 
 export function InstanceAdminPanel({ children }) {
   return (
@@ -31,7 +29,7 @@ const InstanceAdminPanelContent = ({ children }) => {
     <div className="flex h-dvh">
       {/* Sidebar: fixed width, full height, stays visible */}
       <div className="w-64 flex-shrink-0 h-full">
-        <Sidebar />
+        <InstanceSideBar />
       </div>
 
       {/* Main content area */}

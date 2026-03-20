@@ -1,8 +1,5 @@
-import { Bell, User, LogOut } from 'lucide-react';
-import { useSelector } from 'react-redux';
-import { ThemeToggle } from './ThemeToggle';
-import { useAuth } from '../../hooks/useAuth';
-import { getInitials } from '../../utils/helpers';
+import { Bell, User, LogOut, Sun, Moon } from 'lucide-react';
+import { useSelector, useDispatch } from 'react-redux';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -15,10 +12,13 @@ import {
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { router } from '@inertiajs/react';
 import { route } from 'ziggy-js';
+import { toggleTheme } from '@/store/slices/themeSlice'; // ← adjust to your slice path
+import { useAuth } from '@/hooks/useAuth';
 
 export function Header() {
   const { admin } = useAuth();
-  const { colors } = useSelector((state) => state.theme);
+  const dispatch = useDispatch();
+  const { colors, mode } = useSelector((state) => state.theme); // mode = 'light' | 'dark'
 
   const logout = () => {
     router.get(route('logout'));
@@ -49,7 +49,22 @@ export function Header() {
           <span className="sr-only">Notifications</span>
         </Button>
 
-        <ThemeToggle />
+        {/* ── Inline Theme Toggle ── */}
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-9 w-9"
+          onClick={() => dispatch(toggleTheme())}
+          data-testid="button-theme-toggle"
+          title={mode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+        >
+          {mode === 'dark' ? (
+            <Sun className="h-4 w-4" />
+          ) : (
+            <Moon className="h-4 w-4" />
+          )}
+          <span className="sr-only">Toggle theme</span>
+        </Button>
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -60,7 +75,7 @@ export function Header() {
             >
               <Avatar className="h-7 w-7">
                 <AvatarFallback className="text-xs">
-                  {admin ? getInitials(admin.name) : 'AD'}
+                  avatar
                 </AvatarFallback>
               </Avatar>
               <span className="hidden text-sm font-medium md:inline-block">
