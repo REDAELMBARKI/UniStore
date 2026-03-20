@@ -1,5 +1,4 @@
 import { useSelector } from 'react-redux';
-import { Toast } from './Toast';
 
 export function ToastViewport({ toasts, onRemove }) {
   const { colors } = useSelector((state) => state.theme);

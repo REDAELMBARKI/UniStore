@@ -1,7 +1,8 @@
 import { useSelector } from 'react-redux';
-import { ToastProvider  , AuthProvider } from '@/providers/ToastProvider';
 import { InstanceSideBar } from './Partials/InstanceSideBar';
 import { Header } from './Partials/Header';
+import { ToastProvider } from '@/providers/ToastProvider';
+import { AuthProvider } from '@/providers/AuthProvider';
 
 export function InstanceAdminPanel({ children }) {
   return (

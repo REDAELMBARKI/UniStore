@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { AuthContext } from './AuthContext';
 import { usePage } from '@inertiajs/react';
+import { AuthContext } from '@/contexts/AuthContext';
 
 export function AuthProvider({ children }) {
   const { props } = usePage();
