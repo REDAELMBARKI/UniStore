@@ -75,7 +75,7 @@ export function Header() {
             >
               <Avatar className="h-7 w-7">
                 <AvatarFallback className="text-xs">
-                  avatar
+                  
                 </AvatarFallback>
               </Avatar>
               <span className="hidden text-sm font-medium md:inline-block">

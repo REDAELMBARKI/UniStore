@@ -4,8 +4,8 @@ import '../css/tanent.css';
 import { createInertiaApp } from '@inertiajs/react';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createRoot } from 'react-dom/client';
-import { Provider } from 'react-redux';
 import { store } from './store/store';
+import { Provider } from 'react-redux';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
@@ -20,7 +20,7 @@ createInertiaApp({
         const root = createRoot(el);
 
         root.render(  <Provider store={store} >
-            <App {...props} />)
+            <App {...props} />
         </Provider>);
     },
     progress: {

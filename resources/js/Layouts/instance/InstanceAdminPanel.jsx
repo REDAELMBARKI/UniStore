@@ -1,53 +1,67 @@
+import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { InstanceSideBar } from './Partials/InstanceSideBar';
 import { Header } from './Partials/Header';
 import { ToastProvider } from '@/providers/ToastProvider';
 import { AuthProvider } from '@/providers/AuthProvider';
+import { useAuth } from '@/hooks/useAuth';
 
-export function InstanceAdminPanel({ children }) {
+export default function InstanceAdminPanel({ children }) {
   return (
     <ToastProvider>
       <AuthProvider>
-        <InstanceAdminPanelContent children={children} />
+        <InstanceAdminPanelContent>{children}</InstanceAdminPanelContent>
       </AuthProvider>
     </ToastProvider>
   );
 }
 
 const InstanceAdminPanelContent = ({ children }) => {
-  const { admin, isLoading } = useAuth();
+  const { isLoading } = useAuth();
   const { colors } = useSelector((state) => state.theme);
+  const [collapsed, setCollapsed] = useState(false);
 
   if (isLoading) {
     return (
-      <div className="flex h-screen items-center justify-center text-gray-700">
+      <div style={{ display: 'flex', height: '100vh', alignItems: 'center', justifyContent: 'center' }}>
         Loading...
       </div>
     );
   }
 
+  const SIDEBAR_W = collapsed ? 72 : 256;
+
   return (
-    <div className="flex h-dvh">
-      {/* Sidebar: fixed width, full height, stays visible */}
-      <div className="w-64 flex-shrink-0 h-full">
-        <InstanceSideBar />
+    <div style={{ display: 'flex', height: '100vh', overflow: 'hidden', background: colors.bgSecondary }}>
+
+      {/* ── Sidebar ── */}
+      <div style={{
+        width: `${SIDEBAR_W}px`,
+        minWidth: `${SIDEBAR_W}px`,
+        maxWidth: `${SIDEBAR_W}px`,
+        height: '100vh',
+        flexShrink: 0,
+        transition: 'width 0.3s ease, min-width 0.3s ease, max-width 0.3s ease',
+        overflow: 'hidden',
+        position: 'relative',
+        zIndex: 10,
+      }}>
+        <InstanceSideBar collapsed={collapsed} setCollapsed={setCollapsed} />
       </div>
 
-      {/* Main content area */}
-      <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Header fixed height */}
+      {/* ── Right side: Header + Main ── */}
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', minWidth: 0 }}>
         <Header />
-
-        {/* Scrollable content */}
-        <main
-          className="flex-1 overflow-auto"
-          style={{ color: colors.text, background: colors.bgSecondary }}
-        >
+        <main style={{
+          flex: 1,
+          overflowY: 'auto',
+          color: colors.text,
+          background: colors.bgSecondary,
+        }}>
           {children}
         </main>
       </div>
+
     </div>
   );
 };
-
-export default InstanceAdminPanelContent;

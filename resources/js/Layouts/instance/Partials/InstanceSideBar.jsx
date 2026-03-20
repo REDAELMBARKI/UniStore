@@ -1,436 +1,193 @@
 import { useSelector } from 'react-redux';
 import { Link, usePage } from '@inertiajs/react';
-import {
-  ChevronDown,
-  ChevronLeft,
-  ChevronRight,
-  Menu as MenuIcon,
-  MoreVertical,
-} from 'lucide-react';
+import { ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useState } from 'react';
 import { route } from 'ziggy-js';
 import { navigationLinks } from '../navigationLinks';
 
-export function InstanceSideBar() {
-  const [collapsed, setCollapsed] = useState(false);
+export function InstanceSideBar({ collapsed, setCollapsed }) {
   const [expandedItem, setExpandedItem] = useState('Dashboard');
   const { url } = usePage();
   const { colors } = useSelector((state) => state.theme);
-
   const toggleExpanded = (itemTitle) => {
-    setExpandedItem(expandedItem === itemTitle ? null : itemTitle);
+    if (collapsed) {
+      setCollapsed(false);
+      setExpandedItem(itemTitle);
+      return;
+    }
+    setExpandedItem((prev) => (prev === itemTitle ? null : itemTitle));
+  };
+
+  // ── shared button hover helpers ──
+  const btnEnter = (e) => {
+    e.currentTarget.style.backgroundColor = colors.sidebarHover;
+    e.currentTarget.style.color = colors.sidebarFg;
+  };
+  const btnLeave = (e, isActive) => {
+    if (!isActive) {
+      e.currentTarget.style.backgroundColor = 'transparent';
+      e.currentTarget.style.color = colors.sidebarFg;
+    }
   };
 
   return (
-    <div
-      style={{
-        backgroundColor: colors.sidebarBg,
-        color: colors.sidebarFg,
-        height: '100vh',
-        position: 'sticky',
-        top: 0,
+    <div style={{
+      width: '100%',
+      height: '100vh',
+      display: 'flex',
+      flexDirection: 'column',
+      backgroundColor: colors.sidebarBg,
+      color: colors.sidebarFg,
+      borderRight: `1px solid ${colors.sidebarBorder}`,
+      overflow: 'hidden',
+    }}>
+
+      {/* ── Logo row ── */}
+      <div style={{
+        height: '64px',
+        flexShrink: 0,
         display: 'flex',
-        flexDirection: 'column',
-        borderRight: `1px solid ${colors.sidebarBorder}`,
-        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-        width: collapsed ? '80px' : '256px',
-        overflow: 'hidden',
-      }}
-    >
-      {/* Logo Header */}
-      <div
-        style={{
-          padding: '1rem',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          borderBottom: `1px solid ${colors.sidebarBorder}`,
-          backgroundColor: colors.sidebarBg,
-        }}
-      >
+        alignItems: 'center',
+        justifyContent: collapsed ? 'center' : 'space-between',
+        padding: '0 12px',
+        borderBottom: `1px solid ${colors.sidebarBorder}`,
+      }}>
         {!collapsed && (
-          <div
-            style={{
-              color: colors.sidebarFg,
-              fontWeight: 700,
-              fontSize: '1.25rem',
-              letterSpacing: '-0.025em',
-            }}
-          >
+          <span style={{ fontWeight: 700, fontSize: '1.1rem', letterSpacing: '-0.02em', whiteSpace: 'nowrap' }}>
             Ecom
-          </div>
+          </span>
         )}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-          <button
-            onClick={() => setCollapsed(!collapsed)}
-            title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-            style={{
-              color: colors.sidebarMutedFg,
-              padding: '0.5rem',
-              borderRadius: '0.375rem',
-              transition: 'all 0.2s',
-              border: 'none',
-              background: 'transparent',
-              cursor: 'pointer',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.color = colors.sidebarFg;
-              e.currentTarget.style.backgroundColor = colors.sidebarHover;
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.color = colors.sidebarMutedFg;
-              e.currentTarget.style.backgroundColor = 'transparent';
-            }}
-          >
-            {collapsed ? <ChevronRight size={20} /> : <ChevronLeft size={20} />}
-          </button>
-          {!collapsed && (
-            <>
-              <button
-                title="Toggle menu"
-                style={{
-                  color: colors.sidebarMutedFg,
-                  padding: '0.5rem',
-                  borderRadius: '0.375rem',
-                  transition: 'all 0.2s',
-                  border: 'none',
-                  background: 'transparent',
-                  cursor: 'pointer',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.color = colors.sidebarFg;
-                  e.currentTarget.style.backgroundColor = colors.sidebarHover;
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.color = colors.sidebarMutedFg;
-                  e.currentTarget.style.backgroundColor = 'transparent';
-                }}
-              >
-                <MenuIcon size={20} />
-              </button>
-              <button
-                title="More options"
-                style={{
-                  color: colors.sidebarMutedFg,
-                  padding: '0.5rem',
-                  borderRadius: '0.375rem',
-                  transition: 'all 0.2s',
-                  border: 'none',
-                  background: 'transparent',
-                  cursor: 'pointer',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.color = colors.sidebarFg;
-                  e.currentTarget.style.backgroundColor = colors.sidebarHover;
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.color = colors.sidebarMutedFg;
-                  e.currentTarget.style.backgroundColor = 'transparent';
-                }}
-              >
-                <MoreVertical size={20} />
-              </button>
-            </>
-          )}
-        </div>
+        <button
+          onClick={() => setCollapsed(!collapsed)}
+          title={collapsed ? 'Expand' : 'Collapse'}
+          style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            width: 32, height: 32, flexShrink: 0,
+            border: 'none', borderRadius: 6, background: 'transparent',
+            cursor: 'pointer', color: colors.sidebarMutedFg,
+          }}
+          onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = colors.sidebarHover; e.currentTarget.style.color = colors.sidebarFg; }}
+          onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.color = colors.sidebarMutedFg; }}
+        >
+          {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+        </button>
       </div>
 
-      {/* Navigation */}
-      <div
-        className="sidebar-scroll"
-        style={{
-          flex: 1,
-          overflowY: 'auto',
-          paddingTop: '1rem',
-          paddingBottom: '1rem',
-        }}
-      >
-        <nav style={{ paddingBlock: '0 0.75rem' }}>
-          {navigationLinks.map((item, index) => {
-            // Section Header
-            if (item.section) {
-              return (
-                <div
-                  key={`section-${index}`}
-                  style={{
-                    paddingTop: '0.75rem',
-                    paddingBottom: '0.75rem',
-                    paddingLeft: '0.5rem',
-                    paddingRight: '0.5rem',
-                    marginTop: index > 0 ? '1rem' : '0',
-                  }}
-                >
+      {/* ── Nav list ── */}
+      <div className="sidebar-scroll" style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', padding: '8px 0' }}>
+        {navigationLinks.map((item, index) => {
+
+          // Section header
+          if (item.section) {
+            return (
+              <div key={`s-${index}`} style={{ padding: collapsed ? '12px 0 4px' : '12px 16px 4px' }}>
+                {collapsed
+                  ? <div style={{ height: 1, backgroundColor: colors.sidebarBorder, margin: '0 12px' }} />
+                  : <span style={{ fontSize: '0.65rem', fontWeight: 700, color: colors.sidebarMutedFg, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                      {item.sectionTitle}
+                    </span>
+                }
+              </div>
+            );
+          }
+
+          const Icon = item.icon;
+          const isExpanded = expandedItem === item.title && !collapsed;
+          const hasActiveChild = item.subLinks?.some((sub) => sub.href && url.includes(sub.href));
+          const isActive = isExpanded || hasActiveChild;
+
+          return (
+            <div key={item.title}>
+
+              {/* Parent row */}
+              <button
+                onClick={() => toggleExpanded(item.title)}
+                title={collapsed ? item.title : undefined}
+                style={{
+                  width: '100%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: collapsed ? 'center' : 'space-between',
+                  gap: 10,
+                  padding: collapsed ? '10px 0' : '9px 16px',
+                  border: 'none',
+                  cursor: 'pointer',
+                  transition: 'background 0.15s',
+                  backgroundColor: isActive ? colors.sidebarActive : 'transparent',
+                  color: isActive ? colors.sidebarActiveFg : colors.sidebarFg,
+                  textAlign: 'left',
+                }}
+                onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.backgroundColor = colors.sidebarHover; }}
+                onMouseLeave={(e) => { if (!isActive) e.currentTarget.style.backgroundColor = 'transparent'; }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
+                  <Icon size={18} style={{ flexShrink: 0 }} />
                   {!collapsed && (
-                    <>
-                      <div
+                    <span style={{ fontSize: '0.875rem', fontWeight: 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      {item.title}
+                    </span>
+                  )}
+                </div>
+
+                {!collapsed && item.subLinks && (
+                  <ChevronDown size={14} style={{
+                    flexShrink: 0,
+                    opacity: 0.5,
+                    transition: 'transform 0.2s',
+                    transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
+                  }} />
+                )}
+              </button>
+
+              {/* Sub links */}
+              {isExpanded && item.subLinks && (
+                <div style={{ display: 'flex', flexDirection: 'column', backgroundColor: `${colors.sidebarHover}50` }}>
+                  {item.subLinks.map((sub, si) => {
+                    const SubIcon = sub.icon;
+                    const isSubActive = sub.href && url.includes(sub.href);
+                    const isDisabled = !sub.href || sub.disabled;
+
+                    return (
+                      <Link
+                        key={`${sub.title}-${si}`}
+                        href={isDisabled ? '#' : route(sub.href)}
                         style={{
                           display: 'flex',
                           alignItems: 'center',
-                          gap: '0.5rem',
-                          marginBottom: '0.5rem',
-                        }}
-                      >
-                        <div
-                          style={{
-                            height: '1px',
-                            flex: 1,
-                            backgroundColor: colors.sidebarBorder,
-                          }}
-                        />
-                      </div>
-                      <h4
-                        style={{
-                          fontSize: '0.75rem',
-                          fontWeight: 600,
-                          color: colors.sidebarMutedFg,
-                          textTransform: 'uppercase',
-                          letterSpacing: '0.05em',
-                          paddingLeft: '0.5rem',
-                        }}
-                      >
-                        {item.sectionTitle}
-                      </h4>
-                    </>
-                  )}
-                  {collapsed && (
-                    <div style={{ display: 'flex', justifyContent: 'center' }}>
-                      <div
-                        style={{
-                          width: '8px',
-                          height: '8px',
-                          borderRadius: '9999px',
-                          backgroundColor: colors.sidebarMuted,
-                        }}
-                      />
-                    </div>
-                  )}
-                </div>
-              );
-            }
-
-            const Icon = item.icon;
-            const isExpanded = expandedItem === item.title;
-            const hasActiveChild = item.subLinks?.some((sub) => sub.href === url);
-
-            return (
-              <div
-                key={item.title}
-                style={{
-                  overflow: 'hidden',
-                  transition: 'all 0.2s',
-                  backgroundColor:
-                    isExpanded && !collapsed ? `${colors.sidebarHover}80` : 'transparent',
-                  marginBottom: '0.25rem',
-                }}
-              >
-                <button
-                  onClick={() => {
-                    if (item.subLinks) {
-                      toggleExpanded(item.title);
-                    }
-                  }}
-                  style={{
-                    width: '100%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    padding: '0.75rem',
-                    transition: 'all 0.2s',
-                    border: 'none',
-                    cursor: 'pointer',
-                    backgroundColor:
-                      isExpanded || hasActiveChild
-                        ? colors.sidebarActive
-                        : 'transparent',
-                    color:
-                      isExpanded || hasActiveChild
-                        ? colors.sidebarActiveFg
-                        : colors.sidebarFg,
-                  }}
-                  onMouseEnter={(e) => {
-                    if (!isExpanded && !hasActiveChild) {
-                      e.currentTarget.style.backgroundColor = colors.sidebarHover;
-                      e.currentTarget.style.color = colors.sidebarFg;
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (!isExpanded && !hasActiveChild) {
-                      e.currentTarget.style.backgroundColor = 'transparent';
-                      e.currentTarget.style.color = colors.sidebarFg;
-                    }
-                  }}
-                >
-                  <div
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.75rem',
-                      minWidth: 0,
-                    }}
-                  >
-                    <Icon
-                      size={20}
-                      style={{
-                        flexShrink: 0,
-                        transition: 'transform 0.2s',
-                        transform: isExpanded || hasActiveChild ? 'scale(1.1)' : 'scale(1)',
-                      }}
-                    />
-                    {!collapsed && (
-                      <span
-                        style={{
-                          fontSize: '0.875rem',
+                          gap: 10,
+                          padding: '8px 16px 8px 42px',
+                          fontSize: '0.825rem',
                           fontWeight: 500,
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                          whiteSpace: 'nowrap',
+                          textDecoration: 'none',
+                          cursor: isDisabled ? 'not-allowed' : 'pointer',
+                          opacity: isDisabled ? 0.4 : 1,
+                          transition: 'background 0.15s',
+                          backgroundColor: isSubActive ? colors.sidebarActive : 'transparent',
+                          color: isSubActive ? colors.sidebarActiveFg : colors.sidebarMutedFg,
+                          borderLeft: `2px solid ${isSubActive ? colors.sidebarActiveFg : 'transparent'}`,
                         }}
+                        onMouseEnter={(e) => { if (!isSubActive && !isDisabled) { e.currentTarget.style.backgroundColor = colors.sidebarHover; e.currentTarget.style.color = colors.sidebarFg; } }}
+                        onMouseLeave={(e) => { if (!isSubActive && !isDisabled) { e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.color = colors.sidebarMutedFg; } }}
                       >
-                        {item.title}
-                      </span>
-                    )}
-                  </div>
-
-                  {!collapsed && (
-                    <div
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '0.5rem',
-                        flexShrink: 0,
-                      }}
-                    >
-                      {item.badge && (
-                        <span
-                          style={{
-                            backgroundColor: item.badgeColor || colors.accent,
-                            color: '#ffffff',
-                            fontSize: '0.75rem',
-                            padding: '0.125rem 0.5rem',
-                            borderRadius: '9999px',
-                            fontWeight: 500,
-                          }}
-                        >
-                          {item.badge}
+                        <SubIcon size={14} style={{ flexShrink: 0 }} />
+                        <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                          {sub.title}
                         </span>
-                      )}
-                      {item.subLinks && (
-                        <ChevronDown
-                          size={16}
-                          style={{
-                            transition: 'transform 0.3s',
-                            transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
-                          }}
-                        />
-                      )}
-                    </div>
-                  )}
-                </button>
+                      </Link>
+                    );
+                  })}
+                </div>
+              )}
 
-                {/* Sub links */}
-                {item.subLinks && isExpanded && !collapsed && (
-                  <div
-                    style={{
-                      paddingTop: '0.5rem',
-                      paddingBottom: '0.5rem',
-                      paddingLeft: '0.5rem',
-                      paddingRight: '0.5rem',
-                      animation: 'fadeIn 0.3s ease-out',
-                    }}
-                  >
-                    {item.subLinks.map((subLink, subIndex) => {
-                      const SubIcon = subLink.icon;
-                      const isSubActive = url === subLink.href;
-                      const isDisabled = !subLink.href || subLink.disabled;
-
-                      return (
-                        <Link
-                          key={`${subLink.title}-${subIndex}`}
-                          href={isDisabled ? '#' : route(subLink.href)}
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '0.75rem',
-                            padding: '0.625rem 1rem',
-                            borderRadius: '0.5rem',
-                            fontSize: '0.875rem',
-                            fontWeight: 500,
-                            transition: 'all 0.2s ease-out',
-                            cursor: isDisabled ? 'not-allowed' : 'pointer',
-                            textDecoration: 'none',
-                            opacity: isDisabled ? 0.45 : 1,
-                            backgroundColor: isSubActive
-                              ? colors.sidebarActive
-                              : 'transparent',
-                            color: isSubActive
-                              ? colors.sidebarActiveFg
-                              : colors.sidebarMutedFg,
-                            animationDelay: `${subIndex * 30}ms`,
-                            marginBottom: '0.25rem',
-                          }}
-                          onMouseEnter={(e) => {
-                            if (!isSubActive && !isDisabled) {
-                              e.currentTarget.style.backgroundColor = colors.sidebarHover;
-                              e.currentTarget.style.color = colors.sidebarFg;
-                            }
-                          }}
-                          onMouseLeave={(e) => {
-                            if (!isSubActive && !isDisabled) {
-                              e.currentTarget.style.backgroundColor = 'transparent';
-                              e.currentTarget.style.color = colors.sidebarMutedFg;
-                            }
-                          }}
-                        >
-                          <div
-                            style={{
-                              width: '6px',
-                              height: '6px',
-                              borderRadius: '9999px',
-                              transition: 'all 0.2s',
-                              backgroundColor: isSubActive
-                                ? colors.sidebarActiveFg
-                                : colors.sidebarMuted,
-                              transform: isSubActive ? 'scale(1.25)' : 'scale(1)',
-                            }}
-                          />
-                          <SubIcon
-                            size={16}
-                            style={{
-                              flexShrink: 0,
-                              transition: 'transform 0.2s',
-                              transform: isSubActive ? 'scale(1.1)' : 'scale(1)',
-                            }}
-                          />
-                          <span
-                            style={{
-                              flex: 1,
-                              overflow: 'hidden',
-                              textOverflow: 'ellipsis',
-                              whiteSpace: 'nowrap',
-                            }}
-                          >
-                            {subLink.title}
-                          </span>
-                        </Link>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </nav>
+            </div>
+          );
+        })}
       </div>
 
       <style>{`
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(-4px); }
-          to   { opacity: 1; transform: translateY(0);    }
-        }
-        .sidebar-scroll::-webkit-scrollbar       { width: 4px; }
-        .sidebar-scroll::-webkit-scrollbar-track { background: ${colors.sidebarBg}; }
+        .sidebar-scroll::-webkit-scrollbar { width: 3px; }
+        .sidebar-scroll::-webkit-scrollbar-track { background: transparent; }
         .sidebar-scroll::-webkit-scrollbar-thumb { background: ${colors.sidebarMuted}; border-radius: 2px; }
-        .sidebar-scroll::-webkit-scrollbar-thumb:hover { background: ${colors.sidebarMutedFg}; }
       `}</style>
     </div>
   );

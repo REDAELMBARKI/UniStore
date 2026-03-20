@@ -41,11 +41,8 @@ export const navigationLinks = [
     title: 'Products',
     icon: Package,
     subLinks: [
-      { title: 'Drafts',            icon: FolderGit, href: 'drafts.index'    },
       { title: 'All Products',      icon: List,      href: 'products'        },
       { title: 'Add Product',       icon: Plus,      href: 'products.create' },
-      { title: 'Bulk Upload',       icon: Upload,    href: '', disabled: true },
-      { title: 'Featured Products', icon: Star,      href: '', disabled: true },
     ],
   },
   {
