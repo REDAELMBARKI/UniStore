@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Head, Link, useForm } from '@inertiajs/react';
 
+
 const styles = `
   @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=DM+Sans:wght@300;400;500&display=swap');
 

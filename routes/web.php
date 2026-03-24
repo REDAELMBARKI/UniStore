@@ -10,6 +10,9 @@ use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\TanentController;
 use Illuminate\Support\Facades\Route;
 
@@ -63,3 +66,25 @@ Route::middleware('auth')->group(function () {
 
 //tanent routes
 Route::get('/stores/new' , [TanentController::class,  'create']);
+
+Route::prefix('tanent')->group(function(){
+    Route::get('/overview' , [TanentController::class,  'overview']);
+    Route::get('/analytics' , [TanentController::class,  'analytics']);
+    Route::get('/stores' , [TanentController::class,  'instances']);
+    Route::get('/subscriptions' , [TanentController::class,  'subscriptions']);
+    Route::get('/details' , [TanentController::class,  'details']);
+});
+
+
+
+// ── Analytics & Overview ─────────────────────────────────────
+
+// ── Catalog Management ───────────────────────────────────────
+Route::get('/products',        [ProductController::class, 'index']) ->name('products');
+Route::get('/products/create', [ProductController::class, 'create'])->name('products.create');
+
+Route::get('/categories',        [CategoryController::class, 'index']) ->name('categories.index');
+Route::get('/categories/create', [CategoryController::class, 'create'])->name('categories.create');
+
+// ── Sales & Orders ───────────────────────────────────────────
+Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
