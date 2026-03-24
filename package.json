@@ -4,7 +4,7 @@
     "type": "module",
     "scripts": {
         "build": "vite build",
-        "dev": "vite" , 
+        "dev": "vite",
         "lint": "eslint resources/js/**/*.{js,jsx}"
     },
     "devDependencies": {
@@ -30,6 +30,7 @@
     "dependencies": {
         "@reduxjs/toolkit": "^2.11.2",
         "react-redux": "^9.2.0",
+        "react-router-dom": "^7.13.1",
         "ziggy-js": "^2.6.1"
     }
 }
