@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ProductController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -24,9 +25,9 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-<<<<<<< Updated upstream
+
 require __DIR__.'/auth.php';
-=======
+
 
 //tanent routes
 Route::get('/stores/new' , [TanentController::class,  'create']);
@@ -59,4 +60,4 @@ Route::get('/categories/create', [CategoryController::class, 'create'])->name('c
 
 // ── Sales & Orders ───────────────────────────────────────────
 Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
->>>>>>> Stashed changes
+
