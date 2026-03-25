@@ -5,9 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Tanent extends Model
+class TanentSetting extends Model
 {
-    /** @use HasFactory<\Database\Factories\TanentFactory> */
+    /** @use HasFactory<\Database\Factories\TanentSettingFactory> */
     use HasFactory;
-    protected $table = 'tenants';
 }

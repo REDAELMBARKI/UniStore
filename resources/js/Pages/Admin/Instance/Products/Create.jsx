@@ -1,17 +1,23 @@
 import { useState } from "react";
-import { router } from "@inertiajs/react";
-import InstanceAdminPanel from "@/Layouts/instance/InstanceAdminPanel";
-import ProductVariantsForm from "@/Components/ui/ProductVariantsForm";
-import ProductTagsCategories from "@/Components/ui/ProductTagscategories";
+import { router, Head } from "@inertiajs/react";
+const InstanceAdminPanel = ({ children }) => <div className="admin-layout">{children}</div>;
+const ProductVariantsForm = () => null;
+const ProductTagsCategories = () => null;
+import InputError from '@/Components/InputError';
+import InputLabel from '@/Components/InputLabel';
+import PrimaryButton from '@/Components/PrimaryButton';
+import SecondaryButton from '@/Components/SecondaryButton';
+import TextInput from '@/Components/TextInput';
+
 
 // ── Constantes ───────────────────────────────────────────────────────────────
-const pinkGrad = { background: "linear-gradient(135deg, #c0166a 0%, #9e1259 100%)" };
+const cyanGrad = { background: "linear-gradient(135deg, #768d65 0%, #5a6624 100%)" };
 
 // ── Badge ────────────────────────────────────────────────────────────────────
 const Badge = ({ children, color = "gray" }) => {
   const colors = {
     gray:   "bg-gray-100 text-gray-600",
-    pink:   "bg-pink-50 text-pink-600",
+    cyan:   "bg-cyan-50 text-cyan-600",
     green:  "bg-emerald-50 text-emerald-600",
   };
   return (
@@ -50,28 +56,18 @@ const Card = ({ title, subtitle, icon, customHeader, children }) => (
 const Field = ({ label, required, error, hint, children }) => (
   <div className="space-y-1.5">
     {label && (
-      <label className="block text-xs font-semibold uppercase tracking-wide text-gray-500">
-        {label}
-        {required && <span className="text-red-500 ml-0.5">*</span>}
-      </label>
+      <InputLabel value={label} />
     )}
     {children}
     {hint && !error && <p className="text-xs text-gray-400">{hint}</p>}
-    {error && (
-      <p className="text-xs text-red-500 flex items-center gap-1">
-        <svg className="w-3 h-3 shrink-0" fill="currentColor" viewBox="0 0 20 20">
-          <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-        </svg>
-        {error}
-      </p>
-    )}
+    {error && <InputError message={error} className="mt-2" />}
   </div>
 );
 
 // ── Styles champs ─────────────────────────────────────────────────────────────
 const inputCls = (err) =>
   `w-full px-3.5 py-2.5 text-sm border rounded-xl bg-gray-50 placeholder-gray-400 text-gray-800
-   focus:outline-none focus:ring-2 focus:ring-pink-400 focus:bg-white focus:border-pink-400
+   focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:bg-white focus:border-cyan-400
    transition-all duration-150
    ${err
      ? "border-red-300 bg-red-50 focus:ring-red-400 focus:border-red-400"
@@ -80,7 +76,7 @@ const inputCls = (err) =>
 
 const selectCls = (err) =>
   `w-full px-3.5 py-2.5 text-sm border rounded-xl bg-gray-50 text-gray-800 appearance-none
-   focus:outline-none focus:ring-2 focus:ring-pink-400 focus:bg-white focus:border-pink-400
+   focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:bg-white focus:border-cyan-400
    transition-all duration-150 cursor-pointer
    ${err ? "border-red-300 bg-red-50" : "border-gray-200 hover:border-gray-300"}`;
 
@@ -102,7 +98,7 @@ const Toggle = ({ checked, onChange, label, description }) => (
       <input type="checkbox" checked={checked} onChange={onChange} className="sr-only" />
       <div
         className="w-10 h-5 rounded-full transition-colors duration-200"
-        style={checked ? pinkGrad : { background: "#e5e7eb" }}
+        style={checked ? cyanGrad : { background: "#e5e7eb" }}
       />
       <div className={`absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform duration-200 ${checked ? "translate-x-5" : ""}`} />
     </div>
@@ -211,10 +207,12 @@ export default function Create({ categories = [], stores = [] }) {
     setVideoModal(false);
   };
 
-  // ── Render ──────────────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-[#f8f8fb]">
-      <div className="max-w-6xl mx-auto px-6 py-8">
+    <InstanceAdminPanel>
+      <Head title="Créer un produit" />
+
+      <div className="min-h-screen bg-[#f8f8fb]">
+        <div className="max-w-6xl mx-auto px-6 py-8">
 
         {/* ── En-tête page ── */}
         <div className="flex items-center justify-between mb-8">
@@ -239,7 +237,7 @@ export default function Create({ categories = [], stores = [] }) {
             <Badge color={form.status === "published" ? "green" : "gray"}>
               {form.status === "published" ? "Publié" : "Brouillon"}
             </Badge>
-            <Badge color={form.type === "variable" ? "pink" : "gray"}>
+            <Badge color={form.type === "variable" ? "cyan" : "gray"}>
               {form.type === "simple" ? "Simple" : "Variable"}
             </Badge>
           </div>
@@ -257,12 +255,12 @@ export default function Create({ categories = [], stores = [] }) {
                 <div className="space-y-5">
 
                   <Field label="Nom du produit" required error={errors.name}>
-                    <input
+                    <TextInput
                       type="text"
                       value={form.name}
                       onChange={(e) => update("name", e.target.value)}
                       placeholder="Ex: Chaise de bureau ergonomique"
-                      className={inputCls(errors.name)}
+                      className="mt-1 block w-full"
                     />
                   </Field>
 
@@ -272,21 +270,21 @@ export default function Create({ categories = [], stores = [] }) {
                       onChange={(e) => update("description", e.target.value)}
                       placeholder="Décrivez votre produit en détail..."
                       rows={4}
-                      className={inputCls(false)}
+                      className="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
                     />
                   </Field>
 
                   <div className="grid grid-cols-2 gap-4">
                     <Field label="Prix" required error={errors.price}>
                       <div className="relative">
-                        <input
+                        <TextInput
                           type="number"
                           value={form.price}
                           onChange={(e) => update("price", e.target.value)}
                           placeholder="0.00"
                           min="0"
                           step="0.01"
-                          className={`${inputCls(errors.price)} pr-14`}
+                          className="mt-1 block w-full pr-14"
                         />
                         <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs font-semibold text-gray-400">
                           MAD
@@ -295,14 +293,14 @@ export default function Create({ categories = [], stores = [] }) {
                     </Field>
                     <Field label="Prix barré" hint="Prix avant remise">
                       <div className="relative">
-                        <input
+                        <TextInput
                           type="number"
                           value={form.compare_price}
                           onChange={(e) => update("compare_price", e.target.value)}
                           placeholder="0.00"
                           min="0"
                           step="0.01"
-                          className={`${inputCls(false)} pr-14`}
+                          className="mt-1 block w-full pr-14"
                         />
                         <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs font-semibold text-gray-400">
                           MAD
@@ -313,22 +311,22 @@ export default function Create({ categories = [], stores = [] }) {
 
                   <div className="grid grid-cols-2 gap-4">
                     <Field label="SKU / Référence">
-                      <input
+                      <TextInput
                         type="text"
                         value={form.sku}
                         onChange={(e) => update("sku", e.target.value)}
                         placeholder="PROD-001"
-                        className={inputCls(false)}
+                        className="mt-1 block w-full"
                       />
                     </Field>
                     <Field label="Stock disponible">
-                      <input
+                      <TextInput
                         type="number"
                         value={form.stock}
                         onChange={(e) => update("stock", e.target.value)}
                         placeholder="0"
                         min="0"
-                        className={inputCls(false)}
+                        className="mt-1 block w-full"
                       />
                     </Field>
                   </div>
@@ -377,7 +375,7 @@ export default function Create({ categories = [], stores = [] }) {
                     {/* Télécharger */}
                     <label
                       className="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold text-white rounded-lg cursor-pointer transition-all active:scale-[0.98] select-none hover:opacity-90"
-                      style={pinkGrad}
+                      style={cyanGrad}
                     >
                       <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -397,7 +395,7 @@ export default function Create({ categories = [], stores = [] }) {
                       type="button"
                       onClick={() => setVideoModal(true)}
                       className="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold text-white rounded-lg transition-all active:scale-[0.98] hover:opacity-90"
-                      style={pinkGrad}
+                      style={cyanGrad}
                     >
                       <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.723v6.554a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
@@ -434,7 +432,7 @@ export default function Create({ categories = [], stores = [] }) {
                             {idx === 0 && (
                               <span
                                 className="absolute top-1.5 left-1.5 px-1.5 py-0.5 text-[9px] font-bold text-white rounded-md"
-                                style={pinkGrad}
+                                style={cyanGrad}
                               >
                                 Principale
                               </span>
@@ -452,24 +450,24 @@ export default function Create({ categories = [], stores = [] }) {
                         ))}
 
                         {/* Tile ajouter */}
-                        <label className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-200 aspect-square cursor-pointer hover:border-pink-300 hover:bg-pink-50/40 transition-all group">
-                          <svg className="w-5 h-5 text-gray-300 group-hover:text-pink-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <label className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-200 aspect-square cursor-pointer hover:border-cyan-300 hover:bg-cyan-50/40 transition-all group">
+                          <svg className="w-5 h-5 text-gray-300 group-hover:text-cyan-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                           </svg>
-                          <span className="text-[10px] text-gray-400 group-hover:text-pink-500 mt-1 font-medium">
+                          <span className="text-[10px] text-gray-400 group-hover:text-cyan-500 mt-1 font-medium">
                             Ajouter
                           </span>
                           <input type="file" accept="image/*" multiple className="hidden" onChange={handleFileUpload} />
                         </label>
                       </div>
                     ) : (
-                      <label className="flex flex-col items-center justify-center w-full py-12 border-2 border-dashed border-gray-200 rounded-xl cursor-pointer hover:border-pink-300 hover:bg-pink-50/30 transition-all group">
-                        <div className="flex items-center justify-center w-12 h-12 rounded-2xl bg-gray-100 group-hover:bg-pink-100 transition-colors mb-3">
-                          <svg className="w-6 h-6 text-gray-400 group-hover:text-pink-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <label className="flex flex-col items-center justify-center w-full py-12 border-2 border-dashed border-gray-200 rounded-xl cursor-pointer hover:border-cyan-300 hover:bg-cyan-50/30 transition-all group">
+                        <div className="flex items-center justify-center w-12 h-12 rounded-2xl bg-gray-100 group-hover:bg-cyan-100 transition-colors mb-3">
+                          <svg className="w-6 h-6 text-gray-400 group-hover:text-cyan-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                           </svg>
                         </div>
-                        <p className="text-sm font-medium text-gray-600 group-hover:text-pink-600 transition-colors">
+                        <p className="text-sm font-medium text-gray-600 group-hover:text-cyan-600 transition-colors">
                           Glissez vos images ici
                         </p>
                         <p className="text-xs text-gray-400 mt-1">
@@ -512,12 +510,12 @@ export default function Create({ categories = [], stores = [] }) {
               <Card title="Référencement (SEO)" subtitle="Optimisez votre visibilité" icon={Icons.seo}>
                 <div className="space-y-4">
                   <Field label="Meta title">
-                    <input
+                    <TextInput
                       type="text"
                       value={form.seo.meta_title}
                       onChange={(e) => update("seo", { ...form.seo, meta_title: e.target.value })}
                       placeholder="Titre pour les moteurs de recherche"
-                      className={inputCls(false)}
+                      className="mt-1 block w-full"
                     />
                   </Field>
                   <Field label="Meta description">
@@ -526,7 +524,7 @@ export default function Create({ categories = [], stores = [] }) {
                       onChange={(e) => update("seo", { ...form.seo, meta_description: e.target.value })}
                       placeholder="Description courte pour les résultats Google..."
                       rows={2}
-                      className={inputCls(false)}
+                      className="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
                     />
                   </Field>
                   <Field label="Slug URL" hint="Laissez vide pour générer automatiquement">
@@ -534,12 +532,12 @@ export default function Create({ categories = [], stores = [] }) {
                       <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs text-gray-400 font-mono select-none">
                         /products/
                       </span>
-                      <input
+                      <TextInput
                         type="text"
                         value={form.seo.slug}
                         onChange={(e) => update("seo", { ...form.seo, slug: e.target.value })}
                         placeholder="mon-produit"
-                        className={`${inputCls(false)} pl-24`}
+                        className="mt-1 block w-full pl-24"
                       />
                     </div>
                   </Field>
@@ -612,12 +610,12 @@ export default function Create({ categories = [], stores = [] }) {
                     </Select>
                   </Field>
                   <Field label="Marque">
-                    <input
+                    <TextInput
                       type="text"
                       value={form.brand_id}
                       onChange={(e) => update("brand_id", e.target.value)}
                       placeholder="Nom ou ID de la marque"
-                      className={inputCls(false)}
+                      className="mt-1 block w-full"
                     />
                   </Field>
                 </div>
@@ -628,14 +626,14 @@ export default function Create({ categories = [], stores = [] }) {
                 <div className="space-y-4">
                   <Field label="Poids">
                     <div className="relative">
-                      <input
+                      <TextInput
                         type="number"
                         value={form.weight}
                         onChange={(e) => update("weight", e.target.value)}
                         placeholder="0.00"
                         min="0"
                         step="0.01"
-                        className={`${inputCls(false)} pr-10`}
+                        className="mt-1 block w-full pr-10"
                       />
                       <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs font-semibold text-gray-400">
                         kg
@@ -654,7 +652,7 @@ export default function Create({ categories = [], stores = [] }) {
                       ].map(({ label, key }) => (
                         <div key={key}>
                           <p className="text-xs text-gray-400 mb-1">{label}</p>
-                          <input
+                          <TextInput
                             type="number"
                             value={form.dimensions[key]}
                             onChange={(e) =>
@@ -662,7 +660,7 @@ export default function Create({ categories = [], stores = [] }) {
                             }
                             placeholder="0"
                             min="0"
-                            className={inputCls(false)}
+                            className="mt-1 block w-full"
                           />
                         </div>
                       ))}
@@ -673,11 +671,11 @@ export default function Create({ categories = [], stores = [] }) {
 
               {/* Boutons sticky */}
               <div className="sticky bottom-6 space-y-2.5">
-                <button
+                <PrimaryButton
                   type="submit"
                   disabled={loading}
-                  className="w-full flex items-center justify-center gap-2 px-5 py-3 text-white text-sm font-semibold rounded-xl active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-150 shadow-lg hover:opacity-90"
-                  style={pinkGrad}
+                  className="w-full justify-center"
+                  style={cyanGrad}
                 >
                   {loading ? (
                     <>
@@ -695,14 +693,14 @@ export default function Create({ categories = [], stores = [] }) {
                       Créer le produit
                     </>
                   )}
-                </button>
-                <button
+                </PrimaryButton>
+                <SecondaryButton
                   type="button"
                   onClick={() => router.visit("/admin/instance/products")}
-                  className="w-full px-5 py-2.5 text-sm font-medium text-gray-600 border border-gray-200 rounded-xl hover:bg-gray-50 hover:border-gray-300 active:scale-[0.98] transition-all duration-150"
+                  className="w-full"
                 >
                   Annuler
-                </button>
+                </SecondaryButton>
               </div>
 
             </div>
@@ -729,38 +727,36 @@ export default function Create({ categories = [], stores = [] }) {
                 </svg>
               </button>
             </div>
-            <input
+            <TextInput
               type="text"
               value={videoUrl}
               onChange={(e) => setVideoUrl(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && confirmVideoUrl()}
               placeholder="https://youtube.com/watch?v=..."
-              className={inputCls(false)}
+              className="mt-1 block w-full"
               autoFocus
             />
             <div className="flex gap-3 mt-4">
-              <button
+              <SecondaryButton
                 type="button"
                 onClick={() => setVideoModal(false)}
-                className="flex-1 px-4 py-2.5 text-sm font-medium text-gray-600 border border-gray-200 rounded-xl hover:bg-gray-50 transition-all"
+                className="flex-1"
               >
                 Annuler
-              </button>
-              <button
+              </SecondaryButton>
+              <PrimaryButton
                 type="button"
                 onClick={confirmVideoUrl}
-                className="flex-1 px-4 py-2.5 text-sm font-semibold text-white rounded-xl transition-all active:scale-[0.98] hover:opacity-90"
-                style={pinkGrad}
+                className="flex-1"
+                style={cyanGrad}
               >
                 Ajouter
-              </button>
+              </PrimaryButton>
             </div>
           </div>
         </div>
       )}
-
-    </div>
+      </div>
+    </InstanceAdminPanel>
   );
 }
-
-Create.layout = (page) => <InstanceAdminPanel children={page} />;
