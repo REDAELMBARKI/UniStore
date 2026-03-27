@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { router } from "@inertiajs/react";
 import ProductVariantsForm from "@/Components/ui/ProductVariantsForm";
+import { ImportIcon } from "lucide-react";
 
 export default function Create({ categories = [], stores = [] }) {
   const [form, setForm] = useState({
@@ -176,3 +177,4 @@ export default function Create({ categories = [], stores = [] }) {
     </div>
   );
 }
+
