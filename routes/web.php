@@ -1,6 +1,9 @@
 
 <?php
 
+
+use App\Http\Controllers\OrderItemController;
+use App\Http\Controllers\OrderAddressController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\ConfirmablePasswordController;
 use App\Http\Controllers\Auth\EmailVerificationNotificationController;
@@ -88,3 +91,23 @@ Route::get('/categories/create', [CategoryController::class, 'create'])->name('c
 
 // ── Sales & Orders ───────────────────────────────────────────
 Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
+Route::prefix('admin')->group(function () {
+
+    Route::get('/orders/{id}/edit', [OrderController::class, 'edit']);
+    Route::put('/orders/{id}', [OrderController::class, 'update']);
+    Route::delete('/orders/{id}', [OrderController::class, 'destroy']);
+
+});
+
+Route::get('/checkout', function () {
+    return Inertia::render('Shipping/Checkout');
+});
+
+Route::post('/checkout', function () {
+});
+
+
+
+Route::get('/admin/orders/{id}/items', [OrderItemController::class, 'index']);
+Route::delete('/admin/order-items/{id}', [OrderItemController::class, 'destroy']);
+Route::post('/checkout', [OrderAddressController::class, 'store']);
