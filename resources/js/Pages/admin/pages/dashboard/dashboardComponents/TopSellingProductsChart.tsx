@@ -1,34 +1,50 @@
-import { Product } from '@/types/dashboardTypes';
 import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 interface TopSellingProductsChartProps {
-  products: Product[];
+  products: any[];
 }
 
 export function TopSellingProductsChart({ products }: TopSellingProductsChartProps) {
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">Top Selling Products</h3>
-      <ResponsiveContainer width="100%" height={300}>
-        <BarChart data={products} margin={{ top: 5, right: 20, left: 20, bottom: 60 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+    <div className="h-full w-full">
+      <ResponsiveContainer width="100%" height="100%">
+        <BarChart data={products} margin={{ top: 10, right: 10, left: 0, bottom: 40 }}>
+          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#ffffff05" />
           <XAxis 
             dataKey="name" 
-            tick={{ fill: '#6b7280', fontSize: 11 }}
-            angle={-45}
+            axisLine={false}
+            tickLine={false}
+            tick={{ fill: '#4b5563', fontSize: 10, fontWeight: 600 }}
+            angle={-25}
             textAnchor="end"
-            height={100}
+            interval={0}
           />
           <YAxis 
-            tick={{ fill: '#6b7280', fontSize: 12 }}
-            tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
+            axisLine={false}
+            tickLine={false}
+            tick={{ fill: '#4b5563', fontSize: 11, fontWeight: 600 }}
+            tickFormatter={(value) => value >= 1000 ? `${(value / 1000).toFixed(0)}K` : value}
           />
           <Tooltip 
-            formatter={(value: number) => [`$${value.toLocaleString()}`, 'Revenue']}
-            contentStyle={{ backgroundColor: '#fff', border: '1px solid #e5e7eb', borderRadius: '6px' }}
+            contentStyle={{ 
+              backgroundColor: '#1a1a1a', 
+              borderColor: '#ffffff10',
+              borderRadius: '12px',
+              fontSize: '12px',
+              fontWeight: 'bold',
+              color: '#fff'
+            }}
+            itemStyle={{ color: '#f97316' }}
+            cursor={{ fill: '#ffffff05' }}
+            formatter={(value: any) => [`${value.toLocaleString()} MAD`, 'Revenue']}
           />
-          <Bar dataKey="revenue" fill="#dc2626" radius={[4, 4, 0, 0]} />
+          <Bar 
+            dataKey="revenue" 
+            fill="#f97316" 
+            radius={[6, 6, 0, 0]}
+            animationDuration={1500}
+          />
         </BarChart>
       </ResponsiveContainer>
     </div>

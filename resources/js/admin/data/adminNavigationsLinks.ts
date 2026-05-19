@@ -37,7 +37,8 @@ export const menuItems: MenuItem[] = [
     icon: LayoutDashboard,
     subLinks: [
       { title: "Overview",     icon: BarChart3,  href: "dashboard.overview" },
-      { title: "Customers", icon: TrendingUp, href: "", disabled: true },
+      { title: "Sales", icon: DollarSign, href: "dashboard.sales_analytics" },
+      { title: "Customers", icon: TrendingUp, href: "dashboard.customers_analytics" },
       { title: "Inventory", icon: Zap,        href: "", disabled: true },
       { title: "alerts", icon: Zap,        href: "", disabled: true },
     ]

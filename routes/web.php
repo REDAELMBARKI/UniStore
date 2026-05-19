@@ -106,9 +106,7 @@ Route::post('/sheets', [DriveController::class, 'auth'])
 ->name('googleSheet.create');
 
 
-Route::get('admin/dashboard', function () {
-    return Inertia::render('admin/pages/dashboard/Overview');
-})->name("dashboard.overview");
+Route::get('admin/dashboard', [DashboardController::class, 'overview'])->name("dashboard.overview");
 
 // Admin Coupons
 Route::get('admin/coupons', [AdminCouponController::class, 'index'])->name('coupons.index');
@@ -204,13 +202,13 @@ Route::get('/customers/{id}' , [CurstomerController::class, 'show']) ;
 
 // messages
 
-Route::get('/messages' , [MessageController::class, 'index']) ;
+Route::get('/messages' , [MessageController::class, 'index'])->name('messages') ;
 
 
 // dashboard/sales_analytics
-Route::get('dashboard/sales_analytics' , [DashboardController::class, 'salesIndex']) ;
-Route::get('dashboard/customers_analytics' , [DashboardController::class, 'customerIndex']) ;
-Route::get('dashboard/inventory_analytics' , [DashboardController::class, 'inventoryIndex']) ;
+Route::get('dashboard/sales_analytics' , [DashboardController::class, 'salesIndex'])->name('dashboard.sales_analytics');
+Route::get('dashboard/customers_analytics' , [DashboardController::class, 'customerIndex'])->name('dashboard.customers_analytics');
+Route::get('dashboard/inventory_analytics' , [DashboardController::class, 'inventoryIndex'])->name('dashboard.inventory_analytics');
 
 // require __DIR__.'/auth.php';
   

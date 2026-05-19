@@ -41,40 +41,54 @@ class OrderService
         }
 
         public function getStats(){
-            return [
-            'total' => [
-                'count' => 12,
-                'change_percent' => 12.5
-            ],
-            'pending' => [
-                'count' => 3,
-                'change_percent' => 5.1
-            ],
-            'out_for_delivery' => [
-                'count' => 0,
-                'change_percent' => 0
-            ],
-            'delivered' => [
-                'count' => 0,
-                'change_percent' => 0
-            ],
-            'delivery_failed' => [
-                'count' => 0,
-                'change_percent' => 0
-            ],
-            'returned' => [
-                'count' => 1,
-                'change_percent' => 2.3
-            ],
-            'confirmed' => [
-                'count' => 0,
-                'change_percent' => 0
-            ],
-            'canceled' => [
-                'count' => 1,
-                'change_percent' => 8.2
-            ],
-        ];
+            $currentMonth = now()->month;
+            $currentYear = now()->year;
+            $lastMonth = now()->subMonth()->month;
+            $lastMonthYear = now()->subMonth()->year;
+
+            $statuses = [
+                'pending', 
+                'out_for_delivery', 
+                'delivered', 
+                'delivery_failed', 
+                'returned', 
+                'confirmed', 
+                'canceled'
+            ];
+
+            $stats = [
+                'total' => [
+                    'count' => Order::count(),
+                    'change_percent' => $this->calculateChange(
+                        Order::whereMonth('created_at', $currentMonth)->whereYear('created_at', $currentYear)->count(),
+                        Order::whereMonth('created_at', $lastMonth)->whereYear('created_at', $lastMonthYear)->count()
+                    )
+                ]
+            ];
+
+            foreach ($statuses as $status) {
+                $currentCount = Order::where('order_status', $status)
+                    ->whereMonth('created_at', $currentMonth)
+                    ->whereYear('created_at', $currentYear)
+                    ->count();
+                
+                $lastCount = Order::where('order_status', $status)
+                    ->whereMonth('created_at', $lastMonth)
+                    ->whereYear('created_at', $lastMonthYear)
+                    ->count();
+
+                $stats[$status] = [
+                    'count' => Order::where('order_status', $status)->count(),
+                    'change_percent' => $this->calculateChange($currentCount, $lastCount)
+                ];
+            }
+
+            return $stats;
+        }
+
+        private function calculateChange($current, $last) {
+            if ($last == 0) return $current > 0 ? 100 : 0;
+            return round((($current - $last) / $last) * 100, 1);
         }
         
 
