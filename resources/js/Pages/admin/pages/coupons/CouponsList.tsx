@@ -16,7 +16,7 @@ import { COUPON_TYPES } from "../../utils/constants";
 import { useToast } from "../../hooks/useToast";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 
-export function CouponsList() {
+export default  function CouponsList() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [code, setCode] = useState("");

@@ -1,6 +1,8 @@
 <?php
 
 use App\Events\UserLogin;
+use App\Http\Controllers\Admin\CouponController as AdminCouponController;
+use App\Http\Controllers\Admin\PromotionController as AdminPromotionController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\RuleBasedCollectionController;
 use App\Http\Controllers\CategoryController;
@@ -107,6 +109,22 @@ Route::post('/sheets', [DriveController::class, 'auth'])
 Route::get('admin/dashboard', function () {
     return Inertia::render('admin/pages/dashboard/Overview');
 })->name("dashboard.overview");
+
+// Admin Coupons
+Route::get('admin/coupons', [AdminCouponController::class, 'index'])->name('coupons.index');
+Route::get('admin/coupons/create', [AdminCouponController::class, 'create'])->name('coupons.create');
+Route::post('admin/coupons', [AdminCouponController::class, 'store'])->name('coupons.store');
+Route::get('admin/coupons/{coupon}/edit', [AdminCouponController::class, 'edit'])->name('coupons.edit');
+Route::put('admin/coupons/{coupon}', [AdminCouponController::class, 'update'])->name('coupons.update');
+Route::delete('admin/coupons/{coupon}', [AdminCouponController::class, 'destroy'])->name('coupons.destroy');
+
+// Admin Promotions
+Route::get('admin/promotions', [AdminPromotionController::class, 'index'])->name('promotions.index');
+Route::get('admin/promotions/create', [AdminPromotionController::class, 'create'])->name('promotions.create');
+Route::post('admin/promotions', [AdminPromotionController::class, 'store'])->name('promotions.store');
+Route::get('admin/promotions/{promotion}/edit', [AdminPromotionController::class, 'edit'])->name('promotions.edit');
+Route::put('admin/promotions/{promotion}', [AdminPromotionController::class, 'update'])->name('promotions.update');
+Route::delete('admin/promotions/{promotion}', [AdminPromotionController::class, 'destroy'])->name('promotions.destroy');
 // ->middleware(['auth', 'verified'])->name('dashboard');
 
 // Route::middleware('auth')->group(function () {
@@ -160,21 +178,9 @@ Route::get("/store" , [StoreConfigController::class ,  'index'])->name("store") 
 // admin
 Route::get('/admins' , [AdminController::class, 'index']) ;
 
-
-
 // variants managment
-
 Route::get('/variants/colors' , [VariantsController::class, 'colors']) ;
 Route::get('/variants/sizes' , [VariantsController::class, 'sizes']) ;
-
-
-
-//marketing 
-// coupons 
-Route::get('/coupons' , [CouponController::class,'getAll'])->name('get.coupons') ;
-
-// promotions
-Route::get('/promotions' , [PromotionController::class,'getAll'])->name('get.promotions') ;
 
 
 // oderes

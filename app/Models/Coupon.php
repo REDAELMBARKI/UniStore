@@ -10,14 +10,8 @@ class Coupon extends Model
     /** @use HasFactory<\Database\Factories\CouponFactory> */
     use HasFactory;
     protected $hidden = [
-    'times_used',
-    'max_uses',
-    'priority',
-    'created_at',
-    'updated_at',
-    'applicable_category_ids',
-    'applicable_product_ids',
-    'applicable_sub_category_ids',
+        'created_at',
+        'updated_at',
     ];
     protected $guarded = [];
     protected $casts = [

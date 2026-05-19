@@ -9,8 +9,43 @@ use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
+use App\Repositories\PromotionRepository;
+use App\Services\CartService;
+
 class PromotionService extends DiscountService
 {
+    public function __construct(
+        protected CartService $cartService,
+        private PromotionRepository $promotionRepository
+    ) {
+        parent::__construct($cartService);
+    }
+
+    public function getAllPromotions()
+    {
+        return $this->promotionRepository->getAll();
+    }
+
+    public function getPromotionById(int $id)
+    {
+        return $this->promotionRepository->findById($id);
+    }
+
+    public function createPromotion(array $data)
+    {
+        return $this->promotionRepository->create($data);
+    }
+
+    public function updatePromotion(int $id, array $data)
+    {
+        return $this->promotionRepository->update($id, $data);
+    }
+
+    public function deletePromotion(int $id)
+    {
+        return $this->promotionRepository->delete($id);
+    }
+
     public function getDbPromotions()
     {
         return Promotion::where('is_active', true)
