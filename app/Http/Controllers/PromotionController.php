@@ -13,6 +13,7 @@ class PromotionController extends Controller
     public function __construct(private PromotionService $promotionService)
     {
         throw new \Exception('Not implemented');
+        
     }
       public function getAll()
     {
