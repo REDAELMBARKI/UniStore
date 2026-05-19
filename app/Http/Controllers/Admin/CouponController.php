@@ -17,7 +17,7 @@ class CouponController extends Controller
 
     public function index()
     {
-        return Inertia::render('admin/pages/coupons/CouponList', [
+        return Inertia::render('admin/pages/coupons/index', [
             'coupons' => $this->couponService->getAllCoupons()
         ]);
     }

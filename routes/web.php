@@ -191,7 +191,8 @@ Route::prefix('orders')->group(function(){
     Route::get("orders/{order}/track" , [OrderController::class, 'authTrack'])->middleware('auth')->name('track.auth') ;
     Route::get('/track/{token}', [OrderController::class, 'guestTrack'])
         ->where('token', '[0-9a-f-]{36}')->name('track.guest') ;
-})->can('manage-orders');
+});
+// ->can('manage-orders');
 
 // coupon aplly ajaxrequest
 Route::post('/coupon_feedback', [CouponController::class,'coupon_feedback'])->name('coupon.feedback');

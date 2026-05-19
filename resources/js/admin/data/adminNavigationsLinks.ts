@@ -115,9 +115,9 @@ export const menuItems: MenuItem[] = [
     icon: Store,
     subLinks: [
 
-      { title: "Home editor", icon: SectionIcon, href: "home.editor.index", disabled: true },
-      { title: "collections", icon: SectionIcon, href: "collections.index", disabled: true },
-      { title: "banners", icon: SectionIcon, href: "banners.index", disabled: true },
+      { title: "Home editor", icon: SectionIcon, href: "home.editor.index", disabled: false },
+      { title: "collections", icon: SectionIcon, href: "collections.index", disabled: false },
+      { title: "banners", icon: SectionIcon, href: "banners.index", disabled: false },
     ]
   },
   {
@@ -176,7 +176,6 @@ export const menuItems: MenuItem[] = [
       { title: "All Promotions",   icon: List,     href: "promotions.index" },  // ✅
       { title: "Add Promotion",    icon: Plus,     href: "promotions.create" }, // ✅
       { title: "Email Campaigns",  icon: Mail,     href: "", disabled: true },
-      { title: "Banners",          icon: ImageIcon,href: "", disabled: true },
       { title: "Newsletter",       icon: FileText, href: "", disabled: true },
     ]
   },
@@ -186,8 +185,6 @@ export const menuItems: MenuItem[] = [
     subLinks: [
       { title: "All Coupons",     icon: List,        href: "coupons.index" },  // ✅
       { title: "Create Coupon",   icon: Plus,        href: "coupons.create" }, // ✅
-      { title: "Active Coupons",  icon: CheckCircle, href: "", disabled: true },
-      { title: "Expired Coupons", icon: XCircle,     href: "", disabled: true },
     ]
   },
 
