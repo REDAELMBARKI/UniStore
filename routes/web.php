@@ -101,7 +101,7 @@ Route::get('/checkout', [CartController::class, 'index']);
 // end fake url 
 
 //shipping
-Route::get('/shipping/calculate/{id}' , [ShippingController::class , 'calculate' ])->name('shipping.calculate');
+Route::match(['get', 'post'], '/shipping/calculate/{id}', [ShippingController::class, 'calculate'])->name('shipping.calculate');
 Route::get('/shippings_cities' , [ShippingController::class, 'getCities'])->name('shipping.cities.get') ;
 
 

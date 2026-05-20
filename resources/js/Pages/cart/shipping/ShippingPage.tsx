@@ -69,7 +69,8 @@ export default function ShippingPage({items = [], tax  , shippingData, setShippi
     );
    
 
-    const total = parseInt(subtotal) +  parseInt( ( zone?.price ?? 0));
+    const shippingCost = Number(zone?.price ?? 0);
+    const total = subtotal + shippingCost;
     
     const onValid: any = (data : any) => {
         onChangeBackendErrors({});
@@ -86,18 +87,24 @@ export default function ShippingPage({items = [], tax  , shippingData, setShippi
     };
 
 
-    const onCityChange = async (id :string) => {
+    const onCityChange = async (cityId :string) => {
         try{
-          const res = await axios.get(route('shipping.calculate' , {id}))
+          const res = await axios.post(route('shipping.calculate' , {id: cityId}), {
+              items: items
+          })
 
           if(res.status === 200){
-              setZone(res.data.zone)
+              // We merge the calculated cost into the zone object so the UI remains consistent
+              setZone({ 
+                  ...res.data.zone, 
+                  price: res.data.cost 
+              });
           }
   
         } catch(error : any){
+            console.error("Shipping calculation failed:", error);
             setZone(null);
         }       
-
     }
 
     return (

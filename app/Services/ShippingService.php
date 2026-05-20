@@ -119,7 +119,7 @@ class ShippingService
     private function calculateWeightBased(array $items, ShippingZone $zone, ShippingSetting $settings): float
      {
      $totalWeight = collect($items)->sum(function ($item) {
-          $weight = $item->product_variant->product->shipping->weight ?? 0;
+          $weight = ($item->product_variant->product->shipping['weight'] ?? 0);
           return $weight * $item->quantity;
      });
 

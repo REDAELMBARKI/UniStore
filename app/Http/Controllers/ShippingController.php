@@ -8,16 +8,25 @@ use Illuminate\Http\Request;
 
 class ShippingController extends Controller
 {
-    public function calculate($id) {
-          validator(
-                ['id' => $id],
-                ['id' => 'required|numeric|exists:shipping_zone_cities,id']
-          )->validate();
+    public function calculate($id, Request $request, ShippingService $shippingService) {
+          $cityRecord = ShippingZoneCity::findOrFail($id);
+          
+          // Fallback to empty items if not provided
+          $items = $request->input('items', []);
+          $promotionId = $request->input('promotionId');
 
-          $city = ShippingZoneCity::with('shipping_zone')->findOrFail($id);
-
-          $zone = $city->shipping_zone()->first(['estimated_days' ,'price']);
-          return response()->json(['zone' => $zone],200) ;
+          try {
+              $cost = $shippingService->calculateShipping($items, $cityRecord->city, $promotionId);
+              $zone = $cityRecord->shipping_zone()->first(['estimated_days', 'price']);
+              
+              return response()->json([
+                  'cost' => $cost,
+                  'zone' => $zone,
+                  'city' => $cityRecord->city
+              ], 200);
+          } catch (\Exception $e) {
+              return response()->json(['error' => $e->getMessage()], 422);
+          }
     }
 
 

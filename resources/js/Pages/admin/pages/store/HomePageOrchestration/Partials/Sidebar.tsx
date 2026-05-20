@@ -103,7 +103,6 @@ export function Sidebar({
         </button>
       </div>
 
-// Section list
 {isOpen && (
   <div style={{ flex: 1, overflowY: 'auto' }}>
     {sections.map((section, index) => (
