@@ -23,11 +23,13 @@ interface ShippingPageProps {
     setShippingData : React.Dispatch<React.SetStateAction<ShippingData>>
     onChangeBackendErrors : (errors : any) => void
     backendErrors : any 
+    zone : any
+    setZone : (zone : any) => void
 }
 
 
 
-export default function ShippingPage({items = [], tax  , shippingData, setShippingData , onStepChange , backendErrors , onChangeBackendErrors }: ShippingPageProps) {
+export default function ShippingPage({items = [], tax  , shippingData, setShippingData , onStepChange , backendErrors , onChangeBackendErrors, zone, setZone }: ShippingPageProps) {
     const {
         state: { currentTheme: theme },
     } = useStoreConfigCtx();
@@ -36,7 +38,6 @@ export default function ShippingPage({items = [], tax  , shippingData, setShippi
     ) ; 
 
     const [shippingCities , setShippingCities] =  useState([]); 
-    const [zone , setZone] = useState(undefined) ; 
     useEffect(()=>{
         console.log(backendErrors)
     },[backendErrors])

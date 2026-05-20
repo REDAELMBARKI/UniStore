@@ -23,11 +23,12 @@ interface CheckoutPageProps {
     onStepChange : (action : 'prev' | 'next' ) => void , 
     onChangeBackendErrors : ( errors : any) => void
     onResetShippingData : () => void , 
-    postUrl : string
+    postUrl : string,
+    zone : any
 }
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_KEY);
-export default function CheckoutPage({ postUrl , items = [], tax, shippingData ,onStepChange  ,onChangeBackendErrors , onResetShippingData  }: CheckoutPageProps) {
+export default function CheckoutPage({ postUrl , items = [], tax, shippingData ,onStepChange  ,onChangeBackendErrors , onResetShippingData, zone }: CheckoutPageProps) {
     const {
         state: { currentTheme: theme },
     } = useStoreConfigCtx();
@@ -37,13 +38,13 @@ export default function CheckoutPage({ postUrl , items = [], tax, shippingData ,
         order_id : undefined
     });
     const [coupon_code, setCoupon_code] = useState("");
+    const [discount, setDiscount] = useState(0);
     const {addToast} = useToast()
     const subtotal = items.reduce(
         (sum, item) => sum + item.price_snapshot * item.quantity,
         0
     );
-    const shipping = subtotal >= 50 ? 0 : 5.0;
-    const discount = coupon_code ? -10.0 : 0;
+    const shipping = Number(zone?.price ?? 0);
     const total = subtotal + shipping + tax + discount;
 
     const handlePlaceOrder = (e: React.FormEvent) => {
@@ -63,6 +64,7 @@ export default function CheckoutPage({ postUrl , items = [], tax, shippingData ,
                         order_id
                     })
                     setCoupon_code("")
+                    setDiscount(0)
                     // onResetShippingData()
                     onChangeBackendErrors([])
             },
@@ -85,6 +87,7 @@ export default function CheckoutPage({ postUrl , items = [], tax, shippingData ,
             const res = await axios({method:"POST" , url : route("coupon.feedback") , data : {coupon_code}}) ; 
             if(res){
                  if (res.data.success) {
+                        setDiscount(-10.0);
                         addToast({
                         type: "success",
                         title: "Coupon Valid",
@@ -152,6 +155,7 @@ export default function CheckoutPage({ postUrl , items = [], tax, shippingData ,
                                     />
 
                                     <OrderSummaryCard
+                                        zone={zone}
                                         applyCouponWithFeedback={applyCouponWithFeedback}
                                         subtotal={subtotal}
                                         tax={tax}

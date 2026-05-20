@@ -20,7 +20,7 @@ interface ShoppingCartPageMasterProps {
 export default function ShoppingCartMaster({ items = [] , tax = 0 }: ShoppingCartPageMasterProps) {
     const [step , setStep] = useState(0);
     const [backendErrors , setBackendErrors] = useState<any>({}) ;
-    // const [zone , setZone] 
+    const [zone , setZone] = useState<any>(undefined) ; 
 
     const [shippingData, setShippingData] = useState({
         address: {
@@ -101,8 +101,8 @@ export default function ShoppingCartMaster({ items = [] , tax = 0 }: ShoppingCar
 
     const stepsCompos : Record<string , React.ReactElement> = {
         '0' : <CartPage {...{items  , onStepChange}} /> , 
-        '1' : <ShippingPage {...{items ,tax , shippingData, setShippingData , onStepChange , backendErrors  , onChangeBackendErrors }} /> , 
-        '2' : <CheckoutPage {...{ postUrl : "order.checkout" , items , shippingData , tax , onStepChange , onChangeBackendErrors ,onResetShippingData}} /> , 
+        '1' : <ShippingPage {...{items ,tax , shippingData, setShippingData , onStepChange , backendErrors  , onChangeBackendErrors, zone, setZone }} /> , 
+        '2' : <CheckoutPage {...{ postUrl : "order.checkout" , items , shippingData , tax , onStepChange , onChangeBackendErrors ,onResetShippingData, zone}} /> , 
     };
 
 
