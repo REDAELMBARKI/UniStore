@@ -1,5 +1,6 @@
 import React from 'react';
 import Layout from '../../Layouts/Layout';
+import { router } from '@inertiajs/react';
 import HeroSlider from './Partials/HeroSlider';
 import PromoBanners from './Partials/PromoBanners';
 import FeatureStrip from './Partials/FeatureStrip';
@@ -659,8 +660,14 @@ interface HomePageProps {
 
 const HomePage: React.FC<HomePageProps> = ({ feed = FAKE_FEED, onViewAll }) => {
   const handleViewAll = (key: string) => {
-    onViewAll?.(key);
-    // TODO: wire to router e.g. router.push(`/shop/${key}`)
+    if (key === 'collections.new_arrivals') {
+      router.get('/marketplace', { source: 'new_arrivals' });
+    } else if (key.startsWith('collections.')) {
+      const categorySlug = key.split('.')[1];
+      router.get('/marketplace', { category: categorySlug });
+    } else {
+      router.get('/marketplace');
+    }
   };
 
   return (

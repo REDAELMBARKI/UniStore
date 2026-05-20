@@ -10,8 +10,9 @@ import { Card5 } from '@/Pages/admin/pages/settings/configStore/cardsConfig/card
 import { Card6 } from '@/Pages/admin/pages/settings/configStore/cardsConfig/cardsPrototypes/Card6'
 import { ProductClient } from '@/types/clientSideTypes'
 import {  CardOption } from '@/types/StoreConfigTypes'
+import { Link } from '@inertiajs/react'
 
-export default function ProductCardMaster({product}:{product : ProductClient}) {
+export default function ProductCardMaster({product}:{product : any}) {
   const {state : {currentCardConf : {cardId}}} = useStoreConfigCtx()
 
   const cardsMap : Record<CardOption , any>  =  {
@@ -25,8 +26,8 @@ export default function ProductCardMaster({product}:{product : ProductClient}) {
 
   const Card = cardsMap[cardId] ;
   return (
-    <>
-          <Card product={product} />
-    </>
+    <Link href={route('product.show', product.slug || product.id)} className="block h-full">
+      <Card product={product} />
+    </Link>
   )
 }

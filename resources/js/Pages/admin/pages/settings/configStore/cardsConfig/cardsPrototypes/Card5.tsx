@@ -1,4 +1,5 @@
 import { useStoreConfigCtx } from "@/contextHooks/useStoreConfigCtx";
+import ProductImageSlideshow from "@/components/partials/ProductImageSlideshow";
 import { Star } from "lucide-react";
 
 // Card 7: Featured Big
@@ -12,7 +13,11 @@ export const Card5: React.FC<any> = ({ product }) => {
                 {showRating && <div className="flex text-xs font-bold items-center"><Star className="w-3 h-3 fill-black text-black mr-1"/> {product.rating}</div>}
              </div>
              <div className="aspect-[5/4] relative overflow-hidden group border-b border-slate-900">
-                 <img src={product.image} alt={product.name} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" />
+                 <ProductImageSlideshow 
+                    images={product.images || [product.image]} 
+                    alt={product.name} 
+                    className="w-full h-full grayscale group-hover:grayscale-0 transition-all duration-500" 
+                 />
              </div>
              <div className="p-5 bg-white flex flex-col gap-4">
                  <div>

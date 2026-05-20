@@ -8,6 +8,7 @@ use App\Http\Controllers\RuleBasedCollectionController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CurstomerController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\MarketplaceController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\PromotionController;
 use App\Http\Controllers\ShippingController;
@@ -64,7 +65,7 @@ Route::patch('/store/banners/{banner:slug}', [BannerController::class, 'reorder'
 
 // catalog 
 Route::get('/shop', function () {
-    return Inertia::render('ShopPage');
+    return redirect()->route('marketplace.index');
 })->name('shop');
 Route::get('/about', function () {
     return Inertia::render('AboutPage');
@@ -130,6 +131,8 @@ Route::delete('admin/promotions/{promotion}', [AdminPromotionController::class, 
 //     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
 //     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 // });
+
+Route::get('/marketplace', [MarketplaceController::class, 'index'])->name('marketplace.index');
 
 // products
 // Route::resource('/products', ProductController::class );

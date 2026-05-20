@@ -48,7 +48,7 @@ const LayoutContent = ({ children, currentPage , seo}:LayoutProps) => {
 
   const navigation = [
     { name: 'Home', href: '/', active: currentPage === 'home'},
-    { name: 'Shop', href: '/shop', active: currentPage === 'shop' },
+    { name: 'Shop', href: '/marketplace', active: currentPage === 'shop' },
     { name: 'Features', href: '/features', active: currentPage === 'cart', label: 'hot' },
     { name: 'Blog', href: '/blog', active: currentPage === 'blog' },
     { name: 'About', href: '/about' },

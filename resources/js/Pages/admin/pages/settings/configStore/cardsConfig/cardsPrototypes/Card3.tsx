@@ -1,15 +1,20 @@
 import { useStoreConfigCtx } from "@/contextHooks/useStoreConfigCtx";
+import ProductImageSlideshow from "@/components/partials/ProductImageSlideshow";
 import { ProductClient } from "@/types/clientSideTypes";
 import { Heart, Star } from "lucide-react";
 
 // Card 3: Premium Card
-const Card3 = ({ product }:{product : ProductClient}) => {
+const Card3 = ({ product }:{product : any}) => {
   const {state :{currentCardConf :{isRounded , showPrice , showRating , showBorder}} } = useStoreConfigCtx()
 
   return (
     <div className={`bg-white rounded-xl overflow-hidden ${showBorder ? 'border-4 border-purple-200' : 'shadow-xl'}`}>
       <div className="relative">
-        <img src={product.image} alt={product.name} className="w-full h-52 object-cover" />
+        <ProductImageSlideshow 
+          images={product.images || [product.image]} 
+          alt={product.name} 
+          className="w-full h-52" 
+        />
         <button className="absolute top-3 left-3 bg-purple-600 rounded-full p-2 hover:bg-purple-700">
           <Heart className="w-5 h-5 text-white" />
         </button>
