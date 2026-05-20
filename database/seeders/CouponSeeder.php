@@ -15,46 +15,75 @@ class CouponSeeder extends Seeder
      */
     public function run(): void
     {
-        Coupon::factory()->active()->percentage()->create();
-        Coupon::factory()->active()->forProducts([1, 2, 5])->create();
-        Coupon::factory()->exhausted()->create();
-         Coupon::factory()->active()->percentage()->create(['code' => 'SAVE10']);
-        Coupon::factory()->active()->fixed()->create(['code' => 'FLAT50']);
+        // 1. No Rules Coupon - Perfect for testing basic flow
+        Coupon::create([
+            'code' => 'allcanuseitnorules',
+            'name' => 'Unlimited General Discount',
+            'type' => 'fixed',
+            'value' => 10,
+            'is_active' => true,
+            'max_uses' => null,
+            'times_used' => 0,
+            'max_uses_per_user' => 100,
+            'minimum_order_amount' => 0,
+            'minimum_items' => 1,
+            'valid_from' => now()->subDays(1),
+            'valid_until' => now()->addYears(1),
+        ]);
 
-        // ── 2. Expired & inactive (for testing / admin visibility) ──────
-        Coupon::factory()->expired()->create(['code' => 'EXPIRED20']);
-        Coupon::factory()->inactive()->create(['code' => 'DISABLED30']);
-        Coupon::factory()->notYetValid()->create(['code' => 'UPCOMING15']);
+        // 2. High Value - Minimum Amount Required
+        Coupon::create([
+            'code' => 'BIGSPENDER50',
+            'name' => 'Premium Order Discount',
+            'type' => 'fixed',
+            'value' => 50,
+            'is_active' => true,
+            'minimum_order_amount' => 200,
+            'minimum_items' => 1,
+            'max_uses_per_user' => 1,
+            'valid_from' => now()->subDays(1),
+        ]);
 
-        // ── 3. Usage limited coupons ────────────────────────────────────
-        Coupon::factory()->active()->exhausted()->create(['code' => 'SOLDOUT']);
-        Coupon::factory()->active()->requiresLogin(2)->create(['code' => 'MEMBER20']);
+        // 3. Percentage - Minimum Items Required
+        Coupon::create([
+            'code' => 'BUYMORE20',
+            'name' => 'Bulk Purchase Reward',
+            'type' => 'percentage',
+            'value' => 20,
+            'is_active' => true,
+            'minimum_order_amount' => 0,
+            'minimum_items' => 3,
+            'max_uses_per_user' => 5,
+            'valid_from' => now()->subDays(1),
+        ]);
 
-        // ── 4. Minimum order amount ─────────────────────────────────────
-        Coupon::factory()->active()->withMinimumAmount(200)->percentage()->create(['code' => 'MIN200']);
-        Coupon::factory()->active()->withMinimumAmount(500)->fixed()->create(['code' => 'MIN500']);
+        // 4. Usage Limited - Already Sold Out
+        Coupon::create([
+            'code' => 'LIMITED10',
+            'name' => 'Flash Sale (Expired)',
+            'type' => 'fixed',
+            'value' => 10,
+            'is_active' => true,
+            'max_uses' => 5,
+            'times_used' => 5, // Already reached limit
+            'valid_from' => now()->subDays(1),
+        ]);
 
-        // ── 5. Minimum items ────────────────────────────────────────────
-        Coupon::factory()->active()->withMinimumItems(3)->percentage()->create(['code' => 'BULK3']);
-        Coupon::factory()->active()->withMinimumItems(5)->fixed()->create(['code' => 'BULK5']);
+        // 5. Time Limited - Not Yet Active
+        Coupon::create([
+            'code' => 'FUTURE15',
+            'name' => 'Upcoming Holiday Sale',
+            'type' => 'percentage',
+            'value' => 15,
+            'is_active' => true,
+            'valid_from' => now()->addDays(7), // Starts in a week
+            'valid_until' => now()->addDays(14),
+        ]);
 
-        // ── 6. Product-specific (uses real product IDs if they exist) ───
-        $productIds = Product::limit(3)->pluck('id')->toArray();
-        if (!empty($productIds)) {
-            Coupon::factory()->active()->forProducts($productIds)->create(['code' => 'PRODUCT10']);
-        }
-
-        // ── 7. Category-specific ────────────────────────────────────────
-        $categoryIds = Category::limit(2)->pluck('id')->toArray();
-        if (!empty($categoryIds)) {
-            Coupon::factory()->active()->forCategories($categoryIds)->create(['code' => 'CAT15']);
-        }
-
-        // ── 8. Unlimited / no restrictions (safe to use always) ─────────
-        Coupon::factory()->unlimited()->create(['code' => 'FREESHIP']);
-
-        // ── 9. Bulk random ones for a realistic dataset ─────────────────
-        Coupon::factory()->active()->count(10)->create();
-        Coupon::factory()->expired()->count(5)->create();
+        // 6. Basic Active Percentage
+        Coupon::factory()->active()->percentage()->create(['code' => 'SAVE10', 'value' => 10]);
+        
+        // 7. Basic Active Fixed
+        Coupon::factory()->active()->fixed()->create(['code' => 'FLAT25', 'value' => 25]);
     }
 }

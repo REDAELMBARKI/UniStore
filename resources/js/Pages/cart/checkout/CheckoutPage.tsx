@@ -102,7 +102,7 @@ export default function CheckoutPage({ postUrl , items = [], tax, shippingData ,
                     addToast({
                             type: "error",
                             title: "Coupon failed",
-                            description: Array.isArray(errorMessage) ? errorMessage[0] : errorMessage,
+                            description: errorMessage,
                             });
                 }
         }

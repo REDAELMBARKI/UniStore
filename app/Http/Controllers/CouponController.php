@@ -44,7 +44,8 @@ class CouponController extends Controller
             $user = Auth::user();
 
             try {
-                $this->couponService->checkIsValidCoupon($coupon, $items , $user);
+                $this->couponService->checkIsValidCoupon($coupon, $user);
+                $this->couponService->assertCouponApplicable($coupon, $items);
                 return response()->json(['success'=> 'teh coupon is succeesfully applyied'],200);
             } catch (CouponException $e) {
                 return response()->json(['error' => $e->getMessage()], 422);
