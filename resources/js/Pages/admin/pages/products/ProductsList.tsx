@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { router, usePage } from "@inertiajs/react";
+import { route } from "ziggy-js";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -25,7 +26,7 @@ import MultiSelectDropdownForObject, { AllowedObjectsType } from "@/components/u
 // ===================== TYPES =====================
 export interface ProductListItem {
   id: string;
-  name: string;
+  name: string | null;
   brand?: string;
   price?: string | number;
   compareAtPrice?: string;
@@ -58,8 +59,8 @@ export default function ProductsList() {
 
   const filteredProducts = products.filter((product) => {
     const matchesSearch =
-      product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.sku?.toLowerCase().includes(searchTerm.toLowerCase());
+      (product.name || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (product.sku || "").toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === "all" || product.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
@@ -108,7 +109,7 @@ export default function ProductsList() {
        
         <SectionHeader title="Products" description="Manage your product inventory with precision" Icon={Package} >
           <Button 
-          onClick={() => router.visit("/products/create")}
+          onClick={() => router.visit(route("products.create"))}
           className="hover:scale-105 transition-transform"
           style={{
             background: `linear-gradient(135deg, ${theme.primary} 0%, ${theme.accentHover} 100%)`,
@@ -202,12 +203,12 @@ export default function ProductsList() {
                             <div className="flex items-center gap-3">
                               <img
                                 src={getProductImage(product)}
-                                alt={product.name}
+                                alt={product.name || "Product"}
                                 className="h-14 w-14 rounded-lg object-cover"
                                 style={{ border: `2px solid ${theme.border}` }}
                                 onError={(e) => {
                                   // Fallback if the image fails to load
-                                  (e.target as HTMLImageElement).src = `https://api.dicebear.com/7.x/initials/svg?seed=${product.name}`;
+                                  (e.target as HTMLImageElement).src = `https://api.dicebear.com/7.x/initials/svg?seed=${product.name || "Product"}`;
                                 }}
                               />
                               <div>
@@ -325,7 +326,7 @@ export default function ProductsList() {
                               <Button
                                 variant="ghost"
                                 size="icon"
-                                onClick={() => router.visit(`/products/${product.id}/edit`)}
+                                onClick={() => router.visit(route("product.edit", { product: product.id }))}
                                 className="hover:scale-110 transition-transform"
                                 style={{
                                   border: `1px solid ${theme.border}`,
@@ -382,7 +383,7 @@ export default function ProductsList() {
                     : 'Get started by adding your first product'}
                 </p>
                 <Button
-                  onClick={() => router.visit("/products/create")}
+                  onClick={() => router.visit(route("products.create"))}
                   className="hover:scale-105 transition-transform"
                   style={{
                     background: `linear-gradient(135deg, ${theme.primary} 0%, ${theme.accentHover} 100%)`,

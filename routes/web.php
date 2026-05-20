@@ -137,18 +137,13 @@ Route::delete('admin/promotions/{promotion}', [AdminPromotionController::class, 
 
 Route::get('/marketplace', [MarketplaceController::class, 'index'])->name('marketplace.index');
 
-// Public Product Detail
-Route::get('/products/{product}', [ProductController::class, 'show'])->name('product.show');
-
 // products
-// Route::resource('/products', ProductController::class );
 Route::prefix('products')->group(function(){
     Route::get('' , [ProductController::class, 'index'])->name('products') ;
     Route::get('/drafts' , [ProductController::class, 'drafts'])->name('drafts.index') ;
     Route::get('/create' , [ProductController::class, 'create'])->name('products.create') ;
     Route::get('/{product}/edit' , [ProductController::class, 'edit'])->name('product.edit') ;
-    // Route::get('/{product}' , [ProductController::class, 'show'])->name('product.show') ;
-  // drafts
+    // drafts
     Route::post('/drafts' , [ProductController::class, 'storeDraft'])->name('products.storeDraft');
     Route::patch('/{product}/publish' , [ProductController::class, 'publish'])->name('product.publish');
     Route::delete('/{product}' , [ProductController::class, 'destroy'])->name("product.destroy") ;
@@ -156,6 +151,10 @@ Route::prefix('products')->group(function(){
     Route::put('/{product}/submit', [ProductController::class, 'updateOnSubmit'])->name('draft.save.submit');
     Route::post("/{product}/duplicate" , [ProductController::class,"duplicate"])->name("draft.duplicate");
 })->can('manage-products');
+
+// Public Product Detail
+Route::get('/products/{product}', [ProductController::class, 'show'])->name('product.show');
+
 // media section
 // store media route
 Route::post('/media' , [MediaController::class, 'store'])->name('media.store') ;
@@ -166,59 +165,67 @@ Route::delete('/media/{media}', [MediaController::class, 'destroy'])
 Route::delete('/media', [MediaController::class, 'destroyBulk'])
     ->name('media.destroy.bulk');
 // end media section 
+
 // categories 
+Route::prefix('categories')->group(function(){
+    Route::get('' , [CategoryController::class, 'index'])->name("categories.index");
+    Route::get('/create' , [CategoryController::class, 'create'])->name("categories.create");
+    Route::get('/tree' , [CategoryController::class, 'tree'])->name("categories.tree");
+    Route::get('/{category:slug}' , [CategoryController::class, 'edit'])->name("categories.edit");
+});
 Route::get('api/subCategories' , [CategoryController::class,'subCategories'])->name('get.sub_categories');
-Route::get('/categories' , [CategoryController::class, 'index'])->name("categories.index");
-Route::get('/categories/create' , [CategoryController::class, 'create'])->name("categories.create");
-Route::get('/categories/{category:slug}' , [CategoryController::class, 'edit'])->name("categories.edit");
-Route::get('/categories/tree' , [CategoryController::class, 'tree'])->name("categories.tree");
 //end categories section
 
 // attributes
-Route::get('/attributes' , [AttributesController::class, 'index'])->name('get.attributes');
-Route::post('/attributes' , [AttributesController::class, 'store'])->name('store.attributes');
-
-
+Route::prefix('attributes')->group(function(){
+    Route::get('' , [AttributesController::class, 'index'])->name('get.attributes');
+    Route::post('' , [AttributesController::class, 'store'])->name('store.attributes');
+});
 
 // settings 
 Route::get("/store" , [StoreConfigController::class ,  'index'])->name("store") ; 
+
 // admin
-Route::get('/admins' , [AdminController::class, 'index']) ;
+Route::get('/admins' , [AdminController::class, 'index'])->name('admins.index') ;
 
 // variants managment
-Route::get('/variants/colors' , [VariantsController::class, 'colors']) ;
-Route::get('/variants/sizes' , [VariantsController::class, 'sizes']) ;
-
+Route::get('/variants/colors' , [VariantsController::class, 'colors'])->name('variants.colors') ;
+Route::get('/variants/sizes' , [VariantsController::class, 'sizes'])->name('variants.sizes') ;
 
 // oderes
 // OrderManager
 Route::prefix('orders')->group(function(){
-    Route::get('/orders' , [OrderController::class, 'index'])->middleware('auth')->name('orders.index') ;
+    Route::get('' , [OrderController::class, 'index'])->middleware('auth')->name('orders.index') ;
     // after checkout sucess
-    Route::get("orders/{order}/track" , [OrderController::class, 'authTrack'])->middleware('auth')->name('track.auth') ;
+    Route::get("/{order}/track" , [OrderController::class, 'authTrack'])->middleware('auth')->name('track.auth') ;
     Route::get('/track/{token}', [OrderController::class, 'guestTrack'])
         ->where('token', '[0-9a-f-]{36}')->name('track.guest') ;
 });
-// ->can('manage-orders');
 
 // coupon aplly ajaxrequest
 Route::post('/coupon_feedback', [CouponController::class,'coupon_feedback'])->name('coupon.feedback');
+
 // customer
-Route::get('/customers' , [CurstomerController::class, 'index'])->name('customers.index') ;
-Route::get('/customers/{id}' , [CurstomerController::class, 'show'])->name('customers.show') ;
+Route::prefix('customers')->group(function(){
+    Route::get('' , [CurstomerController::class, 'index'])->name('customers.index') ;
+    Route::get('/{id}' , [CurstomerController::class, 'show'])->name('customers.show') ;
+});
 
 // reviews
-Route::get('/reviews', [ReviewController::class, 'index'])->name('reviews.index');
-Route::get('/reviews/pending', [ReviewController::class, 'pending'])->name('reviews.pending');
+Route::prefix('reviews')->group(function(){
+    Route::get('', [ReviewController::class, 'index'])->name('reviews.index');
+    Route::get('/pending', [ReviewController::class, 'pending'])->name('reviews.pending');
+});
 
 // messages
 Route::get('/messages' , [MessageController::class, 'index'])->name('messages') ;
 
-
 // dashboard/sales_analytics
-Route::get('dashboard/sales_analytics' , [DashboardController::class, 'salesIndex'])->name('dashboard.sales_analytics');
-Route::get('dashboard/customers_analytics' , [DashboardController::class, 'customerIndex'])->name('dashboard.customers_analytics');
-Route::get('dashboard/inventory_analytics' , [DashboardController::class, 'inventoryIndex'])->name('dashboard.inventory_analytics');
+Route::prefix('dashboard')->group(function(){
+    Route::get('/sales_analytics' , [DashboardController::class, 'salesIndex'])->name('dashboard.sales_analytics');
+    Route::get('/customers_analytics' , [DashboardController::class, 'customerIndex'])->name('dashboard.customers_analytics');
+    Route::get('/inventory_analytics' , [DashboardController::class, 'inventoryIndex'])->name('dashboard.inventory_analytics');
+});
 
 // require __DIR__.'/auth.php';
   

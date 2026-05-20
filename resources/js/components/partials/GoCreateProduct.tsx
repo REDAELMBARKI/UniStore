@@ -1,6 +1,7 @@
 import { Plus, PackageX } from "lucide-react"
 import { Button } from "../ui/button"
 import { Link } from "@inertiajs/react";
+import { route } from "ziggy-js";
 
 const GoCreateProduct = ({title, description} :{title : string , description : string}) => {
     return (
@@ -22,7 +23,7 @@ const GoCreateProduct = ({title, description} :{title : string , description : s
                 </div>
                 
                 {/* CTA Button */}
-                <Link href={"/products/create"}>
+                <Link href={route("products.create")}>
                     <Button className="gap-2">
                         <Plus className="h-4 w-4" />
                         Create Product
