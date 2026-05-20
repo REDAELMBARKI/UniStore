@@ -55,7 +55,7 @@ const SkeletonImg = styled(SkeletonBase)`
   flex-shrink: 0;
 `;
 
-const SkeletonLine = styled(SkeletonBase)<{ $w?: string; $h?: string }>`
+const SkeletonLine = styled(SkeletonBase) <{ $w?: string; $h?: string }>`
   height: ${({ $h }) => $h ?? '10px'};
   width: ${({ $w }) => $w ?? '100%'};
   border-radius: 999px;
@@ -75,13 +75,13 @@ const SkeletonBtn = styled(SkeletonBase)`
 export default function Drafts() {
   const [pageLoading, setPageLoading] = useState(true);
   const { state: { currentTheme: t } } = useStoreConfigCtx();
-  const {flash , drafts = []} = usePage().props ; 
-  const {addToast} = useToast() ;
-  const {destroyDraftProduct , duplicateDraft , loading , loadingMessage} = useBackendInteraction()
-  
+  const { flash, drafts = [] } = usePage().props;
+  const { addToast } = useToast();
+  const { destroyDraftProduct, duplicateDraft, loading, loadingMessage } = useBackendInteraction()
+
   // 2s page skeleton
   useEffect(() => {
-    const timer = setTimeout(() => setPageLoading(false), 2000); 
+    const timer = setTimeout(() => setPageLoading(false), 2000);
     return () => clearTimeout(timer);
   }, []);
 
@@ -89,21 +89,21 @@ export default function Drafts() {
   // listen for flashes 
 
   useEffect(() => {
-    if(!flash) return   ; 
-    if(flash.success) {
+    if (!flash) return;
+    if (flash.success) {
       return addToast({
-               title : "Success" ,
-               description : flash.success, 
-               type : "success"
-            })
+        title: "Success",
+        description: flash.success,
+        type: "success"
+      })
     }
-    
-     if(flash.error) {
+
+    if (flash.error) {
       return addToast({
-               title : "Error" ,
-               description :flash.error , 
-               type : "error"
-            })
+        title: "Error",
+        description: flash.error,
+        type: "error"
+      })
     }
   }, [flash]);
 
@@ -111,7 +111,7 @@ export default function Drafts() {
     <div className="min-h-screen" style={{ background: t.bgSecondary }}>
       <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-10">
         {/* actions loading  */}
-        {loading  && <AppLoading message={loadingMessage} />}
+        {loading && <AppLoading message={loadingMessage} />}
 
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
@@ -119,7 +119,7 @@ export default function Drafts() {
             {pageLoading ? (
               <div className="flex flex-col gap-2">
                 <SkeletonLine $w="140px" $h="20px" />
-                <SkeletonLine $w="90px"  $h="10px" />
+                <SkeletonLine $w="90px" $h="10px" />
               </div>
             ) : (
               <>
@@ -237,11 +237,11 @@ function getMinPrice(variants?: Variant[]): number | null {
 }
 
 function getTimeAgo(dateStr: string): string {
-  const diff  = Date.now() - new Date(dateStr).getTime();
-  const mins  = Math.floor(diff / 60000);
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const mins = Math.floor(diff / 60000);
   const hours = Math.floor(diff / 3600000);
-  const days  = Math.floor(diff / 86400000);
-  if (mins  < 60) return `${mins}m ago`;
+  const days = Math.floor(diff / 86400000);
+  if (mins < 60) return `${mins}m ago`;
   if (hours < 24) return `${hours}h ago`;
   return `${days}d ago`;
 }
@@ -249,11 +249,11 @@ function getTimeAgo(dateStr: string): string {
 // ─── Progress Item ────────────────────────────────────────────────────────────
 
 function ProgressItem({ label, value }: { label: string; value: number }) {
-  const isComplete  = value === 100;
-  const isMissing   = value === 0;
-  const fillColor   = isComplete ? '#22c55e' : value >= 50 ? '#f59e0b' : '#ef4444';
-  const statusText  = isComplete ? 'Complete' : isMissing ? 'Missing' : `${value}%`;
-  const statusColor = isComplete ? '#16a34a'  : isMissing ? '#9ca3af' : '#d97706';
+  const isComplete = value === 100;
+  const isMissing = value === 0;
+  const fillColor = isComplete ? '#22c55e' : value >= 50 ? '#f59e0b' : '#ef4444';
+  const statusText = isComplete ? 'Complete' : isMissing ? 'Missing' : `${value}%`;
+  const statusColor = isComplete ? '#16a34a' : isMissing ? '#9ca3af' : '#d97706';
 
   return (
     <div className="flex items-center gap-3">
@@ -276,8 +276,8 @@ function ProgressItem({ label, value }: { label: string; value: number }) {
 // ─── Draft Row ────────────────────────────────────────────────────────────────
 
 export function DraftRow({ draft, onDelete, onDuplicate, isFirst }: DraftRowProps) {
-  const [showMenu, setShowMenu]   = useState(false);
-  const [expanded, setExpanded]   = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
+  const [expanded, setExpanded] = useState(false);
   const [expanding, setExpanding] = useState(false);
   const [imgLoaded, setImgLoaded] = useState(false);
   const { state: { currentTheme: t } } = useStoreConfigCtx();
@@ -296,23 +296,23 @@ export function DraftRow({ draft, onDelete, onDuplicate, isFirst }: DraftRowProp
     setTimeout(() => { setExpanding(false); setExpanded(true); }, 1500); // 👈 1.5s skeleton on click
   };
 
-  const minPrice     = getMinPrice(draft.variants);
+  const minPrice = getMinPrice(draft.variants);
   const variantCount = draft.variants?.length ?? 0;
-  const coverImage   = draft.thumbnail?.url ?? null;
+  const coverImage = draft.thumbnail?.url ?? null;
 
-  const thumbnailProgress   = draft.thumbnail ? 100 : 0;
-  const variantsProgress    = variantCount > 0 ? 100 : 0;
+  const thumbnailProgress = draft.thumbnail ? 100 : 0;
+  const variantsProgress = variantCount > 0 ? 100 : 0;
   const descriptionProgress = draft.description
     ? Math.min(100, Math.round((draft.description.length / 200) * 100))
     : 0;
-  const tagsProgress   = draft.tags?.length ? Math.min(100, Math.round((draft.tags.length / 5) * 100)) : 0;
+  const tagsProgress = draft.tags?.length ? Math.min(100, Math.round((draft.tags.length / 5) * 100)) : 0;
   const coversProgress = draft.covers?.length ? Math.min(100, Math.round((draft.covers.length / 4) * 100)) : 0;
 
   const scoreColor = draft.quality_score >= 75
     ? { text: '#15803d' }
     : draft.quality_score >= 50
-    ? { text: '#b45309' }
-    : { text: '#b91c1c' };
+      ? { text: '#b45309' }
+      : { text: '#b91c1c' };
 
   return (
     <div
@@ -401,7 +401,7 @@ export function DraftRow({ draft, onDelete, onDuplicate, isFirst }: DraftRowProp
         {/* Actions */}
         <div className="flex items-center gap-1.5 flex-shrink-0">
           <button
-            
+
             onClick={() => router.visit(route('product.show', { product: draft.id }))}
             className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-lg border transition-colors hover:opacity-75"
             style={{ borderColor: t.border, color: t.textSecondary, background: 'transparent' }}
@@ -469,11 +469,11 @@ export function DraftRow({ draft, onDelete, onDuplicate, isFirst }: DraftRowProp
         >
           <div style={{ width: 56, flexShrink: 0 }} />
           <div className="flex-1 flex flex-col gap-3">
-            <ProgressItem label="Thumbnail"   value={thumbnailProgress}   />
-            <ProgressItem label="Variants"    value={variantsProgress}    />
+            <ProgressItem label="Thumbnail" value={thumbnailProgress} />
+            <ProgressItem label="Variants" value={variantsProgress} />
             <ProgressItem label="Description" value={descriptionProgress} />
-            <ProgressItem label="Tags"        value={tagsProgress}        />
-            <ProgressItem label="Covers"      value={coversProgress}      />
+            <ProgressItem label="Tags" value={tagsProgress} />
+            <ProgressItem label="Covers" value={coversProgress} />
           </div>
         </div>
       )}

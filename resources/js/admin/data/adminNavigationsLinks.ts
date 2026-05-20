@@ -125,7 +125,7 @@ export const menuItems: MenuItem[] = [
     title: "Shipping",
     icon: Ship,
     subLinks: [
-      { title: "Shipping Cities", icon: MapIcon, href: "shipping.cities.get" },  // ✅
+      { title: "Shipping Setup", icon: MapIcon, href: "admin.shipping.index" },  // ✅
       { title: "Shipping Rates", icon: DollarSign, href: "" },
       { title: "Carriers", icon: Truck, href: "" },
       { title: "Track Shipments", icon: Navigation, href: "" },
