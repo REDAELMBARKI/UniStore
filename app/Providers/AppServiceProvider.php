@@ -40,20 +40,12 @@ class AppServiceProvider extends ServiceProvider
 
         //gates
         Gate::define('manage-products' , function(User $user){
-            $role = Role::where('name' , 'manage-products')->first() ;
-            if(!$role) return false;
-            return collect($role->actors)->some(fn($actor)=>
-                 $actor->id === $user->id
-            );
+            return $user->hasRole('Admin') || $user->hasRole('manage-products');
         });
 
 
         Gate::define('manage-orders' , function(User $user ){
-            $role = Role::where('name' , 'manage-orders')->first() ;
-            if(!$role) return false;
-            return collect($role->actors)->some(fn($actor)=>
-                 $actor->id === $user->id
-            );
+            return $user->hasRole('Admin') || $user->hasRole('manage-orders');
         });
 
 

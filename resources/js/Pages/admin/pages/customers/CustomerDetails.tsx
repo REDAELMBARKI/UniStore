@@ -1,7 +1,15 @@
 import React, { useState } from 'react';
-import { User, Mail, Phone, MapPin, ShoppingBag, Star, Calendar, FileText, Bell, StickyNote, AlertTriangle, Package, Heart, CreditCard, Edit2 } from 'lucide-react';
+import { User, Mail, Phone, MapPin, ShoppingBag, Star, Calendar, FileText, Bell, StickyNote, AlertTriangle, Package, Heart, CreditCard, Edit2, Shield, Trash2, Plus } from 'lucide-react';
 import EmptyListSection from '@/admin/components/partials/EmptyListSection';
 import { AdminLayout } from '@/admin/components/layout/AdminLayout';
+import { useToast } from '@/contextHooks/useToasts';
+import { router } from '@inertiajs/react';
+import { Button } from "@/components/ui/button";
+
+interface Role {
+  id: number;
+  name: string;
+}
 
 interface CustomerData {
   id: number;
@@ -18,10 +26,12 @@ interface CustomerData {
   primaryInterest?: string | null;
   allInterests?: string[] | null;
   importantNotes?: string[] | null;
+  roles?: Role[];
 }
 
-export default function CustomerDetails({ customer: backendCustomer }: { customer?: CustomerData }) {
+export default function CustomerDetails({ customer: backendCustomer, allRoles }: { customer?: CustomerData, allRoles: Role[] }) {
   const [activeTab, setActiveTab] = useState<string>('overview');
+  const { addToast } = useToast();
   
   // Default fallback if no data passed (though middleware/controller should handle this)
   const customer: CustomerData = backendCustomer || {
@@ -34,21 +44,34 @@ export default function CustomerDetails({ customer: backendCustomer }: { custome
     memberSince: 'N/A',
     totalOrders: 0,
     totalSpent: 0,
-    recentOrders: null
+    recentOrders: null,
+    roles: []
   };
 
   const tabs = [
     { id: 'overview', label: 'Overview', icon: Heart },
+    { id: 'roles', label: 'Roles', icon: Shield },
     { id: 'orders', label: 'Orders', icon: ShoppingBag },
     { id: 'preferences', label: 'Preferences', icon: Star },
-    { id: 'appointments', label: 'Appointments', icon: Calendar },
-    { id: 'documents', label: 'Documents', icon: FileText },
-    { id: 'reminders', label: 'Reminders', icon: Bell },
     { id: 'notes', label: 'Notes', icon: StickyNote }
   ];
 
   const handleBack = () => {
     window.location.href = '/admin/customers';
+  };
+
+  const handleAssignRole = (roleId: string) => {
+    if (!roleId) return;
+    router.post(route('admin.users.assignRole', { user: customer.id }), { role_id: roleId }, {
+      onSuccess: () => addToast({ type: 'success', title: 'Assigned', description: 'Role assigned successfully' })
+    });
+  };
+
+  const handleRemoveRole = (roleId: number) => {
+    router.delete(route('admin.users.removeRole', { user: customer.id }), { 
+      data: { role_id: roleId },
+      onSuccess: () => addToast({ type: 'success', title: 'Removed', description: 'Role removed successfully' })
+    });
   };
 
   return (
@@ -64,6 +87,7 @@ export default function CustomerDetails({ customer: backendCustomer }: { custome
 
       {/* Customer Header Card */}
       <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+        {/* ... (existing header content) ... */}
         <div className="flex items-start justify-between mb-6">
           <div className="flex gap-6">
             {/* Avatar */}
@@ -153,92 +177,106 @@ export default function CustomerDetails({ customer: backendCustomer }: { custome
         </div>
       </div>
 
-      {/* Main Content Area - Two Columns */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Left Column - Customer Interests */}
-        <div className="bg-white rounded-lg shadow-sm p-6">
-          <div className="flex items-center gap-2 mb-6">
-            <Heart className="w-5 h-5 text-gray-600" />
-            <h2 className="text-xl font-bold text-gray-900">Customer Interests</h2>
-          </div>
-
-          <div className="space-y-4">
-            <div>
-              <h3 className="text-sm font-medium text-gray-600 mb-2">Primary Interest</h3>
-              {customer.primaryInterest ? (
-                <span className="inline-block bg-emerald-500 text-white px-4 py-2 rounded-md font-medium">
-                  {customer.primaryInterest}
-                </span>
-              ) : (
-                <div className="text-gray-400 italic py-2">Customer has no primary interest set</div>
-              )}
+      {/* Main Content Area */}
+      <div className="space-y-6">
+        {activeTab === 'overview' && (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Interests and Notes (same as before) */}
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <div className="flex items-center gap-2 mb-6">
+                <Heart className="w-5 h-5 text-gray-600" />
+                <h2 className="text-xl font-bold text-gray-900">Customer Interests</h2>
+              </div>
+              <div className="space-y-4">
+                <div>
+                  <h3 className="text-sm font-medium text-gray-600 mb-2">Primary Interest</h3>
+                  {customer.primaryInterest ? (
+                    <span className="inline-block bg-emerald-500 text-white px-4 py-2 rounded-md font-medium">{customer.primaryInterest}</span>
+                  ) : (
+                    <div className="text-gray-400 italic py-2">No primary interest set</div>
+                  )}
+                </div>
+                <div>
+                  <h3 className="text-sm font-medium text-gray-600 mb-2">All Interests</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {customer.allInterests?.map((interest, i) => (
+                      <span key={i} className="bg-white border border-gray-300 text-gray-700 px-3 py-1.5 rounded-md text-sm font-medium">{interest}</span>
+                    )) || <div className="text-gray-400 italic py-2">No interests recorded</div>}
+                  </div>
+                </div>
+              </div>
             </div>
 
-            <div>
-              <h3 className="text-sm font-medium text-gray-600 mb-2">All Interests</h3>
-              {customer.allInterests && customer.allInterests.length > 0 ? (
-                <div className="flex flex-wrap gap-2">
-                  {customer.allInterests.map((interest, index) => (
-                    <span
-                      key={index}
-                      className="bg-white border border-gray-300 text-gray-700 px-3 py-1.5 rounded-md text-sm font-medium"
-                    >
-                      {interest}
-                    </span>
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <div className="flex items-center gap-2 mb-6">
+                <AlertTriangle className="w-5 h-5 text-red-500" />
+                <h2 className="text-xl font-bold text-gray-900">Important Notes</h2>
+              </div>
+              {customer.importantNotes && customer.importantNotes.length > 0 ? (
+                <div className="space-y-3">
+                  {customer.importantNotes.map((note, i) => (
+                    <div key={i} className="bg-red-50 border border-red-200 rounded-md p-4 flex items-start gap-3">
+                      <AlertTriangle className="w-5 h-5 text-red-500 mt-0.5" />
+                      <span className="text-red-800 font-medium">{note}</span>
+                    </div>
                   ))}
                 </div>
               ) : (
-                <div className="text-gray-400 italic py-2">Customer has no interests recorded</div>
+                <div className="bg-gray-50 border border-gray-200 rounded-md p-4 text-center text-gray-400 italic">No important notes</div>
               )}
             </div>
           </div>
-        </div>
-
-        {/* Right Column - Important Notes */}
-        <div className="bg-white rounded-lg shadow-sm p-6">
-          <div className="flex items-center gap-2 mb-6">
-            <AlertTriangle className="w-5 h-5 text-red-500" />
-            <h2 className="text-xl font-bold text-gray-900">Important Notes</h2>
-          </div>
-
-          {customer.importantNotes && customer.importantNotes.length > 0 ? (
-            <div className="space-y-3">
-              {customer.importantNotes.map((note, index) => (
-                <div
-                  key={index}
-                  className="bg-red-50 border border-red-200 rounded-md p-4 flex items-start gap-3"
-                >
-                  <AlertTriangle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
-                  <span className="text-red-800 font-medium">{note}</span>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="bg-gray-50 border border-gray-200 rounded-md p-4 text-center">
-              <div className="text-gray-400 italic">Customer has no important notes</div>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Recent Orders Section */}
-      <div className="bg-white rounded-lg shadow-sm p-6 mt-6">
-        <div className="flex items-center gap-2 mb-6">
-          <Package className="w-5 h-5 text-gray-600" />
-          <h2 className="text-xl font-bold text-gray-900">Recent Orders</h2>
-        </div>
-
-        {customer.recentOrders && customer.recentOrders.length > 0 ? (
-          <div className="space-y-3">
-            {customer.recentOrders.map((order, index) => (
-              <div key={index} className="border border-gray-200 rounded-md p-4">
-                Order #{order.id} - {order.date}
-              </div>
-            ))}
-          </div>
-        ) : (
-            <EmptyListSection Icon={Package}  description="Orders will appear here once the customer makes a purchase" />
         )}
+
+        {activeTab === 'roles' && (
+          <div className="bg-white rounded-lg shadow-sm p-6">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-2">
+                <Shield className="w-6 h-6 text-slate-700" />
+                <h2 className="text-xl font-bold text-slate-900">Assigned Roles</h2>
+              </div>
+              <div className="flex gap-2">
+                <select 
+                  className="px-4 py-2 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 text-sm"
+                  onChange={(e) => handleAssignRole(e.target.value)}
+                  defaultValue=""
+                >
+                  <option value="" disabled>Add a role...</option>
+                  {allRoles.filter(r => !customer.roles?.some(ur => ur.id === r.id)).map(role => (
+                    <option key={role.id} value={role.id}>{role.name}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {customer.roles && customer.roles.length > 0 ? (
+                customer.roles.map((role) => (
+                  <div key={role.id} className="flex items-center justify-between p-4 rounded-xl border border-slate-200 bg-slate-50 group">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 bg-emerald-100 rounded-lg">
+                        <Shield className="w-4 h-4 text-emerald-600" />
+                      </div>
+                      <span className="font-semibold text-slate-900">{role.name}</span>
+                    </div>
+                    <button 
+                      onClick={() => handleRemoveRole(role.id)}
+                      className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all opacity-0 group-hover:opacity-100"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
+                ))
+              ) : (
+                <div className="col-span-full py-8 text-center bg-slate-50 rounded-xl border border-dashed border-slate-200 text-slate-400">
+                  This user has no assigned roles.
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* ... (Orders tab would go here if implemented) ... */}
       </div>
     </div>
   );

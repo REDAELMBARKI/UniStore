@@ -175,7 +175,6 @@ export const menuItems: MenuItem[] = [
 
   {
     title: "Promotions",
-    title: "Promotions",
     icon: Megaphone,
     subLinks: [
       { title: "All Promotions", icon: List, href: "promotions.index" },  // ✅
@@ -202,7 +201,7 @@ export const menuItems: MenuItem[] = [
     subLinks: [
       { title: "All Admins", icon: List, href: "" },  // ⚠ no route name
       { title: "Add Admin", icon: Plus, href: "" },
-      { title: "Roles & Permissions", icon: LockIcon, href: "" },
+      { title: "Roles & Permissions", icon: LockIcon, href: "admin.roles.index" },
       { title: "Activity Log", icon: HistoryIcon, href: "" },
     ]
   },

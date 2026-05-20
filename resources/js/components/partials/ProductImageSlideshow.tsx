@@ -47,16 +47,16 @@ export default function ProductImageSlideshow({ images, alt, className = "", pro
                 alt={`${alt} - ${currentIndex + 1}`} 
                 className="w-full h-full object-cover transition-opacity duration-300" 
             />
-            
+
             {/* Controls */}
             <div className="absolute inset-0 flex items-center justify-between p-2 opacity-0 group-hover/slideshow:opacity-100 transition-opacity">
-                <button 
+                <button
                     onClick={prevImage}
                     className="p-1 rounded-full bg-white/80 hover:bg-white shadow-sm transition-colors"
                 >
                     <ChevronLeft className="w-4 h-4 text-black" />
                 </button>
-                <button 
+                <button
                     onClick={nextImage}
                     className="p-1 rounded-full bg-white/80 hover:bg-white shadow-sm transition-colors"
                 >
@@ -74,9 +74,8 @@ export default function ProductImageSlideshow({ images, alt, className = "", pro
                             e.stopPropagation();
                             setCurrentIndex(i);
                         }}
-                        className={`w-1.5 h-1.5 rounded-full transition-all ${
-                            i === currentIndex ? 'bg-white scale-125' : 'bg-white/50'
-                        }`}
+                        className={`w-1.5 h-1.5 rounded-full transition-all ${i === currentIndex ? 'bg-white scale-125' : 'bg-white/50'
+                            }`}
                     />
                 ))}
             </div>
