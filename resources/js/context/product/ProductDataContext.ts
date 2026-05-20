@@ -1,9 +1,9 @@
 
 import { ProductSchemaType } from "@/shemas/productSchema"
 import { Category } from "@/types/inventoryTypes"
-import { ProductBase } from "@/types/products/ProductTypes"
 import { createContext, Dispatch, RefObject, SetStateAction } from "react"
-import { Control, FormState, SubmitHandler, UseFormGetValues, UseFormRegister, UseFormSetError, UseFormSetValue, UseFormWatch, WatchDefaultValue } from "react-hook-form"
+
+import { Control, FormState, SubmitHandler, UseFormGetValues, UseFormHandleSubmit, UseFormRegister, UseFormSetError, UseFormSetValue, UseFormWatch, WatchDefaultValue } from "react-hook-form"
 
 
 
@@ -18,7 +18,7 @@ interface ProductDataContextProps {
     control: Control<ProductSchemaType>
     watch: UseFormWatch<ProductSchemaType>
     setValue : UseFormSetValue<ProductSchemaType>
-    handleSubmit : SubmitHandler<ProductSchemaType>
+    handleSubmit : UseFormHandleSubmit<ProductSchemaType>
     getValues : UseFormGetValues<ProductSchemaType>
     setError : UseFormSetError<any>
     formState : FormState<ProductSchemaType>

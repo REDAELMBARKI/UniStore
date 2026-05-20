@@ -5,7 +5,7 @@ import { route } from "ziggy-js"
 export const useBackendInteraction = () => {
     const [loading, setLoading] = useState(false)  
     const [loadingMessage, setLoadingMessage] = useState("")  
-    const [backendErrors ,setBackendErrors] = useState<T>([]) ; 
+    const [backendErrors, setBackendErrors] = useState<any>([]);
     const startLoading = (message: string) => {
         setLoading(true)
         setLoadingMessage(message)
@@ -26,6 +26,10 @@ export const useBackendInteraction = () => {
     }
 
     const save = (url: "draft.save.leave" | "draft.save.submit", payload: any, id?: string) => {
+        if (!id) {
+            console.error("Attempted to save without a product ID");
+            return;
+        }
         router.put(route(url, { product: id }), { ...payload }, {
             onStart:  () => startLoading("Saving draft..."),
             onFinish: () => stopLoading(),
@@ -34,6 +38,7 @@ export const useBackendInteraction = () => {
                 setBackendErrors(Errors)}
         })
     }
+
 
     const publishDraftProduct = (id: string | number, payload: any) => {
         if (!id) return

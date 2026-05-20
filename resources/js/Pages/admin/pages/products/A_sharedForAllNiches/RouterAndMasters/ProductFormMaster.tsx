@@ -27,21 +27,30 @@ const ProductFormMaster: React.FC = () => {
     formState: { isSubmitting, isDirty, errors },
   } = useProductDataCtx();
   const [showLeaveModal, setShowLeaveModal] = useState(false);
-  const [pendingVisit, setPendingVisit]     = useState<string | null>(null);
+  const [pendingVisit, setPendingVisit] = useState<string | null>(null);
   const { addToast } = useToast();
   const { cleanObjectToIids } = toBackendDataCleaners();
   const { save, destroyDraftProduct, loading, loadingMessage } = useBackendInteraction();
+  const [isDraftLoading, setIsDraftLoading] = useState(false);
   const isLeavingRef = useRef(false);
 
   // ─── Init draft ────────────────────────────────────────────────────────────
   useEffect(() => {
-    if (draftId.current) return;
+    if (draftId.current || modeForm === 'edit') return;
     const draftInit = async () => {
+      setIsDraftLoading(true);
       try {
         const res = await axios.post(route('products.storeDraft'));
         draftId.current = res.data.id;
       } catch (error) {
         console.error('Failed to create draft:', error);
+        addToast({
+          title: "Failed to initialize product storage",
+          type: "error",
+          description: "Please refresh the page and try again."
+        });
+      } finally {
+        setIsDraftLoading(false);
       }
     };
     draftInit();
@@ -58,7 +67,6 @@ const ProductFormMaster: React.FC = () => {
     // FIX — must be true BEFORE save so backend redirect isn't blocked by nav guard
     // if save fails we reset it back to false so the guard works again
     isLeavingRef.current = true;
-
     try {
       await save('draft.save.submit', payload, draftId.current);
     } catch (err: any) {
@@ -100,7 +108,7 @@ const ProductFormMaster: React.FC = () => {
   // ─── Leave modal handlers ──────────────────────────────────────────────────
 
   const handleConfirmLeave = () => {
-    const data    = getValues();
+    const data = getValues();
     const payload = {
       ...data,
       product_attributes: cleanObjectToIids(data.product_attributes),
@@ -142,7 +150,7 @@ const ProductFormMaster: React.FC = () => {
         onSubmit={(e) => {
           e.preventDefault();
           formHandleSubmit(onSubmit, (errors) => {
-            console.log('errors' , errors);
+            console.log('errors', errors);
           })();
         }}
       >
@@ -156,7 +164,7 @@ const ProductFormMaster: React.FC = () => {
         )}
 
         <div className="flex">
-         {/* <pre style={{ 
+          {/* <pre style={{ 
               color: '#00ff00', 
               background: '#1e1e1e', 
               padding: '16px', 
@@ -182,7 +190,7 @@ const ProductFormMaster: React.FC = () => {
           <Button
             type="submit"
             // FIX — was isLoading (undefined), correct variable is loading
-            disabled={loading || isSubmitting}
+            disabled={loading || isSubmitting || isDraftLoading}
             className="min-w-[220px] text-sm font-semibold rounded-lg shadow-lg transition hover:opacity-90 active:scale-[0.98]"
             style={{
               background: currentTheme.primary,
@@ -191,11 +199,13 @@ const ProductFormMaster: React.FC = () => {
           >
             <Save className="mr-2" size={16} />
             {/* FIX — was isLoading (undefined), correct variable is loading */}
-            {loading || isSubmitting
-              ? 'Submitting...'
-              : modeForm === 'create'
-              ? 'Create Product'
-              : 'Update Product'}
+            {isDraftLoading
+              ? 'Initializing...'
+              : (loading || isSubmitting)
+                ? 'Submitting...'
+                : modeForm === 'create'
+                  ? 'Create Product'
+                  : 'Update Product'}
           </Button>
         </div>
       </form>

@@ -154,7 +154,7 @@ Route::prefix('products')->group(function(){
     Route::patch('/{product}/publish' , [ProductController::class, 'publish'])->name('product.publish');
     Route::delete('/{product}' , [ProductController::class, 'destroy'])->name("product.destroy") ;
     Route::put('/{product}/leave',  [ProductController::class, 'updateOnPageLeave'])->name('draft.save.leave');
-    Route::put('/{product}/submit', [ProductController::class, 'updateOnSubmit'])->name('draft.save.submit');
+    Route::put('/{product:id}/submit', [ProductController::class, 'updateOnSubmit'])->name('draft.save.submit');
     Route::post("/{product}/duplicate" , [ProductController::class,"duplicate"])->name("draft.duplicate");
 })->can('manage-products');
 
