@@ -1,7 +1,8 @@
 import { useStoreConfigCtx } from '@/contextHooks/useStoreConfigCtx';
-import type { Section, BannerSection, CollectionSection } from '@/types/homeEditor';
-import { BannerPreview } from './BannerPreview';
-import { CollectionPreview } from './CollectionPreview';
+import type { Section } from '@/types/homeEditor';
+import { ScrollRow } from '@/Pages/Home/Partials/ScrollRow';
+import BannerRenderer from '../../Banner/Partials/BannerRenderer';
+import { ProductSection } from '@/types/HomeFeedTypes';
 
 type PreviewPanelProps = {
   sections: Section[];
@@ -29,7 +30,9 @@ export function PreviewPanel({ sections, onPublish, onDiscard }: PreviewPanelPro
           justifyContent: 'space-between',
           padding: '0 24px',
           borderBottom: `1px solid ${theme.border}`,
+          background: theme.bgSecondary,
           flexShrink: 0,
+          zIndex: 100,
         }}
       >
         <span style={{
@@ -38,7 +41,7 @@ export function PreviewPanel({ sections, onPublish, onDiscard }: PreviewPanelPro
           textTransform: 'uppercase',
           color: theme.textMuted,
         }}>
-          Preview
+          Storefront Preview
         </span>
 
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
@@ -53,17 +56,6 @@ export function PreviewPanel({ sections, onPublish, onDiscard }: PreviewPanelPro
               padding: '5px 14px',
               borderRadius: 5,
               cursor: 'pointer',
-              transition: 'color 0.12s, border-color 0.12s',
-            }}
-            onMouseEnter={(e) => {
-              const el = e.currentTarget as HTMLElement;
-              el.style.color = theme.text;
-              el.style.borderColor = theme.border;
-            }}
-            onMouseLeave={(e) => {
-              const el = e.currentTarget as HTMLElement;
-              el.style.color = theme.textMuted;
-              el.style.borderColor = theme.borderHover;
             }}
           >
             Discard
@@ -80,13 +72,6 @@ export function PreviewPanel({ sections, onPublish, onDiscard }: PreviewPanelPro
               padding: '5px 16px',
               borderRadius: 5,
               cursor: 'pointer',
-              transition: 'background 0.12s',
-            }}
-            onMouseEnter={(e) => {
-              (e.currentTarget as HTMLElement).style.background = theme.primaryHover;
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLElement).style.background = theme.primary;
             }}
           >
             Publish
@@ -94,24 +79,49 @@ export function PreviewPanel({ sections, onPublish, onDiscard }: PreviewPanelPro
         </div>
       </div>
 
-      {/* Sections */}
+      {/* Sections - Authentic Preview */}
       <div style={{
         flex: 1,
         overflowY: 'auto',
-        padding: '20px 24px',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 10,
+        background: theme.bg,
       }}>
         {sections.map(section => (
-          <div key={section.id}>
-            {section.sortable_type === 'App\\Models\\Banner'
-              ? <BannerPreview banner={section.sortable} />
-              : <CollectionPreview section={section as CollectionSection} theme={theme} />
+          <div 
+            key={section.orc_id}
+            style={{
+               borderBottom: `1px dashed ${theme.borderHover}`,
+               position: 'relative',
+            }}
+          >
+             {/* Hint for admin in preview */}
+             <div style={{
+                position: 'absolute',
+                top: 5,
+                right: 80,
+                fontSize: 9,
+                color: theme.textMuted,
+                zIndex: 5,
+                background: theme.bgSecondary,
+                padding: '2px 6px',
+                borderRadius: 4,
+                opacity: 0.6,
+                pointerEvents: 'none',
+             }}>
+                {section.type.toUpperCase()} - SECTION #{section.order}
+             </div>
+
+            {section.type === 'banner'
+              ? <BannerRenderer isEditor={false} banner={section.data} />
+              : <ScrollRow section={section.data as ProductSection} />
             }
           </div>
         ))}
+        
+        {/* Fill space at bottom */}
+        <div style={{ height: 200 }} />
       </div>
+
+      <style>{`.hide-scrollbar::-webkit-scrollbar { display: none; }`}</style>
     </div>
   );
 }

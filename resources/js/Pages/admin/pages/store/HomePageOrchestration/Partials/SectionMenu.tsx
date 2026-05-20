@@ -24,7 +24,7 @@ export function SectionMenu({
 }: SectionMenuProps) {
   const isFirst = index === 0;
   const isLast = index === total - 1;
-  const isBanner = section.sortable_type === 'App\\Models\\Banner';
+  const isBanner = section.type === 'banner';
 
   const item = (label: string, action: () => void, disabled = false) => (
     <button
@@ -70,10 +70,10 @@ export function SectionMenu({
         boxShadow: theme.shadowMd,
       }}
     >
-      {item('⏫  Move to start', () => onMove(section.id, 'move_to_start'), isFirst)}
-      {item('↑  Move up',       () => onMove(section.id, 'move_up'),       isFirst)}
-      {item('↓  Move down',     () => onMove(section.id, 'move_down'),     isLast)}
-      {item('⏬  Move to end',  () => onMove(section.id, 'move_to_end'),   isLast)}
+      {item('⏫  Move to start', () => onMove(section.orc_id, 'move_to_start'), isFirst)}
+      {item('↑  Move up',       () => onMove(section.orc_id, 'move_up'),       isFirst)}
+      {item('↓  Move down',     () => onMove(section.orc_id, 'move_down'),     isLast)}
+      {item('⏬  Move to end',  () => onMove(section.orc_id, 'move_to_end'),   isLast)}
       <div style={{ height: 1, margin: '4px 0', background: theme.border }} />
       {item(
         isBanner ? '✎  Manage banner' : '✎  Manage collection',

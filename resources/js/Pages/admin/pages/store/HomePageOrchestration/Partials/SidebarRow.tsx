@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { GripVertical, MoreVertical } from 'lucide-react';
-import type { Section, BannerSection, CollectionSection } from '@/types/homeEditor';
+import type { Section } from '@/types/homeEditor';
 import { ThemePalette } from '@/types/ThemeTypes';
 import { typePill } from './ThemeUtils';
 import { SectionMenu } from './SectionMenu';
@@ -17,8 +17,8 @@ type SidebarRowProps = {
   showTopIndicator: boolean;
   showBottomIndicator: boolean;
   menuRef: React.RefObject<HTMLDivElement>;
-  onToggleMenu: (id: number | null) => void;
-  onMove: (id: number, action: Action) => void;
+  onToggleMenu: (orc_id: number | null) => void;
+  onMove: (orc_id: number, action: Action) => void;
   onNavigate: (section: Section) => void;
   onDragStart: (index: number) => void;
   onDragOver: (e: React.DragEvent, index: number) => void;
@@ -45,11 +45,11 @@ export function SidebarRow({
   onDragEnd,
 }: SidebarRowProps) {
   const [hovered, setHovered] = useState(false);
-  const isBanner = section.sortable_type === 'App\\Models\\Banner';
+  const isBanner = section.type === 'banner';
 
   const subLabel = isBanner
-    ? `${(section as BannerSection).sortable.slots.filter(s => s.is_visible && s.width !== '0').length} slots`
-    : `${(section as CollectionSection).sortable.products.length} products`;
+    ? `${(section.data as any).slots?.filter((s: any) => s.is_visible && s.width !== '0').length || 0} slots`
+    : `${(section.data as any).products?.length || 0} products`;
 
   const isActive = isMenuOpen || hovered;
 
@@ -110,7 +110,7 @@ export function SidebarRow({
             textOverflow: 'ellipsis',
             lineHeight: 1.3,
           }}>
-            {section.sortable.name}
+            {(section.data as any).name}
           </div>
           <div style={{ fontSize: 11, color: theme.sidebarMuted, marginTop: 1 }}>
             {subLabel}
@@ -131,7 +131,7 @@ export function SidebarRow({
         <button
           onClick={(e) => {
             e.stopPropagation();
-            onToggleMenu(isMenuOpen ? null : section.id);
+            onToggleMenu(isMenuOpen ? null : section.orc_id);
           }}
           style={{
             background: 'none',

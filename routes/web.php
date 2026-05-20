@@ -47,6 +47,7 @@ Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])
 Route::get('/', [HomeController::class, 'index'])->name('home');
 // home layout orchestration
 Route::get('/store/home-editor', [HomeLayoutOrcController::class, 'index'])->name('home.editor.index');
+Route::post('/store/home-editor/publish', [HomeLayoutOrcController::class, 'publish'])->name('home.editor.publish');
 
 //collecctions
 Route::get('/store/collections', [RuleBasedCollectionController::class, 'index'])->name('collections.index');
