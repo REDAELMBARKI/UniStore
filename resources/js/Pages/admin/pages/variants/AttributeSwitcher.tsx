@@ -27,7 +27,7 @@ export function AttributeSwitcher({
   const {state : {currentTheme}} = useStoreConfigCtx(); // color all the page using this theme
 
   const getValueCount = (attributeId: string) => {
-    return attributes.find((v) => v.id === attributeId)?.values.length;
+    return attributes.find((v) => v.id === attributeId)?.values?.length || 0;
   };
   
   return (

@@ -19,6 +19,7 @@ import { Head, Link } from '@inertiajs/react';
 import CartSideBar from '@/Pages/cart/cartlisting/CartSideBar';
 import StoreConfigProvider from '@/contextProvoders/StoreConfigProvider';
 import { ToastProvider } from '@/contextProvoders/ToastProvider';
+import { useStoreConfigCtx } from '@/contextHooks/useStoreConfigCtx';
 
 
 interface LayoutProps {
@@ -42,17 +43,18 @@ const Layout = ({ children, currentPage = 'home' , seo }:LayoutProps) => {
 } 
 
 const LayoutContent = ({ children, currentPage , seo}:LayoutProps) => {
+  const { state: { currentTheme: theme } } = useStoreConfigCtx();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
-  const navigation = [
+  const navigation: { name: string; href: string; active?: boolean; label?: string; submenu?: string[] }[] = [
     { name: 'Home', href: '/', active: currentPage === 'home'},
     { name: 'Shop', href: '/shop', active: currentPage === 'shop' },
     { name: 'Features', href: '/features', active: currentPage === 'cart', label: 'hot' },
     { name: 'Blog', href: '/blog', active: currentPage === 'blog' },
     { name: 'About', href: '/about' },
-    { name: 'Contact', href: '/contact' }
+    { name: 'Contact', href: '/contact', submenu: ['Email', 'Phone'] }
   ];
 
   const cartItems = [
@@ -63,6 +65,28 @@ const LayoutContent = ({ children, currentPage , seo}:LayoutProps) => {
 
   const total = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
+  // Inject theme tokens as CSS variables for components that use them
+  const themeVariables = {
+    '--currenththeme-bg': theme.bg,
+    '--currenththeme-bgSecondary': theme.bgSecondary,
+    '--currenththeme-card': theme.card,
+    '--currenththeme-text': theme.text,
+    '--currenththeme-textSecondary': theme.textSecondary,
+    '--currenththeme-textMuted': theme.textMuted,
+    '--currenththeme-primary': theme.primary,
+    '--currenththeme-accent': theme.accent,
+    '--currenththeme-accentHover': theme.accentHover,
+    '--currenththeme-border': theme.border,
+    '--currenththeme-border-radius': theme.borderRadius,
+    '--currenththeme-shadow': theme.shadow,
+    '--currenththeme-shadowMd': theme.shadowMd,
+    '--currenththeme-shadowLg': theme.shadowLg,
+    '--currenththeme-starColor': theme.starColor || '#fbbf24',
+    '--currenththeme-priceText': theme.priceText || theme.primary,
+    '--currenththeme-priceStrike': theme.priceStrike || theme.textMuted,
+    '--currenththeme-dealBg': theme.dealBg || theme.bgSecondary,
+  } as React.CSSProperties;
+
   return (<>
     {/* header and meta data for seo */}
       <Head>
@@ -71,33 +95,36 @@ const LayoutContent = ({ children, currentPage , seo}:LayoutProps) => {
       </Head>
 
     {/* main page content */}
-    <div className="min-h-screen bg-dark-50">
+    <div 
+      className="min-h-screen transition-colors duration-300"
+      style={{ backgroundColor: theme.bg, ...themeVariables }}
+    >
       {/* Header */}
       <header className="relative">
         {/* Top Bar */}
-        <div className="bg-gray-100 border-b">
+        <div style={{ backgroundColor: theme.bgSecondary, borderBottom: `1px solid ${theme.border}` }}>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center h-10 text-sm">
-              <div className="text-gray-600">
+              <div style={{ color: theme.textSecondary }}>
                 Free shipping for standard order over $100
               </div>
-              <div className="hidden md:flex space-x-6 text-gray-600">
-                <a href="#" className="hover:text-gray-900 transition-colors">Help & FAQs</a>
-                <a href="#" className="hover:text-gray-900 transition-colors">My Account</a>
-                <a href="#" className="hover:text-gray-900 transition-colors">EN</a>
-                <a href="#" className="hover:text-gray-900 transition-colors">USD</a>
+              <div className="hidden md:flex space-x-6">
+                <a href="#" style={{ color: theme.textSecondary }} className="hover:opacity-80 transition-opacity">Help & FAQs</a>
+                <a href="#" style={{ color: theme.textSecondary }} className="hover:opacity-80 transition-opacity">My Account</a>
+                <a href="#" style={{ color: theme.textSecondary }} className="hover:opacity-80 transition-opacity">EN</a>
+                <a href="#" style={{ color: theme.textSecondary }} className="hover:opacity-80 transition-opacity">USD</a>
               </div>
             </div>
           </div>
         </div>
 
         {/* Main Header */}
-        <div className="bg-white shadow-sm">
+        <div style={{ backgroundColor: theme.card, boxShadow: theme.shadow }}>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center h-16">
               {/* Logo */}
               <div className="flex-shrink-0">
-                <a href="#" className="text-2xl font-bold text-gray-900">
+                <a href="#" style={{ color: theme.text }} className="text-2xl font-bold">
                   COZA STORE
                 </a>
               </div>
@@ -108,15 +135,20 @@ const LayoutContent = ({ children, currentPage , seo}:LayoutProps) => {
                   <div key={item.name} className="relative group">
                     <Link
                       href={item.href}
-                      className={`flex items-center px-3 py-2 text-sm font-medium transition-colors ${
-                        item.active 
-                          ? 'text-blue-600 border-b-2 border-blue-600' 
-                          : 'text-gray-700 hover:text-blue-600'
-                      }`}
+                      style={{ 
+                        color: item.active ? theme.primary : theme.textSecondary,
+                        borderBottom: item.active ? `2px solid ${theme.primary}` : 'none'
+                      }}
+                      className="flex items-center px-3 py-2 text-sm font-medium transition-colors hover:opacity-100"
+                      onMouseEnter={(e) => { if(!item.active) e.currentTarget.style.color = theme.primary }}
+                      onMouseLeave={(e) => { if(!item.active) e.currentTarget.style.color = theme.textSecondary }}
                     >
                       {item.name}
                       {item.label && (
-                        <span className="ml-2 px-2 py-1 text-xs bg-red-500 text-white rounded-full">
+                        <span 
+                          style={{ backgroundColor: theme.error, color: '#fff' }}
+                          className="ml-2 px-2 py-1 text-xs rounded-full"
+                        >
                           {item.label}
                         </span>
                       )}
@@ -144,28 +176,40 @@ const LayoutContent = ({ children, currentPage , seo}:LayoutProps) => {
               <div className="flex items-center space-x-4">
                 <button
                   onClick={() => setIsSearchOpen(true)}
-                  className="p-2 text-gray-600 hover:text-gray-900 transition-colors"
+                  style={{ color: theme.textSecondary }}
+                  className="p-2 transition-colors hover:opacity-70"
                 >
                   <Search className="w-5 h-5" />
                 </button>
                 <button
                   onClick={() => setIsCartOpen(true)}
-                  className="relative p-2 text-gray-600 hover:text-gray-900 transition-colors"
+                  style={{ color: theme.textSecondary }}
+                  className="relative p-2 transition-colors hover:opacity-70"
                 >
                   <ShoppingCart className="w-5 h-5" />
-                  <span className="absolute -top-1 -right-1 bg-blue-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  <span 
+                    style={{ backgroundColor: theme.primary, color: theme.textInverse }}
+                    className="absolute -top-1 -right-1 text-xs rounded-full w-5 h-5 flex items-center justify-center"
+                  >
                     {cartItems.length}
                   </span>
                 </button>
-                <button className="relative p-2 text-gray-600 hover:text-gray-900 transition-colors">
+                <button 
+                  style={{ color: theme.textSecondary }}
+                  className="relative p-2 transition-colors hover:opacity-70"
+                >
                   <Heart className="w-5 h-5" />
-                  <span className="absolute -top-1 -right-1 bg-blue-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  <span 
+                    style={{ backgroundColor: theme.primary, color: theme.textInverse }}
+                    className="absolute -top-1 -right-1 text-xs rounded-full w-5 h-5 flex items-center justify-center"
+                  >
                     0
                   </span>
                 </button>
                 <button
                   onClick={() => setIsMenuOpen(true)}
-                  className="md:hidden p-2 text-gray-600 hover:text-gray-900 transition-colors"
+                  style={{ color: theme.textSecondary }}
+                  className="md:hidden p-2 transition-colors hover:opacity-70"
                 >
                   <Menu className="w-5 h-5" />
                 </button>
@@ -263,22 +307,22 @@ const LayoutContent = ({ children, currentPage , seo}:LayoutProps) => {
       )}
 
       {/* Main Content */}
-      <main style={{ backgroundColor: '#131212ff' }} className="">
+      <main style={{ backgroundColor: theme.bg }} className="transition-colors duration-300">
         {children}
       </main>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-white">
+      <footer style={{ backgroundColor: theme.sidebarBg, color: theme.sidebarFg }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {/* Categories */}
             <div>
               <h3 className="text-lg font-semibold mb-6">Categories</h3>
               <ul className="space-y-3">
-                <li><a href="#" className="text-gray-300 hover:text-white transition-colors">Women</a></li>
-                <li><a href="#" className="text-gray-300 hover:text-white transition-colors">Men</a></li>
-                <li><a href="#" className="text-gray-300 hover:text-white transition-colors">Shoes</a></li>
-                <li><a href="#" className="text-gray-300 hover:text-white transition-colors">Watches</a></li>
+                <li><a href="#" style={{ color: theme.sidebarMutedFg }} className="hover:text-white transition-colors">Women</a></li>
+                <li><a href="#" style={{ color: theme.sidebarMutedFg }} className="hover:text-white transition-colors">Men</a></li>
+                <li><a href="#" style={{ color: theme.sidebarMutedFg }} className="hover:text-white transition-colors">Shoes</a></li>
+                <li><a href="#" style={{ color: theme.sidebarMutedFg }} className="hover:text-white transition-colors">Watches</a></li>
               </ul>
             </div>
 
@@ -286,27 +330,27 @@ const LayoutContent = ({ children, currentPage , seo}:LayoutProps) => {
             <div>
               <h3 className="text-lg font-semibold mb-6">Help</h3>
               <ul className="space-y-3">
-                <li><a href="#" className="text-gray-300 hover:text-white transition-colors">Track Order</a></li>
-                <li><a href="#" className="text-gray-300 hover:text-white transition-colors">Returns</a></li>
-                <li><a href="#" className="text-gray-300 hover:text-white transition-colors">Shipping</a></li>
-                <li><a href="#" className="text-gray-300 hover:text-white transition-colors">FAQs</a></li>
+                <li><a href="#" style={{ color: theme.sidebarMutedFg }} className="hover:text-white transition-colors">Track Order</a></li>
+                <li><a href="#" style={{ color: theme.sidebarMutedFg }} className="hover:text-white transition-colors">Returns</a></li>
+                <li><a href="#" style={{ color: theme.sidebarMutedFg }} className="hover:text-white transition-colors">Shipping</a></li>
+                <li><a href="#" style={{ color: theme.sidebarMutedFg }} className="hover:text-white transition-colors">FAQs</a></li>
               </ul>
             </div>
 
             {/* Contact */}
             <div>
               <h3 className="text-lg font-semibold mb-6">Get in Touch</h3>
-              <p className="text-gray-300 mb-6 text-sm leading-relaxed">
+              <p style={{ color: theme.sidebarMutedFg }} className="mb-6 text-sm leading-relaxed">
                 Any questions? Let us know in store at 8th floor, 379 Hudson St, New York, NY 10018 or call us on (+1) 96 716 6879
               </p>
               <div className="flex space-x-4">
-                <a href="#" className="text-gray-300 hover:text-white transition-colors">
+                <a href="#" style={{ color: theme.sidebarMutedFg }} className="hover:text-white transition-colors">
                   <Facebook className="w-5 h-5" />
                 </a>
-                <a href="#" className="text-gray-300 hover:text-white transition-colors">
+                <a href="#" style={{ color: theme.sidebarMutedFg }} className="hover:text-white transition-colors">
                   <Instagram className="w-5 h-5" />
                 </a>
-                <a href="#" className="text-gray-300 hover:text-white transition-colors">
+                <a href="#" style={{ color: theme.sidebarMutedFg }} className="hover:text-white transition-colors">
                   <Twitter className="w-5 h-5" />
                 </a>
               </div>
@@ -320,12 +364,14 @@ const LayoutContent = ({ children, currentPage , seo}:LayoutProps) => {
                   <input
                     type="email"
                     placeholder="email@example.com"
-                    className="w-full bg-gray-800 text-white px-4 py-3 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600"
+                    style={{ backgroundColor: theme.sidebarMuted, color: theme.sidebarFg, borderColor: theme.sidebarBorder }}
+                    className="w-full px-4 py-3 rounded-md focus:outline-none border"
                   />
                 </div>
                 <button
                   type="submit"
-                  className="w-full bg-blue-600 text-white py-3 px-4 rounded-md hover:bg-blue-700 transition-colors"
+                  style={{ backgroundColor: theme.primary, color: theme.textInverse }}
+                  className="w-full py-3 px-4 rounded-md hover:opacity-90 transition-opacity"
                 >
                   Subscribe
                 </button>
@@ -334,14 +380,14 @@ const LayoutContent = ({ children, currentPage , seo}:LayoutProps) => {
           </div>
 
           {/* Payment Icons & Copyright */}
-          <div className="mt-12 pt-8 border-t border-gray-800">
+          <div style={{ borderColor: theme.sidebarBorder }} className="mt-12 pt-8 border-t">
             <div className="flex flex-wrap justify-center items-center space-x-4 mb-6">
-              <div className="w-12 h-8 bg-gray-700 rounded flex items-center justify-center text-xs">VISA</div>
-              <div className="w-12 h-8 bg-gray-700 rounded flex items-center justify-center text-xs">MC</div>
-              <div className="w-12 h-8 bg-gray-700 rounded flex items-center justify-center text-xs">AMEX</div>
-              <div className="w-12 h-8 bg-gray-700 rounded flex items-center justify-center text-xs">PP</div>
+              <div style={{ backgroundColor: theme.sidebarMuted, color: theme.sidebarMutedFg }} className="w-12 h-8 rounded flex items-center justify-center text-xs">VISA</div>
+              <div style={{ backgroundColor: theme.sidebarMuted, color: theme.sidebarMutedFg }} className="w-12 h-8 rounded flex items-center justify-center text-xs">MC</div>
+              <div style={{ backgroundColor: theme.sidebarMuted, color: theme.sidebarMutedFg }} className="w-12 h-8 rounded flex items-center justify-center text-xs">AMEX</div>
+              <div style={{ backgroundColor: theme.sidebarMuted, color: theme.sidebarMutedFg }} className="w-12 h-8 rounded flex items-center justify-center text-xs">PP</div>
             </div>
-            <p className="text-center text-gray-400 text-sm">
+            <p style={{ color: theme.sidebarMutedFg }} className="text-center text-sm">
               Copyright © {new Date().getFullYear()} All rights reserved | Made with ❤️ by Colorlib & distributed by ThemeWagon
             </p>
           </div>
@@ -351,7 +397,8 @@ const LayoutContent = ({ children, currentPage , seo}:LayoutProps) => {
       {/* Back to Top Button */}
       <button
         onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-        className="fixed bottom-6 right-6 bg-gray-900 text-white p-3 rounded-full shadow-lg hover:bg-gray-800 transition-colors"
+        style={{ backgroundColor: theme.primary, color: theme.textInverse }}
+        className="fixed bottom-6 right-6 p-3 rounded-full shadow-lg hover:opacity-90 transition-opacity"
       >
         <ChevronUp className="w-5 h-5" />
       </button>

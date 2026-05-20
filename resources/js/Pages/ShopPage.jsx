@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { Filter, Search, Star, Heart, ShoppingCart, Eye, ChevronDown } from 'lucide-react';
 import Layout from '../Layouts/Layout';
+import { useStoreConfigCtx } from '@/contextHooks/useStoreConfigCtx';
 
 const ShopPage = () => {
+  const { state: { currentTheme: theme } } = useStoreConfigCtx();
   const [activeFilter, setActiveFilter] = useState('*');
   const [showFilters, setShowFilters] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
@@ -138,11 +140,12 @@ const ShopPage = () => {
                 <button
                   key={filter.key}
                   onClick={() => setActiveFilter(filter.key)}
-                  className={`px-6 py-2 rounded-full transition-colors ${
-                    activeFilter === filter.key
-                      ? 'bg-gray-900 text-white'
-                      : 'text-gray-600 hover:text-gray-900 border border-gray-300'
-                  }`}
+                  style={{ 
+                    backgroundColor: activeFilter === filter.key ? theme.primary : 'transparent',
+                    color: activeFilter === filter.key ? theme.textInverse : theme.textSecondary,
+                    borderColor: activeFilter === filter.key ? theme.primary : theme.border
+                  }}
+                  className="px-6 py-2 rounded-full border transition-all"
                 >
                   {filter.label}
                 </button>
@@ -153,14 +156,16 @@ const ShopPage = () => {
             <div className="flex items-center space-x-4">
               <button
                 onClick={() => setShowFilters(!showFilters)}
-                className="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+                style={{ borderColor: theme.border, color: theme.textSecondary }}
+                className="flex items-center space-x-2 px-4 py-2 border rounded-md hover:opacity-80 transition-opacity"
               >
                 <Filter className="w-4 h-4" />
                 <span>Filter</span>
               </button>
               <button
                 onClick={() => setShowSearch(!showSearch)}
-                className="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+                style={{ borderColor: theme.border, color: theme.textSecondary }}
+                className="flex items-center space-x-2 px-4 py-2 border rounded-md hover:opacity-80 transition-opacity"
               >
                 <Search className="w-4 h-4" />
                 <span>Search</span>
@@ -170,12 +175,13 @@ const ShopPage = () => {
 
           {/* Search Bar */}
           {showSearch && (
-            <div className="mb-8 p-4 bg-gray-50 rounded-lg">
-              <div className="flex items-center border border-gray-300 rounded-md bg-white">
-                <Search className="w-5 h-5 text-gray-400 ml-3" />
+            <div style={{ backgroundColor: theme.bgSecondary }} className="mb-8 p-4 rounded-lg">
+              <div style={{ borderColor: theme.border, backgroundColor: theme.bg }} className="flex items-center border rounded-md">
+                <Search style={{ color: theme.textMuted }} className="w-5 h-5 ml-3" />
                 <input
                   type="text"
                   placeholder="Search products..."
+                  style={{ backgroundColor: 'transparent', color: theme.text }}
                   className="flex-1 px-4 py-3 outline-none"
                 />
               </div>
@@ -188,17 +194,17 @@ const ShopPage = () => {
               <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
                 {/* Sort By */}
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-4">Sort By</h3>
+                  <h3 style={{ color: theme.text }} className="font-semibold mb-4">Sort By</h3>
                   <ul className="space-y-2">
                     {sortOptions.map((option) => (
                       <li key={option.value}>
                         <button
                           onClick={() => setSortBy(option.value)}
-                          className={`text-sm transition-colors ${
-                            sortBy === option.value
-                              ? 'text-blue-600 font-medium'
-                              : 'text-gray-600 hover:text-gray-900'
-                          }`}
+                          style={{ 
+                            color: sortBy === option.value ? theme.primary : theme.textSecondary,
+                            fontWeight: sortBy === option.value ? 600 : 400
+                          }}
+                          className="text-sm transition-colors hover:opacity-80"
                         >
                           {option.label}
                         </button>
@@ -209,16 +215,16 @@ const ShopPage = () => {
 
                 {/* Price */}
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-4">Price</h3>
+                  <h3 style={{ color: theme.text }} className="font-semibold mb-4">Price</h3>
                   <ul className="space-y-2">
                     {priceRanges.map((range, index) => (
                       <li key={index}>
                         <button
-                          className={`text-sm transition-colors ${
-                            range.active
-                              ? 'text-blue-600 font-medium'
-                              : 'text-gray-600 hover:text-gray-900'
-                          }`}
+                          style={{ 
+                            color: range.active ? theme.primary : theme.textSecondary,
+                            fontWeight: range.active ? 600 : 400
+                          }}
+                          className="text-sm transition-colors hover:opacity-80"
                         >
                           {range.label}
                         </button>
@@ -229,7 +235,7 @@ const ShopPage = () => {
 
                 {/* Color */}
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-4">Color</h3>
+                  <h3 style={{ color: theme.text }} className="font-semibold mb-4">Color</h3>
                   <ul className="space-y-2">
                     {colors.map((color, index) => (
                       <li key={index} className="flex items-center space-x-3">
@@ -238,11 +244,11 @@ const ShopPage = () => {
                           style={{ backgroundColor: color.color }}
                         />
                         <button
-                          className={`text-sm transition-colors ${
-                            color.active
-                              ? 'text-blue-600 font-medium'
-                              : 'text-gray-600 hover:text-gray-900'
-                          }`}
+                          style={{ 
+                            color: color.active ? theme.primary : theme.textSecondary,
+                            fontWeight: color.active ? 600 : 400
+                          }}
+                          className="text-sm transition-colors hover:opacity-80"
                         >
                           {color.name}
                         </button>
@@ -253,12 +259,13 @@ const ShopPage = () => {
 
                 {/* Tags */}
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-4">Tags</h3>
+                  <h3 style={{ color: theme.text }} className="font-semibold mb-4">Tags</h3>
                   <div className="flex flex-wrap gap-2">
                     {tags.map((tag) => (
                       <button
                         key={tag}
-                        className="px-3 py-1 text-sm border border-gray-300 rounded-full hover:bg-gray-100 transition-colors"
+                        style={{ borderColor: theme.border, color: theme.textSecondary }}
+                        className="px-3 py-1 text-sm border rounded-full hover:opacity-80 transition-all"
                       >
                         {tag}
                       </button>
@@ -293,7 +300,10 @@ const ShopPage = () => {
 
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
-                    <h3 className="text-lg font-medium text-gray-900 group-hover:text-blue-600 transition-colors mb-2">
+                    <h3 
+                      style={{ color: theme.text }}
+                      className="text-lg font-medium transition-colors mb-2 hover:opacity-80"
+                    >
                       {product.name}
                     </h3>
                     
@@ -305,16 +315,17 @@ const ShopPage = () => {
                             key={i}
                             className={`w-4 h-4 ${
                               i < Math.floor(product.rating)
-                                ? 'text-yellow-400 fill-current'
-                                : 'text-gray-300'
+                                ? 'fill-current'
+                                : ''
                             }`}
+                            style={{ color: i < Math.floor(product.rating) ? theme.starColor || '#fbbf24' : theme.border }}
                           />
                         ))}
                       </div>
-                      <span className="text-sm text-gray-500">({product.reviews})</span>
+                      <span style={{ color: theme.textMuted }} className="text-sm">({product.reviews})</span>
                     </div>
 
-                    <p className="text-xl font-bold text-gray-900">${product.price}</p>
+                    <p style={{ color: theme.text }} className="text-xl font-bold">${product.price}</p>
                   </div>
                 </div>
               </div>
@@ -323,7 +334,10 @@ const ShopPage = () => {
 
           {/* Load More Button */}
           <div className="text-center mt-12">
-            <button className="bg-gray-100 text-gray-900 px-8 py-3 rounded-md hover:bg-gray-200 transition-colors">
+            <button 
+              style={{ backgroundColor: theme.bgSecondary, color: theme.text }}
+              className="px-8 py-3 rounded-md hover:opacity-80 transition-opacity"
+            >
               Load More
             </button>
           </div>
