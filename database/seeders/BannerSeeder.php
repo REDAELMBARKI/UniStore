@@ -147,8 +147,9 @@ class BannerSeeder extends Seeder
             foreach ($item['slots'] as $slotData) {
                 if (isset($slotData['image'])) {
                     $media = Media::create([
-                        'url' => $slotData['image'],
+                        'url' => "https://picsum.photos/seed/banner-" . rand(1, 1000) . "/1920/1080",
                         'media_type' => 'image',
+                        'mediaable_type' => 'App\Models\Banner',
                         'collection' => 'banner',
                     ]);
                     $slotData['main_media_id'] = $media->id;

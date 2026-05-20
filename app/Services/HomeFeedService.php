@@ -55,13 +55,21 @@ class HomeFeedService
                     $value = $rule['value'] ?? null;
                     
                     if ($field && $value !== null) {
-                        if ($field === 'category_id') {
+                        if ($field === 'category_id' || $field === 'category') {
                             $query->whereHas('nichCategory', function ($q) use ($value) {
-                                $q->where('name', $value)->orWhere('id', $value);
+                                if (is_numeric($value)) {
+                                    $q->where('id', $value);
+                                } else {
+                                    $q->where('name', $value)->orWhere('slug', $value);
+                                }
                             });
-                        } elseif ($field === 'badge') {
+                        } elseif ($field === 'badge_id' || $field === 'badge') {
                             $query->whereHas('badge', function ($q) use ($value) {
-                                $q->where('name', $value);
+                                if (is_numeric($value)) {
+                                    $q->where('id', $value);
+                                } else {
+                                    $q->where('name', $value);
+                                }
                             });
                         } elseif ($field === 'discount') {
                             $query->whereHas('variants', function ($q) use ($value) {

@@ -99,10 +99,10 @@ class ProductSeeder extends Seeder
             ]);
 
             Media::create([
-                'url' => $data['img'],
+                'url' => "https://picsum.photos/seed/{$product->id}/800/1200",
                 'collection' => 'thumbnail',
                 'media_type' => 'image',
-                'mediaable_type' => Product::class,
+                'mediaable_type' => 'App\Models\Product',
                 'mediaable_id' => $product->id,
                 'is_temporary' => 0,
             ]);
