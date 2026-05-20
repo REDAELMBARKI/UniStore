@@ -6,7 +6,8 @@ use App\Http\Controllers\Admin\PromotionController as AdminPromotionController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\RuleBasedCollectionController;
 use App\Http\Controllers\CategoryController;
-use App\Http\Controllers\CurstomerController;
+use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\RoleController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\MarketplaceController;
 use App\Http\Controllers\MessageController;
@@ -206,7 +207,15 @@ Route::prefix('orders')->group(function(){
 Route::post('/coupon_feedback', [CouponController::class,'coupon_feedback'])->name('coupon.feedback');
 // customer
 Route::get('/customers' , [CustomerController::class, 'index'])->name('admin.customers.index') ;
-Route::get('/customers/{id}' , [CustomerController::class, 'show'])->name('admin.customers.show') ;
+Route::get('/customers/{user}' , [CustomerController::class, 'show'])->name('admin.customers.show') ;
+
+// Roles
+Route::get('/roles', [RoleController::class, 'index'])->name('admin.roles.index');
+Route::post('/roles', [RoleController::class, 'store'])->name('admin.roles.store');
+Route::put('/roles/{role}', [RoleController::class, 'update'])->name('admin.roles.update');
+Route::delete('/roles/{role}', [RoleController::class, 'destroy'])->name('admin.roles.destroy');
+Route::post('/users/{user}/roles', [RoleController::class, 'assignRole'])->name('admin.users.assignRole');
+Route::delete('/users/{user}/roles', [RoleController::class, 'removeRole'])->name('admin.users.removeRole');
 
 
 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\Role;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -52,10 +53,12 @@ class CustomerController extends Controller
             'primaryInterest' => null,
             'allInterests' => [],
             'importantNotes' => [],
+            'roles' => $user->roles,
         ];
 
         return Inertia::render('admin/pages/customers/CustomerDetails', [
-            'customer' => $customerData
+            'customer' => $customerData,
+            'allRoles' => Role::all(),
         ]);
     }
 }
