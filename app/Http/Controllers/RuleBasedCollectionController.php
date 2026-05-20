@@ -14,7 +14,9 @@ class RuleBasedCollectionController extends Controller
     public function index()
     {
         $collections = RuleBasedCollection::orderBy('id')->get();
-        $app_factory_config = AppFactoryConfig::where("config_key" , "LIKE", "collections.%")
+        // Updated to match the actual keys used in the seeder (home.X, etc.)
+        $app_factory_config = AppFactoryConfig::where("config_key" , "LIKE", "home.%")
+                                                ->orWhere("config_key", "LIKE", "collections.%")
                                                 ->get(['id' , 'config_key', 'payload'])
                                                 ->map(function($config) { 
                                                     return array_merge($config->payload , [
@@ -32,7 +34,8 @@ class RuleBasedCollectionController extends Controller
     public function edit(RuleBasedCollection $collection)
     {
         $collections = RuleBasedCollection::orderBy('id')->get();
-        $app_factory_config = AppFactoryConfig::where("config_key" , "LIKE", "collections.%")
+        $app_factory_config = AppFactoryConfig::where("config_key" , "LIKE", "home.%")
+                                                ->orWhere("config_key", "LIKE", "collections.%")
                                                 ->get(['id' , 'config_key', 'payload'])
                                                 ->map(function($config) { 
                                                     return array_merge($config->payload , [
@@ -57,7 +60,8 @@ class RuleBasedCollectionController extends Controller
         $collection->refresh();
 
         $collections = RuleBasedCollection::orderBy('id')->get();
-        $app_factory_config = AppFactoryConfig::where("config_key", "LIKE", "collections.%")
+        $app_factory_config = AppFactoryConfig::where("config_key" , "LIKE", "home.%")
+            ->orWhere("config_key", "LIKE", "collections.%")
             ->get(['id', 'config_key', 'payload'])
             ->map(function ($config) {
                 return array_merge($config->payload, [

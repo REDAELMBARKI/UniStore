@@ -321,6 +321,11 @@ export default function CollectionEditor() {
   };
 
   const resetToFactory = () => {
+    if (!activeSection) return;
+
+    console.log("Resetting collection:", activeSection.key);
+    console.log("Available factory configs:", app_factory_config);
+
     // Find factory config matching current collection key
     const factory = app_factory_config.find((f: any) => f.config_key === activeSection.key);
     
@@ -332,8 +337,17 @@ export default function CollectionEditor() {
         name: factory.name,
       });
       setGlobalCardConfig({ ...factory.card_config });
+      
+      setShowToast({ show: true, message: 'Reset to factory defaults applied!', type: 'success' });
+      setTimeout(() => setShowToast(prev => ({ ...prev, show: false })), 3000);
     } else {
-      console.warn("No factory config found for key:", activeSection.key);
+      const keys = app_factory_config.map((f: any) => f.config_key).join(', ');
+      setShowToast({ 
+        show: true, 
+        message: `No factory match for "${activeSection.key}". Available: ${keys || 'none'}`, 
+        type: 'error' 
+      });
+      setTimeout(() => setShowToast(prev => ({ ...prev, show: false })), 5000);
     }
   };
 

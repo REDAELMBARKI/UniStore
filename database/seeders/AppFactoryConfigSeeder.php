@@ -2,11 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\AppFactoryConfig;
-
-
 
 class AppFactoryConfigSeeder extends Seeder
 {
@@ -17,57 +14,111 @@ class AppFactoryConfigSeeder extends Seeder
     {
         $collections_factoryPayloads = [
             [
-                'config_key' => 'collections.top_deals',
-                'description' => 'Factory default for the Top Deals rule-based collection',
+                'config_key' => 'home.new_arrivals',
+                'description' => 'Factory default for the New Season Arrivals rule-based collection',
                 'payload' => [
-                    'section_type' => 'deals',
-                    'name' => 'Top Deals',
+                    'key' => 'home.new_arrivals',
+                    'name' => 'New Season Arrivals',
+                    'slug' => 'new-season-arrivals',
                     'is_active' => true,
                     'layout_config' => [
-                        'displayLimit' => 4, 
-                        'gap' => 16, 
+                        'gap' => 24,
+                        'displayLimit' => 1,
                         'paddingInline' => 0
                     ],
                     'card_config' => [
-                        'aspectRatio' => '3/4', 
-                        'borderRadius' => 12, 
-                        'showPrice' => true, 
-                        'showBadge' => true, 
-                        'textAlign' => 'left', 
-                        'hoverEffect' => 'zoom'
+                        'showBadge' => true,
+                        'showPrice' => true,
+                        'textAlign' => 'left',
+                        'aspectRatio' => '3/4',
+                        'hoverEffect' => 'zoom',
+                        'borderRadius' => 0
                     ],
                     'rules' => [
-                        ['id' => 'f1', 'field' => 'discount', 'operator' => '>=', 'value' => '25']
+                        ['field' => 'badge_id', 'value' => '2', 'operator' => '=']
                     ],
                 ]
             ],
             [
-                'config_key' => 'collections.featured_footwear',
-                'description' => 'Factory default for the Featured Footwear category section',
+                'config_key' => 'home.featured',
+                'description' => 'Factory default for the The Featured Edit rule-based collection',
                 'payload' => [
-                    'section_type' => 'category',
-                    'name' => 'Featured Footwear',
+                    'key' => 'home.featured',
+                    'name' => 'The Featured Edit',
+                    'slug' => 'the-featured-edit',
                     'is_active' => true,
                     'layout_config' => [
-                        'displayLimit' => 3, 
-                        'gap' => 24, 
+                        'gap' => 24,
+                        'displayLimit' => 12,
                         'paddingInline' => 0
                     ],
                     'card_config' => [
-                        'aspectRatio' => '3/4', 
-                        'borderRadius' => 12, 
-                        'showPrice' => true, 
-                        'showBadge' => true, 
-                        'textAlign' => 'left', 
-                        'hoverEffect' => 'zoom'
+                        'showBadge' => true,
+                        'showPrice' => true,
+                        'textAlign' => 'left',
+                        'aspectRatio' => '3/4',
+                        'hoverEffect' => 'zoom',
+                        'borderRadius' => 0
                     ],
                     'rules' => [
-                        ['id' => 'f2', 'field' => 'category_id', 'operator' => '=', 'value' => 'Menswear']
+                        ['field' => 'badge_id', 'value' => '6', 'operator' => '=']
                     ],
                 ]
             ],
-           
+            [
+                'config_key' => 'home.shoes',
+                'description' => 'Factory default for the Featured Footwear rule-based collection',
+                'payload' => [
+                    'key' => 'home.shoes',
+                    'name' => 'Featured Footwear',
+                    'slug' => 'performance-footwear',
+                    'is_active' => true,
+                    'layout_config' => [
+                        'gap' => 24,
+                        'displayLimit' => 4,
+                        'paddingInline' => 0
+                    ],
+                    'card_config' => [
+                        'showBadge' => true,
+                        'showPrice' => true,
+                        'textAlign' => 'left',
+                        'aspectRatio' => '3/4',
+                        'hoverEffect' => 'zoom',
+                        'borderRadius' => 12
+                    ],
+                    'rules' => [
+                        ['id' => 'f2', 'field' => 'category_id', 'value' => 'Menswear', 'operator' => '=']
+                    ],
+                ]
+            ],
+            [
+                'config_key' => 'home.watches',
+                'description' => 'Factory default for the Luxury Timepieces rule-based collection',
+                'payload' => [
+                    'key' => 'home.watches',
+                    'name' => 'Luxury Timepieces',
+                    'slug' => 'luxury-timepieces',
+                    'is_active' => true,
+                    'layout_config' => [
+                        'gap' => 24,
+                        'displayLimit' => 3,
+                        'paddingInline' => 0
+                    ],
+                    'card_config' => [
+                        'showBadge' => true,
+                        'showPrice' => true,
+                        'textAlign' => 'left',
+                        'aspectRatio' => '1/1',
+                        'hoverEffect' => 'none',
+                        'borderRadius' => 22
+                    ],
+                    'rules' => [
+                        ['field' => 'category_id', 'value' => '63', 'operator' => '=']
+                    ],
+                ]
+            ],
         ];
+
         $banners_factoryPayloads = [
             [
                 'config_key' => 'banners.spring_2026',
@@ -226,7 +277,6 @@ class AppFactoryConfigSeeder extends Seeder
                 ]
             ]
         ];
-       
 
         $configs = array_merge($collections_factoryPayloads, $banners_factoryPayloads);
         foreach ($configs as $config) {
