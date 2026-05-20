@@ -333,28 +333,38 @@ export default function CollectionEditor() {
         dirtyId={isDirty ? activeId : null}
       />
 
-      <CenterPanel
-        activeSection={activeSection}
-        globalCardConfig={globalCardConfig}
-        isDirty={isDirty}
-        onReset={resetToFactory}
-        onPublish={handlePublish}
-        isSaving={isSaving}
-      />
+      {!activeSection ? (
+        <div className="flex-1 flex items-center justify-center" style={{ color: theme.textSecondary }}>
+          <div className="text-center">
+            <p className="text-xs font-black uppercase tracking-widest">No collections found.</p>
+          </div>
+        </div>
+      ) : (
+        <>
+          <CenterPanel
+            activeSection={activeSection}
+            globalCardConfig={globalCardConfig}
+            isDirty={isDirty}
+            onReset={resetToFactory}
+            onPublish={handlePublish}
+            isSaving={isSaving}
+          />
 
-      <CollectionEditorInspector
-        open={rightOpen}
-        onToggle={() => setRightOpen((v) => !v)}
-        activeSection={activeSection}
-        globalCardConfig={globalCardConfig}
-        onUpdateSection={updateSection}
-        onUpdateLayout={updateLayout}
-        onUpdateGlobalCard={updateGlobalCard}
-      />
+          <CollectionEditorInspector
+            open={rightOpen}
+            onToggle={() => setRightOpen((v) => !v)}
+            activeSection={activeSection}
+            globalCardConfig={globalCardConfig}
+            onUpdateSection={updateSection}
+            onUpdateLayout={updateLayout}
+            onUpdateGlobalCard={updateGlobalCard}
+          />
+        </>
+      )}
 
       {pendingSwitchId !== null && (
         <UnsavedModal
-          sectionName={activeSection?.name || ""}
+          sectionName={activeSection?.name || "this collection"}
           onDiscard={handleDiscard}
           onKeep={() => setPendingSwitchId(null)}
         />

@@ -65,6 +65,7 @@ class AppServiceProvider extends ServiceProvider
             'promotion' => 'App\Models\Promotion',
             'product' => 'App\Models\Product',
             'variant' => 'App\Models\ProductVariant',
+            'user' => 'App\Models\User',
         ]);
     
     }

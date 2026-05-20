@@ -14,6 +14,7 @@ import { AvatarImage } from '@/components/ui/avatar';
 import { TableMeta } from '@/components/ui/TableMeta';
 import { PaginationTable } from '@/admin/components/layout/Pagination';
 import MultiSelectDropdownForObject, { AllowedObjectsType } from '@/components/ui/MultiSelectDropdownForObject';
+import { usePage } from '@inertiajs/react';
 
 // Types
 type CustomerStatus = 'active' | 'vip' | 'blocked';
@@ -23,11 +24,11 @@ interface Customer {
   name: string;
   phone: string;
   email: string;
-  totalOrders: number;
-  totalSpent: number;
-  lastOrderDate: string;
+  orders_count: number;
+  total_spent: number;
+  last_order_date: string;
   status: CustomerStatus;
-  joinedDate: string;
+  created_at: string;
   notes: string;
 }
 
@@ -104,17 +105,7 @@ interface CustomerDetailsModalProps {
 
 
 
-// Mock data
-const mockCustomers: Customer[] = [
-  { id: 1, name: 'Ahmed Hassan', phone: '+212-612-345-678', email: 'ahmed@email.com', totalOrders: 12, totalSpent: 4500, lastOrderDate: '2024-11-25', status: 'active', joinedDate: '2024-01-15', notes: 'Prefers morning delivery' },
-  { id: 2, name: 'Fatima Zahra', phone: '+212-623-456-789', email: 'fatima@email.com', totalOrders: 8, totalSpent: 3200, lastOrderDate: '2024-11-20', status: 'active', joinedDate: '2024-02-10', notes: '' },
-  { id: 3, name: 'Mohammed Ali', phone: '+212-634-567-890', email: '', totalOrders: 1, totalSpent: 450, lastOrderDate: '2024-11-15', status: 'active', joinedDate: '2024-11-15', notes: 'Failed delivery once' },
-  { id: 4, name: 'Sara Benani', phone: '+212-645-678-901', email: 'sara@email.com', totalOrders: 15, totalSpent: 6700, lastOrderDate: '2024-11-27', status: 'vip', joinedDate: '2023-12-01', notes: 'VIP customer, very reliable' },
-  { id: 5, name: 'Youssef Idrissi', phone: '+212-656-789-012', email: 'youssef@email.com', totalOrders: 3, totalSpent: 890, lastOrderDate: '2024-10-10', status: 'blocked', joinedDate: '2024-08-05', notes: 'Multiple failed COD deliveries' },
-  { id: 6, name: 'Amina Mansouri', phone: '+212-667-890-123', email: 'amina@email.com', totalOrders: 6, totalSpent: 2100, lastOrderDate: '2024-11-22', status: 'active', joinedDate: '2024-03-20', notes: '' },
-  { id: 7, name: 'Karim Alaoui', phone: '+212-678-901-234', email: '', totalOrders: 9, totalSpent: 3800, lastOrderDate: '2024-11-26', status: 'active', joinedDate: '2024-01-30', notes: 'Always pays on time' },
-  { id: 8, name: 'Nadia Berrada', phone: '+212-689-012-345', email: 'nadia@email.com', totalOrders: 2, totalSpent: 650, lastOrderDate: '2024-11-10', status: 'active', joinedDate: '2024-10-15', notes: '' },
-];
+
 
 
 
@@ -284,7 +275,7 @@ const CustomersTable: FC<CustomersTableProps> = ({
                         className="text-xs"
                         style={{ color: theme.textMuted }}
                       >
-                        Joined {customer.joinedDate}
+                        Joined {customer.created_at}
                       </div>
                     </div>
                   </div>
@@ -312,15 +303,15 @@ const CustomersTable: FC<CustomersTableProps> = ({
                 </TableCell>
 
                 <TableCell className="font-medium">
-                  {customer.totalOrders}
+                  {customer.orders_count}
                 </TableCell>
 
                 <TableCell className="font-medium">
-                  {customer.totalSpent} MAD
+                  {customer.total_spent} MAD
                 </TableCell>
 
                 <TableCell className="text-sm">
-                  {customer.lastOrderDate}
+                  {customer.last_order_date}
                 </TableCell>
 
                 {/* Status */}
@@ -368,109 +359,119 @@ const CustomersTable: FC<CustomersTableProps> = ({
 
 
 
-const CustomersManager = () => {
-  const [searchQuery, setSearchQuery] = useState<string>('');
-  const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [currentPage, setCurrentPage] = useState<number>(1);
+export default function CustomersManager() {
+  const { customers = [] } = usePage().props as any;
+  const {
+    state: { currentTheme: theme },
+  } = useStoreConfigCtx();
+
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
-  const [detailsOpen, setDetailsOpen] = useState<boolean>(false);
-  const [perPage, setPerPage] = useState<string>('10');
+  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
 
-  const stats = useMemo(() => ({
-    total: mockCustomers.length,
-    active: mockCustomers.filter((c: Customer) => c.status === 'active').length,
-    vip: mockCustomers.filter((c: Customer) => c.status === 'vip').length,
-    blocked: mockCustomers.filter((c: Customer) => c.status === 'blocked').length,
-  }), []);
-
-  const filteredCustomers = useMemo((): Customer[] => {
-    return mockCustomers.filter((customer: Customer) => {
-      const matchesSearch: boolean = 
+  const filteredCustomers = useMemo(() => {
+    return customers.filter((customer: any) => {
+      const matchesSearch =
         customer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        customer.phone.includes(searchQuery) ||
-        customer.email.toLowerCase().includes(searchQuery.toLowerCase());
-      
-      const matchesStatus: boolean = statusFilter === 'all' || customer.status === statusFilter;
-      
+        customer.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        customer.phone?.includes(searchQuery);
+
+      const matchesStatus = statusFilter === 'all' || customer.status === statusFilter;
+
       return matchesSearch && matchesStatus;
     });
-  }, [searchQuery, statusFilter]);
+  }, [customers, searchQuery, statusFilter]);
 
-  const totalPages: number = Math.ceil(filteredCustomers.length / parseInt(perPage));
-  const paginatedCustomers: Customer[] = filteredCustomers.slice(
-    (currentPage - 1) * parseInt(perPage),
-    currentPage * parseInt(perPage)
-  );
+  const stats = useMemo(() => {
+    return {
+      total: customers.length,
+      active: customers.filter((c: any) => c.status === 'active').length,
+      vip: customers.filter((c: any) => c.status === 'vip').length,
+      newThisMonth: customers.filter((c: any) => {
+        const joinedDate = new Date(c.created_at);
+        const now = new Date();
+        return joinedDate.getMonth() === now.getMonth() && joinedDate.getFullYear() === now.getFullYear();
+      }).length,
+    };
+  }, [customers]);
 
-  const handleViewDetails = (customer: Customer): void => {
+  const handleViewDetails = (customer: Customer) => {
     setSelectedCustomer(customer);
-    setDetailsOpen(true);
+    setIsDetailsOpen(true);
   };
-
-  const clearFilters = (): void => {
-    setSearchQuery('');
-    setStatusFilter('all');
-  };
-
-  const hasActiveFilters: boolean = searchQuery !== '' || statusFilter !== 'all';
 
   return (
-    <div className="min-h-screen bg-background p-4 md:p-8">
-      <div className="max-w-7xl mx-auto space-y-6">
-        
-        <SectionHeader Icon={PersonStanding} title='Manage Customers' description="View and manage all your customers">
-           <Button type="button" variant="outline" className="rounded-lg">
-              <Download size={18} />
-              Export
-            </Button>
-            <Button type="button" className="rounded-lg" variant='default'>
-              <Plus size={18} />
-              Add Customer
-            </Button>
-        </SectionHeader>
+    <AdminLayout>
+      <div className="p-6 space-y-6">
+        <SectionHeader
+          title="Customers Management"
+          description="View and manage your store customers"
+          actions={
+            <div className="flex gap-3">
+              <Button variant="outline" size="sm" className="h-9">
+                <Download className="mr-2 h-4 w-4" />
+                Export
+              </Button>
+              <Button size="sm" className="h-9">
+                <Plus className="mr-2 h-4 w-4" />
+                Add Customer
+              </Button>
+            </div>
+          }
+        />
 
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <Calendar size={16} />
-          <span>Last update: 28 Nov 2024</span>
-          <Button type="button" variant="ghost" size="icon" className="h-6 w-6 rounded-lg">
-            <RefreshCw size={16} />
-          </Button>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <StatsCard
+            title="Total Customers"
+            value={stats.total}
+            change="12% from last month"
+            trend="up"
+            icon={PersonStanding}
+          />
+          <StatsCard
+            title="Active Customers"
+            value={stats.active}
+            change="5% from last month"
+            trend="up"
+            icon={CheckCircle}
+          />
+          <StatsCard
+            title="VIP Customers"
+            value={stats.vip}
+            change="2% from last month"
+            trend="up"
+            icon={Award}
+          />
+          <StatsCard
+            title="New Customers"
+            value={stats.newThisMonth}
+            change="8% from last month"
+            trend="up"
+            icon={Plus}
+          />
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <StatsCard title="Total Customers" value={stats.total} change="15.3%" trend="up" />
-          <StatsCard title="Active" value={stats.active} change="12.1%" trend="up" />
-          <StatsCard title="VIP" value={stats.vip} change="8.5%" trend="up" />
-          <StatsCard title="Blocked" value={stats.blocked} change="3.2%" trend="down" />
-        </div>
-
-
-     
-        <CustomersTable 
+        <CustomersTable
+          customers={filteredCustomers}
+          onViewDetails={handleViewDetails}
           searchQuery={searchQuery}
           statusFilter={statusFilter}
           onSearchChange={setSearchQuery}
           onStatusChange={setStatusFilter}
-          onClearFilters={clearFilters}
-          hasActiveFilters={hasActiveFilters}
-          customers={paginatedCustomers}
-          onViewDetails={handleViewDetails}
+          onClearFilters={() => {
+            setSearchQuery('');
+            setStatusFilter('all');
+          }}
+          hasActiveFilters={searchQuery !== '' || statusFilter !== 'all'}
         />
 
-        {/* pagination */}
-        {totalPages > 1 && (
-        <TableMeta perPage={perPage} currentPage={currentPage} totalItems={totalPages} setPerPage={setPerPage} >
-            <PaginationTable  totalPages={totalPages} currentPage={currentPage} setCurrentPage={setCurrentPage} />
-        </TableMeta>
-        ) }
-
-      
+        <CustomerDetails
+          customer={selectedCustomer}
+          open={isDetailsOpen}
+          onClose={() => setIsDetailsOpen(false)}
+        />
       </div>
-
-    </div>
+    </AdminLayout>
   );
-};
-
-export default CustomersManager;
-
-CustomersManager.layout  = (page:any ) => <AdminLayout children={page} />
+}

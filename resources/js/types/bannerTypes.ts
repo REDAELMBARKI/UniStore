@@ -37,7 +37,6 @@ export interface Banner {
   name: string;
   key: string;
   slug: string;
-  order: number;
   direction: 'ltr' | 'rtl';
   is_active: boolean;
   

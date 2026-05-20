@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { router } from "@inertiajs/react";
+import { router, usePage } from "@inertiajs/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -27,74 +27,29 @@ export interface ProductListItem {
   id: string;
   name: string;
   brand?: string;
-  price: string;
+  price?: string | number;
   compareAtPrice?: string;
   stockQuantity?: number;
   sku?: string;
-  thumbnail?: Cover  | null;
-  category: { id: string; name: string }[];
-  isFeatured?: boolean;
-  status: "active" | "draft" | "inactive";
+  thumbnail?: Cover | null;
+  category?: { id: string; name: string }[];
+  is_featured?: boolean;
+  status: "active" | "draft" | "inactive" | "published";
+  variants?: {
+    id: string;
+    sku?: string;
+    price?: number;
+    stock?: number;
+    is_default?: boolean;
+  }[];
+  nichCategory?: { id: string; name: string };
+  subCategories?: { id: string; name: string }[];
 }
-
-
-interface ProductsResponse {
-  data: ProductListItem[];
-  current_page: number;
-  last_page: number;
-  per_page: number;
-  total: number;
-  links: { url: string | null; label: string; active: boolean }[];
-}
-
-
-
-
-// ===================== PLACEHOLDER DATA =====================
-const MOCK_PRODUCTS: ProductListItem[] = [
-  {
-    id: "1",
-    name: "Basic White T‑Shirt",
-    brand: "Essential",
-    price: "19.99",
-    stockQuantity: 34,
-    sku: "TSH-WHT-001",
-    status: "active",
-    isFeatured: true,
-    thumbnail: null,
-    category: [{ id: "1", name: "Tops" }, { id: "4", name: "Casual" }],
-  },
-  {
-    id: "2",
-    name: "Slim Fit Jeans",
-    brand: "Urban Wear",
-    price: "59.00",
-    stockQuantity: 6,
-    sku: "JNS-BLK-021",
-    status: "active",
-    isFeatured: false,
-    thumbnail: null,
-    category: [{ id: "2", name: "Bottoms" }],
-  },
-  {
-    id: "3",
-    name: "Oversized Hoodie",
-    brand: "StreetLab",
-    price: "79.90",
-    stockQuantity: 0,
-    sku: "HD-OVR-332",
-    status: "draft",
-    isFeatured: true,
-    thumbnail: null,
-    category: [{ id: "3", name: "Hoodies" }, { id: "5", name: "Winter" }],
-  },
-];
 
 // ===================== COMPONENT =====================
-export default function ProductsList({ response }: { response?: ProductsResponse }) {
-
-  const products = response ? response?.data  : MOCK_PRODUCTS; 
-        const {state :{currentTheme : theme}} = useStoreConfigCtx()
+export default function ProductsList() {
+  const { products = [] } = usePage().props as { products: ProductListItem[] };
+  const { state: { currentTheme: theme } } = useStoreConfigCtx();
 
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -110,6 +65,15 @@ export default function ProductsList({ response }: { response?: ProductsResponse
   });
 
   const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+
+  // Helper to get product image with fallback
+  const getProductImage = (product: ProductListItem) => {
+    if (product.thumbnail?.url && !product.thumbnail.url.includes('/storage/products/')) {
+      return product.thumbnail.url;
+    }
+    // Fallback to a high-quality placeholder if no image or if it's a default storage path that might not exist
+    return `https://picsum.photos/seed/${product.id}/200/200`;
+  };
 
   const deleteProduct = () => {
     if (!deleteId) return;
@@ -218,181 +182,177 @@ export default function ProductsList({ response }: { response?: ProductsResponse
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {filteredProducts.map((product) => (
-                      <TableRow 
-                        key={product.id}
-                        className="hover:bg-opacity-50 transition-colors"
-                        style={{ 
-                          borderBottom: `1px solid ${theme.border}`,
-                          background: theme.bg,
-                        }}
-                      >
-                        <TableCell>
-                          <div className="flex items-center gap-3">
-                            {product.thumbnail ? (
+                    {filteredProducts.map((product: ProductListItem) => {
+                      const variants = product.variants || [];
+                      const defaultVariant = variants.find((v) => v.is_default) || variants[0];
+                      const totalStock = variants.reduce((sum, v) => sum + (v.stock || 0), 0);
+                      const price = defaultVariant?.price;
+                      const sku = defaultVariant?.sku;
+
+                      return (
+                        <TableRow
+                          key={product.id}
+                          className="hover:bg-opacity-50 transition-colors"
+                          style={{
+                            borderBottom: `1px solid ${theme.border}`,
+                            background: theme.bg,
+                          }}
+                        >
+                          <TableCell>
+                            <div className="flex items-center gap-3">
                               <img
-                                src={(product.thumbnail as any).url}
+                                src={getProductImage(product)}
                                 alt={product.name}
                                 className="h-14 w-14 rounded-lg object-cover"
                                 style={{ border: `2px solid ${theme.border}` }}
-                              />
-                            ) : (
-                              <div 
-                                className="flex h-14 w-14 items-center justify-center rounded-lg"
-                                style={{
-                                  background: `linear-gradient(135deg, ${theme.gray100} 0%, ${theme.gray200} 100%)`,
-                                  border: `2px solid ${theme.border}`,
+                                onError={(e) => {
+                                  // Fallback if the image fails to load
+                                  (e.target as HTMLImageElement).src = `https://api.dicebear.com/7.x/initials/svg?seed=${product.name}`;
                                 }}
-                              >
-                                <ImageIcon className="h-6 w-6" style={{ color: theme.textMuted }} />
-                              </div>
-                            )}
-                            <div>
-                              <div className="flex items-center gap-2 mb-1">
-                                <p className="font-semibold" style={{ color: theme.text }}>
-                                  {product.name}
-                                </p>
-                                {product.isFeatured && (
-                                  <Star 
-                                    size={14} 
-                                    style={{ color: theme.warning }} 
-                                    fill={theme.warning}
-                                  />
+                              />
+                              <div>
+                                <div className="flex items-center gap-2 mb-1">
+                                  <p className="font-semibold" style={{ color: theme.text }}>
+                                    {product.name || 'Unnamed Product'}
+                                  </p>
+                                  {product.is_featured && (
+                                    <Star
+                                      size={14}
+                                      style={{ color: theme.warning }}
+                                      fill={theme.warning}
+                                    />
+                                  )}
+                                </div>
+                                {product.brand && (
+                                  <p className="text-sm" style={{ color: theme.textMuted }}>
+                                    {product.brand}
+                                  </p>
                                 )}
                               </div>
-                              {product.brand && (
-                                <p className="text-sm" style={{ color: theme.textMuted }}>
-                                  {product.brand}
-                                </p>
-                              )}
                             </div>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex flex-wrap gap-1.5">
-                            {product.category.map((cat) => (
-                              <span
-                                key={cat.id}
-                                className="px-2 py-1 rounded-md text-xs font-semibold"
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex flex-wrap gap-1.5">
+                              {product.nichCategory && (
+                                <span
+                                  className="px-2 py-1 rounded-md text-xs font-semibold"
+                                  style={{
+                                    background: `${theme.accent}15`,
+                                    color: theme.accent,
+                                    border: `1px solid ${theme.accent}30`,
+                                  }}
+                                >
+                                  {product.nichCategory.name}
+                                </span>
+                              )}
+                              {(product.subCategories || []).map((cat) => (
+                                <span
+                                  key={cat.id}
+                                  className="px-2 py-1 rounded-md text-xs font-semibold"
+                                  style={{
+                                    background: `${theme.info}15`,
+                                    color: theme.info,
+                                    border: `1px solid ${theme.info}30`,
+                                  }}
+                                >
+                                  {cat.name}
+                                </span>
+                              ))}
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <span
+                              className="font-mono text-sm px-2 py-1 rounded"
+                              style={{
+                                background: theme.bgSecondary,
+                                color: theme.textSecondary,
+                              }}
+                            >
+                              {sku ?? "—"}
+                            </span>
+                          </TableCell>
+                          <TableCell>
+                            <span className="font-semibold" style={{ color: theme.text }}>
+                              {price !== undefined && price !== null ? formatCurrency(price) : "—"}
+                            </span>
+                          </TableCell>
+                          <TableCell>
+                            {totalStock < 10 ? (
+                              <Badge
+                                variant="destructive"
+                                className="font-semibold"
                                 style={{
-                                  background: `${theme.info}15`,
-                                  color: theme.info,
-                                  border: `1px solid ${theme.info}30`,
+                                  background: `${theme.error}15`,
+                                  color: theme.error,
+                                  border: `1px solid ${theme.error}30`,
                                 }}
                               >
-                                {cat.name}
+                                Low: {totalStock}
+                              </Badge>
+                            ) : (
+                              <span style={{ color: theme.textSecondary, fontWeight: '500' }}>
+                                {totalStock}
                               </span>
-                            ))}
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <span 
-                            className="font-mono text-sm px-2 py-1 rounded"
-                            style={{
-                              background: theme.gray100,
-                              color: theme.textSecondary,
-                            }}
-                          >
-                            {product.sku ?? "—"}
-                          </span>
-                        </TableCell>
-                        <TableCell>
-                          <span className="font-semibold" style={{ color: theme.text }}>
-                            {formatCurrency(product.price)}
-                          </span>
-                        </TableCell>
-                        <TableCell>
-                          {product.stockQuantity !== undefined && product.stockQuantity < 10 ? (
-                            <Badge 
-                              variant="destructive"
-                              className="font-semibold"
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            <Badge
+                              className="capitalize font-semibold"
                               style={{
-                                background: `${theme.error}15`,
-                                color: theme.error,
-                                border: `1px solid ${theme.error}30`,
-                              }}
-                            >
-                              Low: {product.stockQuantity}
-                            </Badge>
-                          ) : (
-                            <span style={{ color: theme.textSecondary, fontWeight: '500' }}>
-                              {product.stockQuantity ?? "—"}
-                            </span>
-                          )}
-                        </TableCell>
-                        <TableCell>
-                          <Badge
-                            className="capitalize font-semibold"
-                            style={{
-                              background: product.status === 'active' 
-                                ? `${theme.success}15`
-                                : product.status === 'draft'
-                                ? `${theme.warning}15`
-                                : `${theme.textMuted}15`,
-                              color: product.status === 'active'
-                                ? theme.success
-                                : product.status === 'draft'
-                                ? theme.warning
-                                : theme.textMuted,
-                              border: `1px solid ${
-                                product.status === 'active'
+                                background: product.status === 'published'
+                                  ? `${theme.success}15`
+                                  : product.status === 'draft'
+                                    ? `${theme.warning}15`
+                                    : `${theme.textMuted}15`,
+                                color: product.status === 'published'
                                   ? theme.success
                                   : product.status === 'draft'
-                                  ? theme.warning
-                                  : theme.textMuted
-                              }30`,
-                            }}
-                          >
-                            {product.status}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex justify-end gap-2">
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => router.visit(`/products/${product.id}/edit`)}
-                              className="hover:scale-110 transition-transform"
-                              style={{
-                                border: `1px solid ${theme.border}`,
+                                    ? theme.warning
+                                    : theme.textMuted,
+                                border: `1px solid ${product.status === 'published'
+                                  ? theme.success
+                                  : product.status === 'draft'
+                                    ? theme.warning
+                                    : theme.textMuted
+                                  }30`,
                               }}
                             >
-                              <Pencil className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => setDeleteId(product.id)}
-                              className="hover:scale-110 transition-transform"
-                              style={{
-                                border: `1px solid ${theme.border}`,
-                                color: theme.error,
-                              }}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
+                              {product.status || 'Unknown'}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <div className="flex justify-end gap-2">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => router.visit(`/products/${product.id}/edit`)}
+                                className="hover:scale-110 transition-transform"
+                                style={{
+                                  border: `1px solid ${theme.border}`,
+                                }}
+                              >
+                                <Pencil className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => setDeleteId(product.id)}
+                                className="hover:scale-110 transition-transform"
+                                style={{
+                                  border: `1px solid ${theme.border}`,
+                                  color: theme.error,
+                                }}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
                   </TableBody>
                 </Table>
               </div>
-
-              {/* Pagination */}
-
-              {(response && response.current_page && response.last_page > 1) && (
-             <PaginationSlide
-             currentPage={response?.current_page}
-             totalPages={response?.last_page}
-             pages={( response?.links ?? [])
-             .filter(link => link.url)
-             .map(link => link.label === "Previous" || link.label === "Next" ? null : parseInt(link.label))
-             .filter(Boolean) as number[]}
-              onPageChange={(page) => router.get("/products", { page })}
-               />
-
-             )}
 
             </>
           ) : (
@@ -400,7 +360,7 @@ export default function ProductsList({ response }: { response?: ProductsResponse
               <div
                 className="w-32 h-32 rounded-full flex items-center justify-center animate-bounce"
                 style={{
-                  background: `linear-gradient(135deg, ${theme.gray100} 0%, ${theme.gray200} 100%)`,
+                  background: `linear-gradient(135deg, ${theme.bgSecondary} 0%, ${theme.border} 100%)`,
                   boxShadow: theme.shadowMd,
                 }}
               >
@@ -425,7 +385,7 @@ export default function ProductsList({ response }: { response?: ProductsResponse
                   onClick={() => router.visit("/products/create")}
                   className="hover:scale-105 transition-transform"
                   style={{
-                    background: `linear-gradient(135deg, ${theme.buttonPrimary} 0%, ${theme.accentHover} 100%)`,
+                    background: `linear-gradient(135deg, ${theme.primary} 0%, ${theme.accentHover} 100%)`,
                     boxShadow: `0 4px 15px ${theme.accent}40`,
                   }}
                 >

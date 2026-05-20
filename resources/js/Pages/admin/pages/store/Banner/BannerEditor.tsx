@@ -15,7 +15,6 @@ const FALLBACK_BANNERS: Banner[] = [
     name: "Spring Collection 2026",
     slug: "spring-2026",
     is_active: true,
-    order: 0,
     direction: 'ltr',
     aspect_ratio: "21:9",
     border_radius: "12px",
@@ -56,8 +55,7 @@ export default function BannerEditor() {
   const { banners = [], app_factory_config = [], selectedBanner, available_banner_templates = [] } = usePage().props as any;
 
   const initialData = useMemo(() => {
-    const data = banners.length > 0 ? banners : FALLBACK_BANNERS;
-    return [...data].sort((a: Banner, b: Banner) => a.order - b.order);
+    return banners.length > 0 ? banners : FALLBACK_BANNERS;
   }, [banners]);
 
   const [localBanners, setLocalBanners]     = useState<Banner[]>(initialData);
@@ -73,11 +71,10 @@ export default function BannerEditor() {
 
   // Sync when Inertia refreshes props after a server round-trip
   useEffect(() => {
-    const sorted = [...banners].sort((a: Banner, b: Banner) => a.order - b.order);
-    setLocalBanners(sorted);
+    setLocalBanners(banners);
     if (selectedBanner) {
       setActiveId(selectedBanner.id);
-      setSavedSnapshot(JSON.stringify(sorted));
+      setSavedSnapshot(JSON.stringify(banners));
       setActiveSlotKey(selectedBanner.slots?.[0]?.slot_key ?? 'left');
       setActiveElementKey(null);
     }
@@ -187,9 +184,8 @@ export default function BannerEditor() {
       onBefore:  () => setIsSaving(true),
       onSuccess: (page) => {
         const freshBanners = (page.props.banners as Banner[]) ?? localBanners;
-        const sorted = [...freshBanners].sort((a, b) => a.order - b.order);
-        setLocalBanners(sorted);
-        setSavedSnapshot(JSON.stringify(sorted));
+        setLocalBanners(freshBanners);
+        setSavedSnapshot(JSON.stringify(freshBanners));
         pendingFiles.current = {};
       },
       onFinish: () => setIsSaving(false),
@@ -201,10 +197,9 @@ export default function BannerEditor() {
     router.post(route('banners.store'), { template_key: templateKey }, {
       onSuccess: (page) => {
         const freshBanners = (page.props.banners as Banner[]) ?? localBanners;
-        const sorted = [...freshBanners].sort((a, b) => a.order - b.order);
-        setLocalBanners(sorted);
-        setSavedSnapshot(JSON.stringify(sorted));
-        const newest = sorted[sorted.length - 1];
+        setLocalBanners(freshBanners);
+        setSavedSnapshot(JSON.stringify(freshBanners));
+        const newest = freshBanners[freshBanners.length - 1];
         if (newest) {
           setActiveId(newest.id);
           setActiveSlotKey(newest.slots?.[0]?.slot_key ?? 'left');
@@ -252,32 +247,42 @@ export default function BannerEditor() {
         onSelect={handleSelectBanner}
       />
 
-      <BannerCenterPanel
-        activeBanner={activeBanner}
-        activeSlotKey={activeSlotKey}
-        activeElementKey={activeElementKey}
-        onSlotSelect={handleSlotSelect}
-        onElementSelect={handleElementSelect}
-        onToggleSlotVisibility={handleToggleSlotVisibility}
-        isDirty={isDirty}
-        isSaving={isSaving}
-        onReset={resetToFactory}
-        onPublish={handlePublish}
-        onUpdate={(path: string, value: any) => updateBanner(activeBanner.id, path, value)}
-        onAddBanner={handleAddBanner}
-        availableBannerTemplates={available_banner_templates}
-      />
+      {!activeBanner ? (
+        <div className="flex-1 flex items-center justify-center" style={{ color: theme.textMuted }}>
+          <div className="text-center">
+            <p>No banners found. Create your first banner to get started.</p>
+          </div>
+        </div>
+      ) : (
+        <>
+          <BannerCenterPanel
+            activeBanner={activeBanner}
+            activeSlotKey={activeSlotKey}
+            activeElementKey={activeElementKey}
+            onSlotSelect={handleSlotSelect}
+            onElementSelect={handleElementSelect}
+            onToggleSlotVisibility={handleToggleSlotVisibility}
+            isDirty={isDirty}
+            isSaving={isSaving}
+            onReset={resetToFactory}
+            onPublish={handlePublish}
+            onUpdate={(path: string, value: any) => updateBanner(activeBanner.id, path, value)}
+            onAddBanner={handleAddBanner}
+            availableBannerTemplates={available_banner_templates}
+          />
 
-      <BannerInspector
-        open={rightOpen}
-        onToggle={() => setRightOpen(v => !v)}
-        banner={activeBanner}
-        activeSlotKey={activeSlotKey}
-        activeElementKey={activeElementKey}
-        onElementSelect={handleElementSelect}
-        onUpdate={(path: string, value: any) => updateBanner(activeBanner.id, path, value)}
-        onMediaChange={handleMediaChange}
-      />
+          <BannerInspector
+            open={rightOpen}
+            onToggle={() => setRightOpen(v => !v)}
+            banner={activeBanner}
+            activeSlotKey={activeSlotKey}
+            activeElementKey={activeElementKey}
+            onElementSelect={handleElementSelect}
+            onUpdate={(path: string, value: any) => updateBanner(activeBanner.id, path, value)}
+            onMediaChange={handleMediaChange}
+          />
+        </>
+      )}
     </div>
   );
 }

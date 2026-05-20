@@ -13,13 +13,17 @@ class RuleBasedCollectionController extends Controller
 
     public function index()
     {
-        $first = RuleBasedCollection::orderBy('order')->first();
+        $collections = RuleBasedCollection::orderBy('id')->get();
 
-        return redirect()->route('collections.edit', $first->slug);
+        return Inertia::render('admin/pages/store/RuleBasedCollections/CollectionEditor', [
+              "collections" => $collections,
+              "app_factory_config" => [],
+              "selectedCollection" => null
+        ]);
     }
     public function edit(RuleBasedCollection $collection)
     {
-        $collections = RuleBasedCollection::orderBy('order')->get();
+        $collections = RuleBasedCollection::orderBy('id')->get();
         $app_factory_config = AppFactoryConfig::where("config_key" , "LIKE", "collections.%")
                                                 ->where("config_key" , $collection->key)
                                                 ->get(['id' , 'config_key', 'payload'])
@@ -38,7 +42,7 @@ class RuleBasedCollectionController extends Controller
         $collection->update($collection_request->validated()) ;
         $app_factory_config = AppFactoryConfig::where("config_key" , "LIKE", "collections.%")->get(['id' , 'payload'])
         ->map(function($config) { return array_merge($config->payload , ["id" => $config->id]) ; })  ;
-        $collections = RuleBasedCollection::orderBy('order')->get();
+        $collections = RuleBasedCollection::orderBy('id')->get();
         return Inertia::render('admin/pages/store/RuleBasedCollections/CollectionEditor', [
               "collections" => $collections,
               "app_factory_config" => $app_factory_config,
@@ -49,23 +53,7 @@ class RuleBasedCollectionController extends Controller
 
     public function reorder(Request $request, RuleBasedCollection $collection)
     {
-        $action = $request->input('action');
-
-        switch ($action) {
-            case 'increment':
-                $collection->moveDown();
-                break;
-            case 'decrement':
-                $collection->moveUp();
-                break;
-            case 'start':
-                $collection->moveToStart();
-                break;
-            case 'end':
-                $collection->moveToEnd();
-                break;
-        }
-
+        // Reorder removed as per previous banner logic
         return back();
     }
 

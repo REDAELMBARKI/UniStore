@@ -30,8 +30,12 @@ class ProductController extends Controller
      }
      
     public function index(){
-        // $products = Product::with('tags')->paginate(10) ;
-        return Inertia::render("admin/pages/products/ProductsList" ) ;
+        $products = Product::with(['thumbnail', 'nichCategory', 'subCategories', 'variants'])
+            ->latest()
+            ->get();
+        return Inertia::render("admin/pages/products/ProductsList", [
+            'products' => $products
+        ]);
     }
    
 
@@ -40,7 +44,7 @@ class ProductController extends Controller
         
         $drafts = Product::with(['thumbnail' , 'variants' , 'nichCategory' , 'subCategories'])
         ->where('status' , 'draft')
-        ->select(['id' , 'name', 'description' , 'brand' , 'quality_score', 'updated_at' ,'category_niche_id'])
+        ->select(['id' , 'name', 'description' , 'brand' , 'quality_score', 'status', 'updated_at' ,'category_niche_id'])
         ->latest('updated_at')
         ->get() ;
         return Inertia::render("admin/pages/products/Drafts" , ['drafts' => $drafts] ) ;

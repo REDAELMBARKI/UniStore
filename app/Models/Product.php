@@ -44,7 +44,7 @@ class Product extends Model
         'related_product_ids',
     ];
 
-    protected $hidden = ['created_at', 'updated_at', 'status', 'quality_score ', 'allow_backorder', 'deleted_at', 'inventory', 'is_visible', 'is_featured'];
+    protected $hidden = ['created_at', 'updated_at', 'quality_score', 'allow_backorder', 'deleted_at', 'inventory'];
 
     protected $casts = [
         'inventory' => 'array',
@@ -53,7 +53,8 @@ class Product extends Model
         'oldPrice' => 'float',
         'video' => 'array',
         'related_products' => 'array',
-        'isFeatured' => 'boolean',
+        'is_featured' => 'boolean',
+        'is_visible' => 'boolean',
         'ready_to_publish' => 'boolean',
         'meta' => 'array',
         'vendor' => 'array',

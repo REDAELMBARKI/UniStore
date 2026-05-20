@@ -11,7 +11,6 @@ class Banner extends Model
         'key',
         'slug',
         'name',
-        'order',
         'direction',
         'aspect_ratio',
         'border_radius',
@@ -21,7 +20,6 @@ class Banner extends Model
 
     protected $casts = [
         'is_active' => 'boolean',
-        'order' => 'integer',
     ];
 
     public function slots(){

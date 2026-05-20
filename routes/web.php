@@ -26,6 +26,7 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\GoogleAuthController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\BannerController;
+use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\CouponController;
@@ -61,7 +62,6 @@ Route::patch('/store/collections/{collection:slug}', [RuleBasedCollectionControl
 Route::get('/store/banners', [BannerController::class, 'index'])->name('banners.index');
 Route::get('/store/banners/{banner:slug}', [BannerController::class, 'edit'])->name('banners.edit');
 Route::put('/store/banners/{banner:slug}', [BannerController::class, 'update'])->name('banners.update');
-Route::patch('/store/banners/{banner:slug}', [BannerController::class, 'reorder'])->name('banners.reorder');
 
 // catalog 
 Route::get('/shop', function () {
@@ -204,13 +204,14 @@ Route::prefix('orders')->group(function(){
 // coupon aplly ajaxrequest
 Route::post('/coupon_feedback', [CouponController::class,'coupon_feedback'])->name('coupon.feedback');
 // customer
-Route::get('/customers' , [CurstomerController::class, 'index']) ;
-Route::get('/customers/{id}' , [CurstomerController::class, 'show']) ;
+Route::get('/customers' , [CurstomerController::class, 'index'])->name('customers.index') ;
+Route::get('/customers/{id}' , [CurstomerController::class, 'show'])->name('customers.show') ;
 
-
+// reviews
+Route::get('/reviews', [ReviewController::class, 'index'])->name('reviews.index');
+Route::get('/reviews/pending', [ReviewController::class, 'pending'])->name('reviews.pending');
 
 // messages
-
 Route::get('/messages' , [MessageController::class, 'index'])->name('messages') ;
 
 

@@ -11,8 +11,8 @@ class RuleBasedCollection extends Model
    protected $fillable = [
        'name',
        'key',
+       'slug',
        'is_active',
-       'order',
        'layout_config',
        'card_config',
        'rules',
