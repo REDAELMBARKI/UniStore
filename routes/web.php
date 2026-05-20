@@ -191,8 +191,8 @@ Route::prefix('orders')->group(function(){
 // coupon aplly ajaxrequest
 Route::post('/coupon_feedback', [CouponController::class,'coupon_feedback'])->name('coupon.feedback');
 // customer
-Route::get('/customers' , [CurstomerController::class, 'index']) ;
-Route::get('/customers/{id}' , [CurstomerController::class, 'show']) ;
+Route::get('/customers' , [CustomerController::class, 'index'])->name('admin.customers.index') ;
+Route::get('/customers/{id}' , [CustomerController::class, 'show'])->name('admin.customers.show') ;
 
 
 

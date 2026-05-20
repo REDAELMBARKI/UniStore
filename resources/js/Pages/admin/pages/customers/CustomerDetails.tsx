@@ -4,39 +4,37 @@ import EmptyListSection from '@/admin/components/partials/EmptyListSection';
 import { AdminLayout } from '@/admin/components/layout/AdminLayout';
 
 interface CustomerData {
+  id: number;
   name: string;
-  age: number;
-  accountType: string;
-  memberSince: string;
   email: string;
   phone: string;
   address: string;
-  accountManager: string;
-  status: 'Active' | 'Inactive';
-  primaryInterest: string | null;
-  allInterests: string[] | null;
-  importantNotes: string[] | null;
+  status: string;
+  memberSince: string;
+  totalOrders: number;
+  totalSpent: number;
   recentOrders: any[] | null;
+  avatarUrl?: string | null;
+  primaryInterest?: string | null;
+  allInterests?: string[] | null;
+  importantNotes?: string[] | null;
 }
 
-export default function CustomerDetails() {
+export default function CustomerDetails({ customer: backendCustomer }: { customer?: CustomerData }) {
   const [activeTab, setActiveTab] = useState<string>('overview');
   
-  // Sample customer data - change values to null to see empty states
-  const customer: CustomerData = {
-    name: 'Amanda Williams',
-    age: 45,
-    accountType: 'Premium Member',
-    memberSince: '2022',
-    email: 'amanda.williams@email.com',
-    phone: '(555) 456-7890',
-    address: '321 Elm St, Brookline, MA 02445',
-    accountManager: 'Sarah Johnson',
-    status: 'Active',
-    primaryInterest: 'Electronics',
-    allInterests: ['Electronics', 'Home & Garden', 'Books'],
-    importantNotes: ['Prefers email communication', 'VIP customer'],
-    recentOrders: null // Set to null to see empty state
+  // Default fallback if no data passed (though middleware/controller should handle this)
+  const customer: CustomerData = backendCustomer || {
+    id: 0,
+    name: 'Unknown Customer',
+    email: 'N/A',
+    phone: 'N/A',
+    address: 'N/A',
+    status: 'Inactive',
+    memberSince: 'N/A',
+    totalOrders: 0,
+    totalSpent: 0,
+    recentOrders: null
   };
 
   const tabs = [
@@ -49,10 +47,17 @@ export default function CustomerDetails() {
     { id: 'notes', label: 'Notes', icon: StickyNote }
   ];
 
+  const handleBack = () => {
+    window.location.href = '/admin/customers';
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       {/* Back Button */}
-      <button className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6 transition-colors">
+      <button 
+        onClick={handleBack}
+        className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6 transition-colors"
+      >
         <span className="text-xl">←</span>
         <span className="font-medium">Back to Customers</span>
       </button>
@@ -62,8 +67,12 @@ export default function CustomerDetails() {
         <div className="flex items-start justify-between mb-6">
           <div className="flex gap-6">
             {/* Avatar */}
-            <div className="w-32 h-32 bg-gradient-to-br from-slate-300 to-slate-400 rounded-full flex items-center justify-center flex-shrink-0">
-              <User className="w-16 h-16 text-slate-600" />
+            <div className="w-32 h-32 bg-gradient-to-br from-slate-300 to-slate-400 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden">
+              {customer.avatarUrl ? (
+                <img src={customer.avatarUrl} alt={customer.name} className="w-full h-full object-cover" />
+              ) : (
+                <User className="w-16 h-16 text-slate-600" />
+              )}
             </div>
 
             {/* Customer Info */}
@@ -76,7 +85,7 @@ export default function CustomerDetails() {
                   </button>
                 </div>
                 <p className="text-gray-600">
-                  {customer.age} years • {customer.accountType} • Member since {customer.memberSince}
+                  {customer.status} • Member since {customer.memberSince}
                 </p>
               </div>
 
@@ -113,7 +122,7 @@ export default function CustomerDetails() {
           </div>
           <div className="flex items-center gap-2 text-gray-700">
             <User className="w-4 h-4 text-gray-400" />
-            <span>Account Manager: {customer.accountManager}</span>
+            <span>Orders: {customer.totalOrders} • Spent: {customer.totalSpent} MAD</span>
           </div>
         </div>
       </div>

@@ -263,13 +263,13 @@ const CustomersTable: FC<CustomersTableProps> = ({
                     <div
                       className="flex h-10 w-10 items-center justify-center rounded-full"
                       style={{
-                        background: `linear-gradient(135deg, ${theme.gray100} 0%, ${theme.gray200} 100%)`,
+                        background: `linear-gradient(135deg, ${theme.bgSecondary} 0%, ${theme.border} 100%)`,
                         border: `1px solid ${theme.border}`,
                       }}
                     >
                       <PersonStanding
                         size={18}
-                        style={{ color: theme.textMuted }}
+                        style={{ color: theme.textSecondary }}
                       />
                     </div>
 
@@ -368,7 +368,7 @@ const CustomersTable: FC<CustomersTableProps> = ({
 
 
 
-const CustomersManager = () => {
+const CustomersManager = ({ customers: backendCustomers = [] }: { customers?: Customer[] }) => {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -377,14 +377,14 @@ const CustomersManager = () => {
   const [perPage, setPerPage] = useState<string>('10');
 
   const stats = useMemo(() => ({
-    total: mockCustomers.length,
-    active: mockCustomers.filter((c: Customer) => c.status === 'active').length,
-    vip: mockCustomers.filter((c: Customer) => c.status === 'vip').length,
-    blocked: mockCustomers.filter((c: Customer) => c.status === 'blocked').length,
-  }), []);
+    total: backendCustomers.length,
+    active: backendCustomers.filter((c: Customer) => c.status === 'active').length,
+    vip: backendCustomers.filter((c: Customer) => c.status === 'vip').length,
+    blocked: backendCustomers.filter((c: Customer) => c.status === 'blocked').length,
+  }), [backendCustomers]);
 
   const filteredCustomers = useMemo((): Customer[] => {
-    return mockCustomers.filter((customer: Customer) => {
+    return backendCustomers.filter((customer: Customer) => {
       const matchesSearch: boolean = 
         customer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         customer.phone.includes(searchQuery) ||
@@ -394,7 +394,7 @@ const CustomersManager = () => {
       
       return matchesSearch && matchesStatus;
     });
-  }, [searchQuery, statusFilter]);
+  }, [searchQuery, statusFilter, backendCustomers]);
 
   const totalPages: number = Math.ceil(filteredCustomers.length / parseInt(perPage));
   const paginatedCustomers: Customer[] = filteredCustomers.slice(
@@ -403,8 +403,7 @@ const CustomersManager = () => {
   );
 
   const handleViewDetails = (customer: Customer): void => {
-    setSelectedCustomer(customer);
-    setDetailsOpen(true);
+    window.location.href = `/admin/customers/${customer.id}`;
   };
 
   const clearFilters = (): void => {
@@ -459,8 +458,16 @@ const CustomersManager = () => {
 
         {/* pagination */}
         {totalPages > 1 && (
-        <TableMeta perPage={perPage} currentPage={currentPage} totalItems={totalPages} setPerPage={setPerPage} >
-            <PaginationTable  totalPages={totalPages} currentPage={currentPage} setCurrentPage={setCurrentPage} />
+        <TableMeta perPage={+perPage} currentPage={currentPage} totalItems={filteredCustomers.length} onPerPageChange={setPerPage} >
+            <PaginationTable  
+              totalPages={totalPages} 
+              currentPage={currentPage} 
+              onCurrentPageChange={(action) => {
+                if (typeof action === 'number') setCurrentPage(action);
+                else if (action === 'prev') setCurrentPage(p => Math.max(1, p - 1));
+                else if (action === 'next') setCurrentPage(p => Math.min(totalPages, p + 1));
+              }} 
+            />
         </TableMeta>
         ) }
 
