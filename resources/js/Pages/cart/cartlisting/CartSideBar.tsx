@@ -19,19 +19,26 @@ function CartSideBar({cartItems , onClose , total}:{cartItems:any ;  onClose : a
             </div>
             <div className="flex-1 overflow-y-auto p-6">
               <div className="space-y-4">
-                {cartItems.map((item : any) => (
-                  <div key={item.id} className="flex items-center space-x-4">
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      className="w-16 h-16 object-cover rounded"
-                    />
-                    <div className="flex-1">
-                      <h3 className="text-sm font-medium text-gray-900">{item.name}</h3>
-                      <p className="text-sm text-gray-600">{item.quantity} x ${item.price.toFixed(2)}</p>
+                {cartItems.map((item : any) => {
+                  const product = item.product_variant?.product;
+                  const image = product?.thumbnail?.url || "/placeholder-product.png";
+                  const name = product?.name || "Product";
+                  const price = item.price_snapshot || 0;
+
+                  return (
+                    <div key={item.id} className="flex items-center space-x-4">
+                      <img
+                        src={image}
+                        alt={name}
+                        className="w-16 h-16 object-cover rounded"
+                      />
+                      <div className="flex-1">
+                        <h3 className="text-sm font-medium text-gray-900">{name}</h3>
+                        <p className="text-sm text-gray-600">{item.quantity} x ${Number(price).toFixed(2)}</p>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
               <div className="mt-8 pt-6 border-t">
                 <div className="text-lg font-semibold text-gray-900 mb-4">

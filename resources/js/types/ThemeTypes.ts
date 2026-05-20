@@ -87,7 +87,6 @@ export type Themes =  Record<ThemeStyle ,Record<ThemeMode , ThemePalette>>
     badge: string         // the yellow threshold badge background
     badgeText: string     // text on the badge
  },
- // Add this block to every theme variant (light + dark) in your ThemePalette type first:
 
 banner: {
   scrim: string           // overlay on top of photos (rgba dark tint)
@@ -98,7 +97,14 @@ banner: {
   solidText: string       // text on solid background sections
   solidSubtext: string    // subtext on solid background sections
   accentBtn: string       // CTA button bg on banners
-  accentBtnText: string   // CTA button text on banners
+  accentBtnText: string
+}
+
+header: {
+  bg: string
+  text: string
+  accent: string
+  border: string
 }
 
 };

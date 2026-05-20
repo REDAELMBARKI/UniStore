@@ -119,6 +119,9 @@ export const menuItems: MenuItem[] = [
       { title: "Home editor", icon: SectionIcon, href: "home.editor.index", disabled: false },
       { title: "collections", icon: SectionIcon, href: "collections.index", disabled: false },
       { title: "banners", icon: SectionIcon, href: "banners.index", disabled: false },
+      { title: "Home editor", icon: SectionIcon, href: "home.editor.index", disabled: false },
+      { title: "collections", icon: SectionIcon, href: "collections.index", disabled: false },
+      { title: "banners", icon: SectionIcon, href: "banners.index", disabled: false },
     ]
   },
   {
@@ -171,6 +174,7 @@ export const menuItems: MenuItem[] = [
   { section: true, sectionTitle: "Marketing & Promotions", icon: Megaphone, title: 'marketing' },
 
   {
+    title: "Promotions",
     title: "Promotions",
     icon: Megaphone,
     subLinks: [

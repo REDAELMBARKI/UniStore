@@ -1,6 +1,7 @@
 import { menuItems } from '@/admin/data/adminNavigationsLinks';
 import { useStoreConfigCtx } from '@/contextHooks/useStoreConfigCtx';
 import { Link, router, usePage } from '@inertiajs/react';
+import { route } from 'ziggy-js';
 import {
   ChevronDown,
   ChevronLeft,
@@ -9,8 +10,7 @@ import {
   Menu as MenuIcon,
   MoreVertical,
 } from 'lucide-react';
-import { useState} from 'react';
-import { route } from 'ziggy-js';
+import { useState } from 'react';
 
 // Types
 interface SubLink {
@@ -33,8 +33,7 @@ interface MenuItem {
 
 // Color Palette
 
-export function Sidebar() {
-  const [collapsed, setCollapsed] = useState(false);
+export function Sidebar({ collapsed, setCollapsed }: { collapsed: boolean; setCollapsed: (val: boolean) => void }) {
   const [expandedItem, setExpandedItem] = useState<string | null>('Dashboard');
   const {url} = usePage()
         const {state :{currentTheme}} = useStoreConfigCtx()
@@ -373,8 +372,8 @@ export function Sidebar() {
                   >
                     {item.subLinks.map((subLink, subIndex) => {
                           const SubIcon = subLink.icon;
-                          const isSubActive = url === subLink.href;
-                          const isDisabled = !subLink.href;  
+                          const isSubActive = subLink.href ? route().current(subLink.href) : false;
+                          const isDisabled = !subLink.href || subLink.disabled;  
 
                           return (
                             <Link

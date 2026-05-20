@@ -13,29 +13,52 @@ use Inertia\Inertia;
 class CartController extends Controller
 {
     
-    public function index(){
-        $cartService = app(CartService::class);
-        $items = $cartService->getCartItems(false);
-        return Inertia::render('cart/ShoppingCartMaster' , compact('items'));
+    public function __construct(private CartService $cartService) {}
+
+    public function index()
+    {
+        $items = $this->cartService->getCartItems(false);
+        return Inertia::render('cart/ShoppingCartMaster', compact('items'));
     }
-    
-public function destroy($id)
-{
-       validator(['id' => $id], [
-            'id' => ['required', 'numeric', Rule::exists('products_cart', 'id')]
-        ])->validate();
-     
 
-       $deleted = Cart::where('id', $id)
-                    ->where('user_id', Auth::id())
-                    ->firstOrFail()
-                    ->delete();
+    public function store(Request $request)
+    {
+        $request->validate([
+            'product_id' => 'required|exists:products,id',
+            'variant_id' => 'required|exists:product_variants,id',
+            'quantity' => 'integer|min:1'
+        ]);
 
-        if ($deleted) {
-            return response()->json(['success' => 'Cart item deleted'], 200);
+        try {
+            $this->cartService->addToCart($request->all());
+            return back()->with('success', 'Product added to cart');
+        } catch (\Exception $e) {
+            return back()->withErrors(['error' => $e->getMessage()]);
         }
+    }
 
-        return response()->json(['error' => 'Failed to delete'], 400);
-}
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'quantity' => 'required|integer|min:1'
+        ]);
+
+        $cart = Cart::findOrFail($id);
+        $cart->update(['quantity' => $request->quantity]);
+
+        return back()->with('success', 'Cart updated');
+    }
+
+    public function clear()
+    {
+        $this->cartService->clearCart();
+        return back()->with('success', 'Cart cleared successfully');
+    }
+
+    public function destroy($id)
+    {
+        Cart::destroy($id);
+        return back()->with('success', 'Item removed from cart');
+    }
 
 }

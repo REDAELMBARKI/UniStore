@@ -1,11 +1,14 @@
 <?php
 
 use App\Events\UserLogin;
+use App\Http\Controllers\Admin\CouponController as AdminCouponController;
+use App\Http\Controllers\Admin\PromotionController as AdminPromotionController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\RuleBasedCollectionController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CurstomerController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\MarketplaceController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\PromotionController;
 use App\Http\Controllers\ShippingController;
@@ -63,7 +66,7 @@ Route::patch('/store/banners/{banner:slug}', [BannerController::class, 'reorder'
 
 // catalog 
 Route::get('/shop', function () {
-    return Inertia::render('ShopPage');
+    return redirect()->route('marketplace.index');
 })->name('shop');
 Route::get('/about', function () {
     return Inertia::render('AboutPage');
@@ -87,6 +90,9 @@ Route::post('/order/buy-now/now', [OrderController::class , 'store'])->name('ord
 
 // cart
 Route::get('/cart', [CartController::class , 'index'])->name('shoppingCart.index');
+Route::post('/cart', [CartController::class , 'store'])->name('cart.store');
+Route::patch('/cart/{id}', [CartController::class , 'update'])->name('cart.update');
+Route::delete('/cart/clear', [CartController::class , 'clear'])->name('cart.clear');
 Route::delete('/cart/{id}', [CartController::class , 'destroy'])->name('cart.destroy');
 
 // checkout steps routes (this fakes the url to make steps work fine)
@@ -105,9 +111,23 @@ Route::post('/sheets', [DriveController::class, 'auth'])
 ->name('googleSheet.create');
 
 
-Route::get('admin/dashboard', function () {
-    return Inertia::render('admin/pages/dashboard/Overview');
-})->name("dashboard.overview");
+Route::get('admin/dashboard', [DashboardController::class, 'overview'])->name("dashboard.overview");
+
+// Admin Coupons
+Route::get('admin/coupons', [AdminCouponController::class, 'index'])->name('coupons.index');
+Route::get('admin/coupons/create', [AdminCouponController::class, 'create'])->name('coupons.create');
+Route::post('admin/coupons', [AdminCouponController::class, 'store'])->name('coupons.store');
+Route::get('admin/coupons/{coupon}/edit', [AdminCouponController::class, 'edit'])->name('coupons.edit');
+Route::put('admin/coupons/{coupon}', [AdminCouponController::class, 'update'])->name('coupons.update');
+Route::delete('admin/coupons/{coupon}', [AdminCouponController::class, 'destroy'])->name('coupons.destroy');
+
+// Admin Promotions
+Route::get('admin/promotions', [AdminPromotionController::class, 'index'])->name('promotions.index');
+Route::get('admin/promotions/create', [AdminPromotionController::class, 'create'])->name('promotions.create');
+Route::post('admin/promotions', [AdminPromotionController::class, 'store'])->name('promotions.store');
+Route::get('admin/promotions/{promotion}/edit', [AdminPromotionController::class, 'edit'])->name('promotions.edit');
+Route::put('admin/promotions/{promotion}', [AdminPromotionController::class, 'update'])->name('promotions.update');
+Route::delete('admin/promotions/{promotion}', [AdminPromotionController::class, 'destroy'])->name('promotions.destroy');
 // ->middleware(['auth', 'verified'])->name('dashboard');
 
 // Route::middleware('auth')->group(function () {
@@ -116,6 +136,11 @@ Route::get('admin/dashboard', function () {
 //     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 // });
 
+Route::get('/marketplace', [MarketplaceController::class, 'index'])->name('marketplace.index');
+
+// Public Product Detail
+Route::get('/products/{product}', [ProductController::class, 'show'])->name('product.show');
+
 // products
 // Route::resource('/products', ProductController::class );
 Route::prefix('products')->group(function(){
@@ -123,7 +148,7 @@ Route::prefix('products')->group(function(){
     Route::get('/drafts' , [ProductController::class, 'drafts'])->name('drafts.index') ;
     Route::get('/create' , [ProductController::class, 'create'])->name('products.create') ;
     Route::get('/{product}/edit' , [ProductController::class, 'edit'])->name('product.edit') ;
-    Route::get('/{product}' , [ProductController::class, 'show'])->name('product.show') ;
+    // Route::get('/{product}' , [ProductController::class, 'show'])->name('product.show') ;
   // drafts
     Route::post('/drafts' , [ProductController::class, 'storeDraft'])->name('products.storeDraft');
     Route::patch('/{product}/publish' , [ProductController::class, 'publish'])->name('product.publish');
@@ -161,21 +186,9 @@ Route::get("/store" , [StoreConfigController::class ,  'index'])->name("store") 
 // admin
 Route::get('/admins' , [AdminController::class, 'index']) ;
 
-
-
 // variants managment
-
 Route::get('/variants/colors' , [VariantsController::class, 'colors']) ;
 Route::get('/variants/sizes' , [VariantsController::class, 'sizes']) ;
-
-
-
-//marketing 
-// coupons 
-Route::get('/coupons' , [CouponController::class,'getAll'])->name('get.coupons') ;
-
-// promotions
-Route::get('/promotions' , [PromotionController::class,'getAll'])->name('get.promotions') ;
 
 
 // oderes
@@ -186,7 +199,8 @@ Route::prefix('orders')->group(function(){
     Route::get("orders/{order}/track" , [OrderController::class, 'authTrack'])->middleware('auth')->name('track.auth') ;
     Route::get('/track/{token}', [OrderController::class, 'guestTrack'])
         ->where('token', '[0-9a-f-]{36}')->name('track.guest') ;
-})->can('manage-orders');
+});
+// ->can('manage-orders');
 
 // coupon aplly ajaxrequest
 Route::post('/coupon_feedback', [CouponController::class,'coupon_feedback'])->name('coupon.feedback');
@@ -198,13 +212,13 @@ Route::get('/customers/{id}' , [CustomerController::class, 'show'])->name('admin
 
 // messages
 
-Route::get('/messages' , [MessageController::class, 'index']) ;
+Route::get('/messages' , [MessageController::class, 'index'])->name('messages') ;
 
 
 // dashboard/sales_analytics
-Route::get('dashboard/sales_analytics' , [DashboardController::class, 'salesIndex']) ;
-Route::get('dashboard/customers_analytics' , [DashboardController::class, 'customerIndex']) ;
-Route::get('dashboard/inventory_analytics' , [DashboardController::class, 'inventoryIndex']) ;
+Route::get('dashboard/sales_analytics' , [DashboardController::class, 'salesIndex'])->name('dashboard.sales_analytics');
+Route::get('dashboard/customers_analytics' , [DashboardController::class, 'customerIndex'])->name('dashboard.customers_analytics');
+Route::get('dashboard/inventory_analytics' , [DashboardController::class, 'inventoryIndex'])->name('dashboard.inventory_analytics');
 
 // require __DIR__.'/auth.php';
   

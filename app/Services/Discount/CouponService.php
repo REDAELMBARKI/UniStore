@@ -17,8 +17,41 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
+ use App\Repositories\CouponRepository;
+
 class CouponService extends DiscountService
 {
+    public function __construct(
+        protected CartService $cartService,
+        private CouponRepository $couponRepository
+    ) {
+        parent::__construct($cartService);
+    }
+
+    public function getAllCoupons()
+    {
+        return $this->couponRepository->getAll();
+    }
+
+    public function getCouponById(int $id)
+    {
+        return $this->couponRepository->findById($id);
+    }
+
+    public function createCoupon(array $data)
+    {
+        return $this->couponRepository->create($data);
+    }
+
+    public function updateCoupon(int $id, array $data)
+    {
+        return $this->couponRepository->update($id, $data);
+    }
+
+    public function deleteCoupon(int $id)
+    {
+        return $this->couponRepository->delete($id);
+    }
    
         public function getDbCoupons(){
             return Coupon::where('is_active', true)

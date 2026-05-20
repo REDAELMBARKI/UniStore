@@ -20,35 +20,51 @@ class CartService
 {
 
     public function __construct(private ItemEligibilityService $itemEligibilityService){}
-    public function getOrCreateToken()
+
+    public function addToCart(array $data)
     {
-        $token = request()->cookie('cart_token');
-         
-        if (!$token) {
-            $token = Str::uuid()->toString();
-            cookie()->queue('cart_token', $token, 60 * 24 * 30); // 30 days
+        $userId = Auth::id();
+        if (!$userId) {
+            Log::error('CartService: User not authenticated');
+            throw new Exception("Please login to add items to your cart.");
         }
         
-        return $token;
+        Log::info('CartService: Adding to cart', ['data' => $data, 'user_id' => $userId]);
+
+        $variant = \App\Models\ProductVariant::findOrFail($data['variant_id']);
+
+        $cartItem = Cart::where('product_variant_id', $data['variant_id'])
+            ->where('user_id', $userId)
+            ->first();
+
+        if ($cartItem) {
+            $cartItem->increment('quantity', $data['quantity'] ?? 1);
+            Log::info('CartService: Incremented quantity', ['cart_item_id' => $cartItem->id]);
+        } else {
+            $cartItem = Cart::create([
+                'user_id' => $userId,
+                'product_variant_id' => $data['variant_id'],
+                'quantity' => $data['quantity'] ?? 1,
+                'price_snapshot' => $variant->price,
+            ]);
+            Log::info('CartService: Created new cart item', ['cart_item_id' => $cartItem->id]);
+        }
     }
-    
-    public function clearToken()
+
+    public function clearCart()
     {
-        cookie()->queue(cookie()->forget('cart_token'));
+        $userId = Auth::id();
+        Cart::where('user_id', $userId)->delete();
     }
 
     public function getCartItems($wiThCategories = false){
 
         try{
 
+        $userId = Auth::id();
         
         return Cart::query()
-            ->when(Auth::check(), function($q) {
-                $q->where('user_id', Auth::id());
-            })
-            ->when(!Auth::check() && Cookie::has('cart_token'), function($q) {
-                $q->where('cart_token', Cookie::get('cart_token'));
-            })
+            ->where('user_id', $userId)
             ->with(['productVariant' => function($q) use($wiThCategories) {
                     $q->select('id', 'product_id', 'attrs', 'stock');
                     $q->with(['product' => function($q2) use($wiThCategories){

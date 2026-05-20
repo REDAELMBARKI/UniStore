@@ -14,12 +14,18 @@ class UserLogin
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
+    public $type;
+    public $user;
+    public $remember;
+
     /**
      * Create a new event instance.
      */
-    public function __construct()
+    public function __construct($type = null, $user = null, $remember = false)
     {
-        //
+        $this->type = $type;
+        $this->user = $user;
+        $this->remember = $remember;
     }
 
     /**

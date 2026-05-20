@@ -1,7 +1,7 @@
 <?php
 
 return [
-    // 'application_name' => env('APP_NAME', 'MyEcomApp'),
-    // 'redirect_uri' => 'http://localhost:8000/sheetAuth/google/callback' ,
-    // 'oauth_drive_credentials_path' => storage_path('app/google/googleDrive-credentials.json'),
+    'client_id' => env('GOOGLE_DRIVE_CLIENT_ID'),
+    'client_secret' => env('GOOGLE_DRIVE_CLIENT_SECRET'),
+    'redirect_uri' => env('GOOGLE_DRIVE_REDIRECT_URI', 'http://localhost:8000/sheetAuth/google/callback'),
 ];

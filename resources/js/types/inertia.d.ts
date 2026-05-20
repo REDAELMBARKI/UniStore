@@ -1,5 +1,17 @@
 import { ProductSchemaType } from '@/shemas/productSchema'
 import { PageProps as InertiaPageProps } from '@inertiajs/core'
+import { Config, RouteName, RouteParams } from 'ziggy-js'
+
+declare global {
+    var route: ((
+        name?: RouteName,
+        params?: RouteParams<RouteName>,
+        absolute?: boolean,
+        config?: Config
+    ) => string) & {
+        current: (name?: string, params?: RouteParams<RouteName>) => boolean;
+    };
+}
 
 
 interface Media {

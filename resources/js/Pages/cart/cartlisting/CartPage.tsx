@@ -11,6 +11,7 @@ import CartItemsList from "./CartItemsList";
 import CartSummary from "./CartSummary";
 import { useToast } from "@/contextHooks/useToasts";
 import axios from "axios";
+import { Trash2 } from "lucide-react";
 
 interface CartPageProps {
     items: any[];
@@ -45,33 +46,44 @@ export default function CartPage({ items = [], onStepChange }: CartPageProps) {
         );
     };
 
-    const handleRemoveItem = async (id: number) => {
-         try{
-            const res = await axios({
-            method: "DELETE",
-            url: route("cart.destroy" ,{ id }),
-         
-            });
-
-            if(res){
-                 if (res.data.success) {
-                        addToast({
-                        type: "success",
-                        title: "item deleted successfully plaise refresh the page ",
-                        });
-                    }
+    const handleRemoveItem = (id: number) => {
+        router.delete(route("cart.destroy", { id }), {
+            preserveScroll: true,
+            onSuccess: () => {
+                addToast({
+                    type: "success",
+                    title: "Item removed from cart",
+                });
+            },
+            onError: () => {
+                addToast({
+                    type: "error",
+                    title: "Error",
+                    description: "Failed to remove item",
+                });
             }
+        });
+    };
 
-        }catch(err : any){
-               const errorMessage = err.response?.data?.error || 'Failed to Delete Item ';
-                if(errorMessage){
-                    addToast({
-                            type: "error",
-                            title: "Error",
-                            description: Array.isArray(errorMessage) ? errorMessage[0] : errorMessage,
-                            });
-                }
-        }
+    const handleClearCart = () => {
+        if (!confirm("Are you sure you want to clear your cart?")) return;
+        
+        router.delete(route("cart.clear"), {
+            preserveScroll: true,
+            onSuccess: () => {
+                addToast({
+                    type: "success",
+                    title: "Cart cleared",
+                });
+            },
+            onError: () => {
+                addToast({
+                    type: "error",
+                    title: "Error",
+                    description: "Failed to clear cart",
+                });
+            }
+        });
     };
 
     const handleProceedToCheckout = () => {
@@ -99,12 +111,21 @@ export default function CartPage({ items = [], onStepChange }: CartPageProps) {
                            
 
                             {/* Cart Header */}
-                            <div className="mb-6">
+                            <div className="mb-6 flex items-center justify-between">
                                 <h1 style={{ color: theme.text }} className="text-2xl font-bold">
                                     Shopping Cart ({items.length} Item
                                     {items.length !== 1 ? "s" : ""}): $
                                     {(subtotal + shipping).toFixed(2)}
                                 </h1>
+                                {items.length > 0 && (
+                                    <button 
+                                        onClick={handleClearCart}
+                                        className="flex items-center gap-2 text-sm font-bold text-red-500 hover:text-red-600 transition-colors uppercase tracking-wider"
+                                    >
+                                        <Trash2 size={16} />
+                                        Clear Cart
+                                    </button>
+                                )}
                             </div>
 
                             {/* Cart Items List */}

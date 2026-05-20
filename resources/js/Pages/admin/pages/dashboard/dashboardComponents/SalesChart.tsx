@@ -1,40 +1,60 @@
-import { SalesData } from '@/types/dashboardTypes';
 import React from 'react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 interface SalesChartProps {
-  data: SalesData[];
+  data: any[];
 }
 
 export function SalesChart({ data }: SalesChartProps) {
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">Sales Trend (Last 7 Days)</h3>
-      <ResponsiveContainer width="100%" height={300}>
-        <LineChart data={data} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+    <div className="h-full w-full">
+      <ResponsiveContainer width="100%" height="100%">
+        <AreaChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+          <defs>
+            <linearGradient id="colorTotal" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor="#f97316" stopOpacity={0.3}/>
+              <stop offset="95%" stopColor="#f97316" stopOpacity={0}/>
+            </linearGradient>
+          </defs>
+          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#ffffff05" />
           <XAxis 
             dataKey="date" 
-            tick={{ fill: '#6b7280', fontSize: 12 }}
-            tickFormatter={(value) => new Date(value).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+            axisLine={false}
+            tickLine={false}
+            tick={{ fill: '#4b5563', fontSize: 11, fontWeight: 600 }}
+            tickFormatter={(value) => {
+              const date = new Date(value);
+              return `${date.getDate()}/${date.getMonth() + 1}`;
+            }}
           />
           <YAxis 
-            tick={{ fill: '#6b7280', fontSize: 12 }}
-            tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
+            axisLine={false}
+            tickLine={false}
+            tick={{ fill: '#4b5563', fontSize: 11, fontWeight: 600 }}
+            tickFormatter={(value) => value >= 1000 ? `${value / 1000}K` : value}
           />
           <Tooltip 
-            formatter={(value: number) => [`$${value.toLocaleString()}`, 'Revenue']}
-            labelFormatter={(label) => new Date(label).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+            contentStyle={{ 
+              backgroundColor: '#1a1a1a', 
+              borderColor: '#ffffff10',
+              borderRadius: '12px',
+              fontSize: '12px',
+              fontWeight: 'bold',
+              color: '#fff'
+            }}
+            itemStyle={{ color: '#f97316' }}
+            cursor={{ stroke: '#f97316', strokeWidth: 2, strokeDasharray: '5 5' }}
           />
-          <Line 
+          <Area 
             type="monotone" 
-            dataKey="revenue" 
-            stroke="#2563eb" 
-            strokeWidth={2}
-            dot={{ fill: '#2563eb', r: 4 }}
-            activeDot={{ r: 6 }}
+            dataKey="total" 
+            stroke="#f97316" 
+            strokeWidth={4}
+            fillOpacity={1} 
+            fill="url(#colorTotal)" 
+            animationDuration={1500}
           />
-        </LineChart>
+        </AreaChart>
       </ResponsiveContainer>
     </div>
   );

@@ -80,6 +80,12 @@ export const currentThemeExample: Themes = {
         accentBtn: '#bfa36f',        // gold accent
         accentBtnText: '#111111',
       },
+      header: {
+        bg: '#ffffff',
+        text: '#111111',
+        accent: '#bfa36f',
+        border: '#c9c8c5',
+      },
 
     },
  
@@ -159,6 +165,12 @@ export const currentThemeExample: Themes = {
         solidSubtext: '#d6b97b',     // gold subtext — luxury feel
         accentBtn: '#d6b97b',
         accentBtnText: '#000000',
+      },
+      header: {
+        bg: '#111113',
+        text: '#f9fafb',
+        accent: '#d6b97b',
+        border: '#262626',
       },
 
     },
@@ -242,6 +254,12 @@ export const currentThemeExample: Themes = {
         accentBtn: '#8b5cf6',         // purple primary
         accentBtnText: '#ffffff',
       },
+      header: {
+        bg: '#ffffff',
+        text: '#1f2937',
+        accent: '#8b5cf6',
+        border: '#c4c7d1',
+      },
 
     },
  
@@ -323,6 +341,12 @@ export const currentThemeExample: Themes = {
       accentBtn: '#a78bfa',
       accentBtnText: '#0f172a',
     },
+    header: {
+      bg: '#111827',
+      text: '#f9fafb',
+      accent: '#a78bfa',
+      border: '#334155',
+    },
     },
   },
 
@@ -402,6 +426,12 @@ export const currentThemeExample: Themes = {
         solidSubtext: '#9c9189',
         accentBtn: '#ff6b35',         // orange
         accentBtnText: '#ffffff',
+      },
+      header: {
+        bg: '#faf9f7',
+        text: '#1a1210',
+        accent: '#ff6b35',
+        border: '#d9d4cc',
       },
 
 
@@ -484,6 +514,12 @@ export const currentThemeExample: Themes = {
         solidSubtext: '#d4ccc3',
         accentBtn: '#ff6b35',
         accentBtnText: '#ffffff',
+      },
+      header: {
+        bg: '#141009',
+        text: '#f5f0ea',
+        accent: '#ff6b35',
+        border: '#2a2018',
       },
     },
   },

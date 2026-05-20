@@ -10,11 +10,11 @@ import { useStoreConfigCtx } from "@/contextHooks/useStoreConfigCtx";
 import { router } from "@inertiajs/react";
 import { route } from "ziggy-js";
 
-export function Header() {
+export function Header({ collapsed, setCollapsed }: { collapsed: boolean; setCollapsed: (val: boolean) => void }) {
   const { admin } = useAuth();
   const { state : {currentTheme} } = useStoreConfigCtx();
   const toggleSidebar = () => {
-    // Implement your sidebar toggle logic here, e.g. updating state or triggering a class
+    setCollapsed(!collapsed);
   };
 
   const logout = () => {

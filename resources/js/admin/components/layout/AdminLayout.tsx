@@ -13,15 +13,9 @@ import { ToastProvider } from "@/contextProvoders/ToastProvider";
 export function AdminLayout({ children }: { children: ReactNode }) {
 
   return<>
-  <StoreConfigProvider >
- 
-      <ToastProvider>
         <AuthProvider>
             <AdminLayoutContent children={children} />
         </AuthProvider>
-        </ToastProvider>
-
-  </StoreConfigProvider>
   </>
 }
 
@@ -46,7 +40,7 @@ const AdminLayoutContent = ({ children }: { children: ReactNode }) => {
       </div>
 
       <div className="flex-1 flex flex-col overflow-hidden min-w-0">
-        <Header />
+        <Header collapsed={collapsed} setCollapsed={setCollapsed} />
         <main className="flex-1 overflow-auto"
           style={{ color: currentTheme.text, background: currentTheme.bgSecondary }}
         >

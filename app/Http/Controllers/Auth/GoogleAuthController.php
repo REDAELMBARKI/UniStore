@@ -25,27 +25,27 @@ class GoogleAuthController extends Controller
 
     }
     
-   public function callback(Request $request)
+    public function callback(Request $request)
     {
         try {
             $socialite = app('Laravel\Socialite\Contracts\Factory');
             $httpClient = new \GuzzleHttp\Client(['verify' => false]);
-            Log::error('before creating the google user');
+            Log::info('Google Auth: Callback received');
             
             $googleUser = $socialite->driver('google-login')
                 ->setHttpClient($httpClient)
                 ->stateless()
                 ->user();
                 
-            Log::error('created the google user');
+            Log::info('Google Auth: Google user retrieved', ['email' => $googleUser->email]);
             
             $user = User::where('email', $googleUser->email)->first();
             
             if ($user) {
-                Log::error('user already exists');
+                Log::info('Google Auth: User already exists, updating google_id');
                 $user->update(['google_id' => $googleUser->id]);
             } else {
-                Log::error('create the user in db');
+                Log::info('Google Auth: Creating new user');
                 $user = User::create([
                     'name' => $googleUser->name,
                     'email' => $googleUser->email,
@@ -55,23 +55,24 @@ class GoogleAuthController extends Controller
                 ]);
             }
             
-            Log::error('logging in the user');
-            Auth::login($user);
-            Log::error('user logged in');
+            Log::info('Google Auth: Logging in user');
+            Auth::login($user, true); // Added true for remember me
+            $request->session()->regenerate();
+            event(new \App\Events\UserLogin('auth', $user, true));
+            Log::info('Google Auth: User logged in, session regenerated, and event dispatched');
 
             $intendedUrl = session()->pull('url.intended', '/');
-            Log::error('getting the url intended', ['url' => $intendedUrl]);
+            Log::info('Google Auth: Redirecting to intended URL', ['url' => $intendedUrl]);
             
-            return redirect()->intended($intendedUrl , '/');
+            return redirect()->intended($intendedUrl);
             
         } catch (\Laravel\Socialite\Two\InvalidStateException $e) {
-            Log::error('InvalidStateException: ' . $e->getMessage());
+            Log::error('Google Auth: InvalidStateException: ' . $e->getMessage());
             return $this->redirectToLogin();
             
         } catch (\Exception $e) {
-            // This will catch ALL other exceptions
-            Log::error('Google Login Error: ' . $e->getMessage());
-            Log::error('Stack trace: ' . $e->getTraceAsString());
+            Log::error('Google Auth: Error: ' . $e->getMessage());
+            Log::error('Google Auth: Stack trace: ' . $e->getTraceAsString());
             return $this->redirectToLogin();
         }
     }
