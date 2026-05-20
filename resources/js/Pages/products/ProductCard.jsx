@@ -1,9 +1,9 @@
 import React from 'react';
 import { Heart, ShoppingCart, Star, Eye } from 'lucide-react';
-import { getProductImage } from '../../lib/utils';
+import { useStoreConfigCtx } from '@/contextHooks/useStoreConfigCtx';
+import { Link } from '@inertiajs/react';
 // import { motion } from 'framer-motion';
 // import { Product } from '../../types';
-import { useCart } from '../../context/CartContext';
 
 
 /**
@@ -14,7 +14,8 @@ export const ProductCard= ({
   product, 
   variant = 'default' 
 }) => {
-  const { state, dispatch } = useCart();
+  const { state: { currentTheme: theme } } = useStoreConfigCtx();
+  // const { state, dispatch } = useCart();
   // const isInCart = state.cartItems.some(item => item.product.id === product.id);
 
   // Handle adding/removing from wishlist
@@ -36,9 +37,9 @@ export const ProductCard= ({
 
   // Variant-specific styles
   const cardStyles = {
-    default: 'bg-white rounded-xl shadow-lg overflow-hidden',
-    compact: 'bg-white rounded-lg shadow-md overflow-hidden',
-    featured: 'bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-xl overflow-hidden'
+    default: 'rounded-xl overflow-hidden',
+    compact: 'rounded-lg overflow-hidden',
+    featured: 'rounded-2xl overflow-hidden'
   };
 
   return (
@@ -51,8 +52,15 @@ export const ProductCard= ({
       // >
       // instale motion and replace this div
       <div className="group relative">
-          <Link to={`/products/${product.id}`} className="block">
-              <div className={cardStyles[variant]}>
+          <Link href={`/products/${product.id}`} className="block">
+              <div 
+                style={{ 
+                  backgroundColor: theme.card, 
+                  borderColor: theme.border,
+                  boxShadow: theme.shadow
+                }}
+                className={`${cardStyles[variant]} border transition-all duration-300`}
+              >
                   {/* Image Container */}
                   <div className="relative overflow-hidden aspect-square">
                       <img
@@ -63,7 +71,10 @@ export const ProductCard= ({
 
                       {/* Discount Badge */}
                       {discountPercentage > 0 && (
-                          <div className="absolute top-3 left-3 bg-red-500 text-white px-2 py-1 rounded-lg text-sm font-medium">
+                          <div 
+                            style={{ backgroundColor: theme.error, color: theme.textInverse }}
+                            className="absolute top-3 left-3 px-2 py-1 rounded-lg text-sm font-medium"
+                          >
                               -{discountPercentage}%
                           </div>
                       )}
@@ -72,19 +83,25 @@ export const ProductCard= ({
                       <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300 flex items-center justify-center">
                           <div className="transform translate-y-4 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300 space-x-2">
                               <button
-                                  className={`p-2 rounded-full transition-colors ${
-                                      false
-                                          ? "bg-red-500 text-white"
-                                          : "bg-white text-gray-700 hover:bg-red-500 hover:text-white"
-                                  }`}
+                                  style={{ 
+                                    backgroundColor: theme.card, 
+                                    color: theme.textSecondary 
+                                  }}
+                                  className="p-2 rounded-full transition-colors hover:text-red-500"
                               >
                                   <Heart
                                       size={20}
-                                      fill={true ? "white" : "none"}
+                                      fill="none"
                                   />
                               </button>
 
-                              <button className="p-2 bg-white text-gray-700 hover:bg-blue-500 hover:text-white rounded-full transition-colors">
+                              <button 
+                                style={{ 
+                                  backgroundColor: theme.card, 
+                                  color: theme.textSecondary 
+                                }}
+                                className="p-2 rounded-full transition-colors hover:opacity-80"
+                              >
                                   <Eye size={20} />
                               </button>
                           </div>
@@ -94,15 +111,19 @@ export const ProductCard= ({
                   {/* Product Info */}
                   <div className="p-4">
                       <div className="flex items-start justify-between mb-2">
-                          <h3 className="font-semibold text-gray-900 line-clamp-2 group-hover:text-blue-600 transition-colors">
+                          <h3 
+                            style={{ color: theme.text }}
+                            className="font-semibold line-clamp-2 transition-colors group-hover:opacity-80"
+                          >
                               {product.name}
                           </h3>
                           <div className="flex items-center ml-2">
                               <Star
                                   size={16}
-                                  className="text-yellow-400 fill-current"
+                                  style={{ color: theme.starColor || '#fbbf24' }}
+                                  className="fill-current"
                               />
-                              <span className="text-sm text-gray-600 ml-1">
+                              <span style={{ color: theme.textSecondary }} className="text-sm ml-1">
                                   {product.rating}
                               </span>
                           </div>
@@ -110,22 +131,20 @@ export const ProductCard= ({
 
                       {/* Price */}
                       <div className="flex items-center space-x-2 mb-2">
-                          <span className="text-lg font-bold text-blue-600">
+                          <span style={{ color: theme.primary }} className="text-lg font-bold">
                               ${product.price.toFixed(2)}
                           </span>
                           {product.originalPrice && (
-                              <span className="text-sm text-gray-500 line-through">
+                              <span style={{ color: theme.textMuted }} className="text-sm line-through">
                                   ${product.originalPrice.toFixed(2)}
                               </span>
                           )}
                       </div>
 
                       {/* Additional Info */}
-                      <div className="flex items-center justify-between text-sm text-gray-500 mb-3">
+                      <div style={{ color: theme.textMuted }} className="flex items-center justify-between text-sm mb-3">
                           <span>{product.reviews} reviews</span>
-                          Sold by{" some one"}
-                          Sold by{" some one"}
-                          {/* <span>{product.sales} sold</span> */}
+                          <span>In Stock</span>
                       </div>
 
                       {/* Seller */}
@@ -138,13 +157,15 @@ export const ProductCard= ({
 
                       {/* Add to Cart Button */}
                       <button
-                          onClick={handleAddToCart}
-                          variant={false ? "secondary" : "primary"}
-                          size="sm"
-                          className="w-full"
-                          icon={<ShoppingCart size={16} />}
+                          style={{ 
+                            backgroundColor: theme.primary, 
+                            color: theme.textInverse,
+                            borderRadius: theme.borderRadius 
+                          }}
+                          className="w-full py-2 font-medium flex items-center justify-center gap-2 hover:opacity-90 transition-opacity"
                       >
-                          {false ? "In Cart" : "Add to Cart"}
+                          <ShoppingCart size={16} />
+                          Add to Cart
                       </button>
                   </div>
               </div>

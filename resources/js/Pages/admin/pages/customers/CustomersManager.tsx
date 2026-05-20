@@ -254,13 +254,13 @@ const CustomersTable: FC<CustomersTableProps> = ({
                     <div
                       className="flex h-10 w-10 items-center justify-center rounded-full"
                       style={{
-                        background: `linear-gradient(135deg, ${theme.gray100} 0%, ${theme.gray200} 100%)`,
+                        background: `linear-gradient(135deg, ${theme.bgSecondary} 0%, ${theme.border} 100%)`,
                         border: `1px solid ${theme.border}`,
                       }}
                     >
                       <PersonStanding
                         size={18}
-                        style={{ color: theme.textMuted }}
+                        style={{ color: theme.textSecondary }}
                       />
                     </div>
 

@@ -103,32 +103,32 @@ export function Sidebar({
         </button>
       </div>
 
-      {/* Section list */}
-      {isOpen && (
-        <div style={{ flex: 1, overflowY: 'auto' }}>
-          {sections.map((section, index) => (
-            <SidebarRow
-              key={section.id}
-              section={section}
-              index={index}
-              total={sections.length}
-              theme={theme}
-              isMenuOpen={openMenuId === section.id}
-              isDragging={draggedIndex === index}
-              showTopIndicator={dropIndicator?.index === index && dropIndicator.position === 'top'}
-              showBottomIndicator={dropIndicator?.index === index && dropIndicator.position === 'bottom'}
-              menuRef={menuRef}
-              onToggleMenu={onToggleMenu}
-              onMove={onMove}
-              onNavigate={onNavigate}
-              onDragStart={onDragStart}
-              onDragOver={onDragOver}
-              onDrop={onDrop}
-              onDragEnd={onDragEnd}
-            />
-          ))}
-        </div>
-      )}
+// Section list
+{isOpen && (
+  <div style={{ flex: 1, overflowY: 'auto' }}>
+    {sections.map((section, index) => (
+      <SidebarRow
+        key={section.orc_id}
+        section={section}
+        index={index}
+        total={sections.length}
+        theme={theme}
+        isMenuOpen={openMenuId === section.orc_id}
+        isDragging={draggedIndex === index}
+        showTopIndicator={dropIndicator?.index === index && dropIndicator.position === 'top'}
+        showBottomIndicator={dropIndicator?.index === index && dropIndicator.position === 'bottom'}
+        menuRef={menuRef}
+        onToggleMenu={onToggleMenu}
+        onMove={onMove}
+        onNavigate={onNavigate}
+        onDragStart={onDragStart}
+        onDragOver={onDragOver}
+        onDrop={onDrop}
+        onDragEnd={onDragEnd}
+      />
+    ))}
+  </div>
+)}
     </div>
   );
 }

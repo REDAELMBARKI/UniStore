@@ -1,65 +1,42 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useStoreConfigCtx } from '@/contextHooks/useStoreConfigCtx';
 
 // ─────────────────────────────────────────────
 //  DATA — each panel IS a slide
 // ─────────────────────────────────────────────
 interface Slide {
-  image: string;
+  id: number;
+  image_url: string;
   tag: string;
   title: string;
   subtitle: string;
-  cta: string;
-  panelLabel: string;
-  panelTitle: string;
-  panelBg: string;
+  cta_text: string;
+  cta_link: string;
+  panel_label: string;
+  panel_title: string;
+  panel_bg: string;
+  order: number;
 }
 
-const SLIDES: Slide[] = [
-  {
-    image: 'https://images.pexels.com/photos/1926769/pexels-photo-1926769.jpeg?auto=compress&cs=tinysrgb&w=1400',
-    tag: 'New Collection · SS 2025',
-    title: 'The Art of\nSlow Fashion',
-    subtitle: 'Curated pieces that transcend seasons',
-    cta: 'Explore Collection',
-    panelLabel: 'Exclusive',
-    panelTitle: 'Jewelry Noir',
-    panelBg: 'rgba(18,30,50,0.92)',
-  },
-  {
-    image: 'https://images.pexels.com/photos/1183266/pexels-photo-1183266.jpeg?auto=compress&cs=tinysrgb&w=1400',
-    tag: 'Beauty Edit · Spring',
-    title: 'Ritual\nBeauty',
-    subtitle: 'Skincare crafted for the discerning',
-    cta: 'Shop Beauty',
-    panelLabel: 'Beauty Edit',
-    panelTitle: 'Ritual Beauty',
-    panelBg: 'rgba(22,40,28,0.92)',
-  },
-  {
-    image: 'https://images.pexels.com/photos/1040945/pexels-photo-1040945.jpeg?auto=compress&cs=tinysrgb&w=1400',
-    tag: "Men's · New Season",
-    title: 'Tailored\nPrecision',
-    subtitle: 'Refined menswear for the modern man',
-    cta: 'Shop Men',
-    panelLabel: "Men's",
-    panelTitle: 'Tailored Precision',
-    panelBg: 'rgba(38,18,26,0.92)',
-  },
-];
+interface SliderData {
+  id: number;
+  name: string;
+  autoplay_speed: number;
+  show_arrows: boolean;
+  show_dots: boolean;
+  slides: Slide[];
+}
 
-const PROMO_ITEMS = [
-  { icon: '✦', text: 'Free shipping on orders over $150' },
-  { icon: '◈', text: 'Authenticity guaranteed on all products' },
-  { icon: '↩', text: '30-day hassle-free returns' },
-  { icon: '✦', text: 'Members get early access to drops' },
-  { icon: '◈', text: 'New arrivals every week' },
-  { icon: '↩', text: 'Secure checkout — 256-bit SSL' },
-];
+interface HeroSliderProps {
+  slider?: SliderData | null;
+}
 
 // ─────────────────────────────────────────────
 //  HERO SLIDER
 // ─────────────────────────────────────────────
-const HeroSlider: React.FC = () => {
+const HeroSlider: React.FC<HeroSliderProps> = ({ slider }) => {
+  const { state: { currentTheme: theme } } = useStoreConfigCtx();
+  const slides = slider?.slides || [];
   const [current, setCurrent]   = useState(0);
   const [animating, setAnimating] = useState(false);
 
@@ -76,13 +53,16 @@ const HeroSlider: React.FC = () => {
 
   // Auto-advance through panels
   useEffect(() => {
+    if (slides.length <= 1) return;
     const t = setInterval(() => {
-      setCurrent((p) => (p + 1) % SLIDES.length);
-    }, 4000);
+      setCurrent((p) => (p + 1) % slides.length);
+    }, slider?.autoplay_speed || 5000);
     return () => clearInterval(t);
-  }, []);
+  }, [slides.length, slider?.autoplay_speed]);
 
-  const slide = SLIDES[current];
+  if (slides.length === 0) return null;
+
+  const slide = slides[current];
 
   return (
     <section
@@ -90,13 +70,13 @@ const HeroSlider: React.FC = () => {
       style={{ height: 'clamp(340px, 60vh, 860px)' }}
     >
       {/* ── Background images — all stacked, active one on top ── */}
-      {SLIDES.map((s, i) => (
+      {slides.map((s, i) => (
         <div
-          key={i}
+          key={s.id}
           className="absolute inset-0 transition-opacity duration-700 ease-in-out"
           style={{ opacity: i === current ? 1 : 0, zIndex: i === current ? 1 : 0 }}
         >
-          <img src={s.image} alt={s.title} className="w-full h-full object-cover block" />
+          <img src={s.image_url} alt={s.title} className="w-full h-full object-cover block" />
           <div
             className="absolute inset-0"
             style={{
@@ -119,7 +99,7 @@ const HeroSlider: React.FC = () => {
           {/* Tag */}
           <p
             className="text-[10px] font-normal uppercase tracking-[0.26em] mb-5"
-            style={{ color: '#c9a96e' }}
+            style={{ color: theme.accent }}
           >
             {slide.tag}
           </p>
@@ -144,24 +124,39 @@ const HeroSlider: React.FC = () => {
           </p>
 
           {/* CTA */}
-          <button
-            className="px-8 py-3 text-[10px] font-medium uppercase tracking-[0.2em]
-                       text-white border bg-transparent cursor-pointer
-                       transition-colors duration-300 hover:bg-white/10"
-            style={{ borderColor: 'rgba(201,169,110,0.7)' }}
+          <a
+            href={slide.cta_link || '#'}
+            className="inline-block px-8 py-3 text-[10px] font-medium uppercase tracking-[0.2em]
+                       border cursor-pointer no-underline
+                       transition-all duration-300"
+            style={{ 
+              borderColor: `${theme.accent}aa`, 
+              color: '#fff',
+              backgroundColor: 'transparent'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = theme.accent;
+              e.currentTarget.style.borderColor = theme.accent;
+              e.currentTarget.style.color = '#000';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = 'transparent';
+              e.currentTarget.style.borderColor = `${theme.accent}aa`;
+              e.currentTarget.style.color = '#fff';
+            }}
           >
-            {slide.cta} →
-          </button>
+            {slide.cta_text} →
+          </a>
         </div>
       </div>
 
       {/* ── Right panels — the slide mechanic ── */}
       <div className="absolute top-0 right-0 bottom-0 z-[6] flex flex-row items-stretch">
-        {SLIDES.map((s, i) => {
+        {slides.map((s, i) => {
           const isActive = i === current;
           return (
             <div
-              key={i}
+              key={s.id}
               onClick={() => goTo(i)}
               className="relative flex flex-col items-center justify-between
                          py-9 cursor-pointer overflow-hidden
@@ -170,7 +165,7 @@ const HeroSlider: React.FC = () => {
               style={{
                 // Active panel is wide, inactive panels are narrow
                 width: isActive ? 180 : 96,
-                background: s.panelBg,
+                background: s.panel_bg || 'rgba(0,0,0,0.5)',
                 backdropFilter: isActive ? 'blur(0px)' : 'blur(3px)',
               }}
             >
@@ -180,7 +175,7 @@ const HeroSlider: React.FC = () => {
                   className="absolute inset-0 transition-opacity duration-500"
                   style={{ opacity: 0.18 }}
                 >
-                  <img src={s.image} alt="" className="w-full h-full object-cover" />
+                  <img src={s.image_url} alt="" className="w-full h-full object-cover" />
                 </div>
               )}
 
@@ -191,10 +186,10 @@ const HeroSlider: React.FC = () => {
                 style={{
                   writingMode: 'vertical-rl',
                   transform: 'rotate(180deg)',
-                  color: isActive ? 'rgba(201,169,110,0.9)' : 'rgba(255,255,255,0.35)',
+                  color: isActive ? theme.accent : 'rgba(255,255,255,0.35)',
                 }}
               >
-                {s.panelLabel}
+                {s.panel_label}
               </span>
 
               {/* Main rotated title */}
@@ -210,7 +205,7 @@ const HeroSlider: React.FC = () => {
                   letterSpacing: isActive ? '0.08em' : '0.04em',
                 }}
               >
-                {s.panelTitle}
+                {s.panel_title}
               </span>
 
               {/* Bottom indicator — gold dash on active */}
@@ -220,7 +215,7 @@ const HeroSlider: React.FC = () => {
                   style={{
                     width: isActive ? 32 : 12,
                     height: isActive ? 2 : 1.5,
-                    background: isActive ? '#c9a96e' : 'rgba(255,255,255,0.25)',
+                    background: isActive ? theme.accent : 'rgba(255,255,255,0.25)',
                   }}
                 />
                 {/* Slide number on active */}
@@ -253,44 +248,35 @@ const HeroSlider: React.FC = () => {
       </div>
 
       {/* ── Dots (bottom left) ── */}
-      <div className="absolute bottom-7 left-[6vw] z-10 flex items-center gap-2">
-        {SLIDES.map((_, i) => (
-          <button
-            key={i}
-            onClick={() => goTo(i)}
-            className="h-[2px] rounded-sm border-none p-0 cursor-pointer transition-all duration-500"
-            style={{
-              width: i === current ? 28 : 7,
-              background: i === current ? '#c9a96e' : 'rgba(255,255,255,0.35)',
-            }}
-          />
-        ))}
-      </div>
+      {slider?.show_dots !== false && (
+        <div className="absolute bottom-7 left-[6vw] z-10 flex items-center gap-2">
+          {slides.map((s, i) => (
+            <button
+              key={s.id}
+              onClick={() => goTo(i)}
+              className="h-[2px] rounded-sm border-none p-0 cursor-pointer transition-all duration-500"
+              style={{
+                width: i === current ? 28 : 7,
+                background: i === current ? theme.accent : 'rgba(255,255,255,0.35)',
+              }}
+            />
+          ))}
+        </div>
+      )}
 
       {/* ── Total counter ── */}
       <div
         className="absolute bottom-8 z-10 text-[11px] tracking-[0.12em]"
         style={{
-          right: `calc(${SLIDES.length * 96 + (180 - 96)}px + 28px)`,
+          right: `calc(${slides.length * 96 + (180 - 96)}px + 28px)`,
           fontFamily: '"Cormorant Garamond", Georgia, serif',
           color: 'rgba(255,255,255,0.35)',
         }}
       >
-        {String(current + 1).padStart(2, '0')} / {String(SLIDES.length).padStart(2, '0')}
+        {String(current + 1).padStart(2, '0')} / {String(slides.length).padStart(2, '0')}
       </div>
     </section>
   );
 };
 
-// ────────────────────────────────
-
-// ─────────────────────────────────────────────
-//  PAGE EXPORT
-// ─────────────────────────────────────────────
-const Page: React.FC = () => (
-  <>
-    <HeroSlider />
-  </>
-);
-
-export default Page;
+export default HeroSlider;

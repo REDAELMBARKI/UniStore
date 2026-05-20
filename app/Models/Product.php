@@ -49,8 +49,6 @@ class Product extends Model
     protected $casts = [
         'inventory' => 'array',
         'shipping' => 'array',
-        'price' => 'float',
-        'oldPrice' => 'float',
         'video' => 'array',
         'related_products' => 'array',
         'is_featured' => 'boolean',

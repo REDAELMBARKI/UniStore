@@ -2,72 +2,118 @@
 
 namespace Database\Seeders;
 
+use App\Models\RuleBasedCollection;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
 
 class RuleBasedCollectionsSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        DB::table('rule_based_collections')->insert([
+        \Illuminate\Support\Facades\Schema::disableForeignKeyConstraints();
+        RuleBasedCollection::query()->delete();
+        \Illuminate\Support\Facades\Schema::enableForeignKeyConstraints();
+
+        // Target IDs from Audit:
+        // Badges: New (2), Featured (6), Hot (3), Sale (4)
+        // Categories: Shoes (5), Watches (63)
+
+        $collections = [
             [
-                'id' => 1,
-                'name' => 'Top Deals',
-                'slug' => 'top-deals',
-                'key' => 'collections.top_deals',
+                'name' => 'New Season Arrivals',
+                'slug' => 'new-season-arrivals',
+                'key' => 'home.new_arrivals',
                 'is_active' => true,
-                'order' => 1,
-                // Matching your layout_config including the gap
-                'layout_config' => json_encode([
-                    'displayLimit' => 2,
-                    'gap' => 32,
-                    'paddingInline' => 12
-                ]),
-                // Matching your card_config
-                'card_config' => json_encode([
-                    'aspectRatio' => '1/1',
-                    'borderRadius' => 40,
-                    'showPrice' => false,
-                    'showBadge' => true,
-                    'textAlign' => 'center',
-                    'hoverEffect' => 'none'
-                ]),
-                // Matching your rules
-                'rules' => json_encode([
-                    ['field' => 'discount', 'operator' => '>=', 'value' => '25']
-                ]),
-                'created_at' => now(),
-                'updated_at' => now()
-            ],
-            [
-                'id' => 2,
-                'name' => 'Featured Footwear',
-                'slug' => 'featured-footwear',
-                'key' => 'collections.featured_footwear',
-                'is_active' => true,
-                'order' => 2,
-                'layout_config' => json_encode([
-                    'displayLimit' => 3,
+                'order' => 0,
+                'layout_config' => [
+                    'displayLimit' => 12,
                     'gap' => 24,
                     'paddingInline' => 0
-                ]),
-                'card_config' => json_encode([
+                ],
+                'card_config' => [
                     'aspectRatio' => '3/4',
-                    'borderRadius' => 12,
+                    'borderRadius' => 0,
                     'showPrice' => true,
                     'showBadge' => true,
                     'textAlign' => 'left',
                     'hoverEffect' => 'zoom'
-                ]),
-                'rules' => json_encode([
-                    ['field' => 'category_id', 'operator' => '=', 'value' => 'Menswear']
-                ]),
-                'created_at' => now(),
-                'updated_at' => now()
+                ],
+                'rules' => [
+                    ['field' => 'badge_id', 'operator' => '=', 'value' => '2']
+                ],
             ],
-        ]);
+            [
+                'name' => 'The Featured Edit',
+                'slug' => 'the-featured-edit',
+                'key' => 'home.featured',
+                'is_active' => true,
+                'order' => 0,
+                'layout_config' => [
+                    'displayLimit' => 12,
+                    'gap' => 24,
+                    'paddingInline' => 0
+                ],
+                'card_config' => [
+                    'aspectRatio' => '3/4',
+                    'borderRadius' => 0,
+                    'showPrice' => true,
+                    'showBadge' => true,
+                    'textAlign' => 'left',
+                    'hoverEffect' => 'zoom'
+                ],
+                'rules' => [
+                    ['field' => 'badge_id', 'operator' => '=', 'value' => '6']
+                ],
+            ],
+            [
+                'name' => 'Performance Footwear',
+                'slug' => 'performance-footwear',
+                'key' => 'home.shoes',
+                'is_active' => true,
+                'order' => 0,
+                'layout_config' => [
+                    'displayLimit' => 10,
+                    'gap' => 24,
+                    'paddingInline' => 0
+                ],
+                'card_config' => [
+                    'aspectRatio' => '1/1',
+                    'borderRadius' => 12,
+                    'showPrice' => true,
+                    'showBadge' => true,
+                    'textAlign' => 'center',
+                    'hoverEffect' => 'zoom'
+                ],
+                'rules' => [
+                    ['field' => 'category_id', 'operator' => '=', 'value' => '5']
+                ],
+            ],
+            [
+                'name' => 'Luxury Timepieces',
+                'slug' => 'luxury-timepieces',
+                'key' => 'home.watches',
+                'is_active' => true,
+                'order' => 0,
+                'layout_config' => [
+                    'displayLimit' => 10,
+                    'gap' => 24,
+                    'paddingInline' => 0
+                ],
+                'card_config' => [
+                    'aspectRatio' => '1/1',
+                    'borderRadius' => 12,
+                    'showPrice' => true,
+                    'showBadge' => true,
+                    'textAlign' => 'left',
+                    'hoverEffect' => 'none'
+                ],
+                'rules' => [
+                    ['field' => 'category_id', 'operator' => '=', 'value' => '63']
+                ],
+            ],
+        ];
+
+        foreach ($collections as $cData) {
+            RuleBasedCollection::create($cData);
+        }
     }
 }

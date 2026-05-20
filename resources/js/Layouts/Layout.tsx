@@ -2,14 +2,14 @@ import React, { useState } from 'react';
 import '../../css/main.css';
 import '../../css/util.css';
 
-import { 
-  Search, 
-  ShoppingCart, 
-  Heart, 
-  Menu, 
-  X, 
+import {
+  Search,
+  ShoppingCart,
+  Heart,
+  Menu,
+  X,
   ChevronRight,
-  Facebook , 
+  Facebook,
 
   ChevronUp,
   Instagram,
@@ -32,30 +32,30 @@ import { getInitials } from '@/admin/utils/helpers';
 
 
 interface LayoutProps {
-  children : React.ReactNode 
-  currentPage : string  ; 
-  seo : {
-      title : string , 
-      description : string 
+  children: React.ReactNode
+  currentPage: string;
+  seo: {
+    title: string,
+    description: string
   }
 }
 
-const Layout = ({ children, currentPage = 'home' , seo }:LayoutProps) => {
-     return (
-       <ToastProvider>
-          <StoreConfigProvider >
-                      <LayoutContent {...{children , currentPage , seo}}/>
-          </StoreConfigProvider>
-       </ToastProvider>
-     )
-} 
+const Layout = ({ children, currentPage = 'home', seo }: LayoutProps) => {
+  return (
+    <ToastProvider>
+      <StoreConfigProvider >
+        <LayoutContent {...{ children, currentPage, seo }} />
+      </StoreConfigProvider>
+    </ToastProvider>
+  )
+}
 
-const LayoutContent = ({ children, currentPage , seo}:LayoutProps) => {
+const LayoutContent = ({ children, currentPage, seo }: LayoutProps) => {
   const { props } = usePage();
   const { flash, cartCount, cartItems: sharedCartItems, auth } = props as any;
   const { addToast } = useToast();
   const { state: { currentTheme: theme } } = useStoreConfigCtx();
-  
+
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -85,22 +85,22 @@ const LayoutContent = ({ children, currentPage , seo}:LayoutProps) => {
   }, [flash]);
 
   const navigation = [
-    { name: 'Home', href: '/', active: currentPage === 'home'},
+    { name: 'Home', href: '/', active: currentPage === 'home' },
     { name: 'Shop', href: '/marketplace', active: currentPage === 'shop' },
     { name: 'Features', href: '/features', active: currentPage === 'cart', label: 'hot' },
     { name: 'Blog', href: '/blog', active: currentPage === 'blog' },
     { name: 'About', href: '/about' },
-    { name: 'Contact', href: '/contact' }
+    { name: 'Contact', href: '/contact', submenu: ['Email', 'Phone'] }
   ];
 
   const total = (sharedCartItems || []).reduce((sum, item) => sum + (item.price_snapshot * item.quantity), 0);
 
   return (<>
     {/* header and meta data for seo */}
-      <Head>
-        <title>{seo?.title || 'Default Store Title'}</title>
-        <meta name="description" content={seo?.description || 'Default description'} />
-      </Head>
+    <Head>
+      <title>{seo?.title || 'Default Store Title'}</title>
+      <meta name="description" content={seo?.description || 'Default description'} />
+    </Head>
 
     {/* main page content */}
     <div className="min-h-screen" style={{ backgroundColor: theme.bg }}>
@@ -116,9 +116,9 @@ const LayoutContent = ({ children, currentPage , seo}:LayoutProps) => {
               <div className="hidden md:flex space-x-6" style={{ color: theme.textSecondary }}>
                 <a href="#" className="transition-colors hover:opacity-80">Help & FAQs</a>
                 {auth?.user ? (
-                   <div className="flex items-center gap-4">
-                     <span style={{ color: theme.textMuted }}>Welcome, {auth.user.name}</span>
-                   </div>
+                  <div className="flex items-center gap-4">
+                    <span style={{ color: theme.textMuted }}>Welcome, {auth.user.name}</span>
+                  </div>
                 ) : (
                   <>
                     <Link href={'/login'} className="transition-colors hover:opacity-80">Login</Link>
@@ -150,7 +150,7 @@ const LayoutContent = ({ children, currentPage , seo}:LayoutProps) => {
                     <Link
                       href={item.href}
                       className={`flex items-center px-3 py-2 text-sm font-medium transition-colors`}
-                      style={{ 
+                      style={{
                         color: item.active ? theme.header.accent : theme.header.text,
                         borderBottom: item.active ? `2px solid ${theme.header.accent}` : 'none'
                       }}
@@ -185,7 +185,7 @@ const LayoutContent = ({ children, currentPage , seo}:LayoutProps) => {
                     {cartCount || 0}
                   </span>
                 </button>
-                
+
                 {auth?.user ? (
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -198,13 +198,13 @@ const LayoutContent = ({ children, currentPage , seo}:LayoutProps) => {
                         </Avatar>
                       </button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent 
-                      style={{ 
-                        backgroundColor: theme.modal, 
-                        color: theme.text, 
+                    <DropdownMenuContent
+                      style={{
+                        backgroundColor: theme.modal,
+                        color: theme.text,
                         borderColor: theme.border,
-                        boxShadow: theme.shadowMd 
-                      }} 
+                        boxShadow: theme.shadowMd
+                      }}
                       align="end"
                     >
                       <DropdownMenuLabel>
@@ -214,7 +214,7 @@ const LayoutContent = ({ children, currentPage , seo}:LayoutProps) => {
                         </div>
                       </DropdownMenuLabel>
                       <DropdownMenuSeparator style={{ backgroundColor: theme.border }} />
-                      
+
                       {auth.user.roles?.some(role => role.name === 'admin' || role.name === 'super admin') && (
                         <DropdownMenuItem asChild style={{ cursor: 'pointer' }}>
                           <Link href="/admin/dashboard" className="flex items-center w-full">
@@ -223,16 +223,16 @@ const LayoutContent = ({ children, currentPage , seo}:LayoutProps) => {
                           </Link>
                         </DropdownMenuItem>
                       )}
-                      
+
                       <DropdownMenuItem asChild style={{ cursor: 'pointer' }}>
                         <Link href="/profile" className="flex items-center w-full">
                           <UserCircle className="mr-2 h-4 w-4" />
                           <span>My Profile</span>
                         </Link>
                       </DropdownMenuItem>
-                      
+
                       <DropdownMenuSeparator style={{ backgroundColor: theme.border }} />
-                      
+
                       <DropdownMenuItem asChild style={{ cursor: 'pointer' }}>
                         <Link href="/logout" method="post" as="button" className="flex items-center w-full text-left">
                           <LogOut className="mr-2 h-4 w-4" />
@@ -243,16 +243,16 @@ const LayoutContent = ({ children, currentPage , seo}:LayoutProps) => {
                   </DropdownMenu>
                 ) : (
                   <div className="hidden md:flex items-center gap-3">
-                    <Link 
-                      href="/login" 
-                      className="px-4 py-2 text-sm font-medium transition-all hover:opacity-80" 
+                    <Link
+                      href="/login"
+                      className="px-4 py-2 text-sm font-medium transition-all hover:opacity-80"
                       style={{ color: theme.header.text }}
                     >
                       Sign In
                     </Link>
-                    <Link 
-                      href="/register" 
-                      className="px-4 py-2 text-sm font-bold text-white rounded-lg shadow-sm transition-all hover:opacity-90 active:scale-95" 
+                    <Link
+                      href="/register"
+                      className="px-4 py-2 text-sm font-bold text-white rounded-lg shadow-sm transition-all hover:opacity-90 active:scale-95"
                       style={{ backgroundColor: theme.header.accent }}
                     >
                       Sign Up
@@ -295,9 +295,9 @@ const LayoutContent = ({ children, currentPage , seo}:LayoutProps) => {
                     key={item.name}
                     href={item.href}
                     className="flex items-center justify-between py-3 px-4 rounded-lg transition-colors"
-                    style={{ 
+                    style={{
                       backgroundColor: item.active ? `${theme.header.accent}10` : 'transparent',
-                      color: item.active ? theme.header.accent : theme.text 
+                      color: item.active ? theme.header.accent : theme.text
                     }}
                     onClick={() => setIsMenuOpen(false)}
                   >
@@ -313,7 +313,7 @@ const LayoutContent = ({ children, currentPage , seo}:LayoutProps) => {
                   </Link>
                 ))}
               </nav>
-              
+
               <div className="mt-8 pt-8 border-t" style={{ borderColor: theme.border }}>
                 {!auth?.user ? (
                   <div className="grid grid-cols-2 gap-4">
@@ -327,14 +327,14 @@ const LayoutContent = ({ children, currentPage , seo}:LayoutProps) => {
                 ) : (
                   <div className="space-y-4">
                     <div className="flex items-center gap-3 px-4">
-                       <Avatar className="h-10 w-10">
-                          <AvatarImage src={auth.user.google_avatar || auth.user.avatar?.url} />
-                          <AvatarFallback>{getInitials(auth.user.name)}</AvatarFallback>
-                       </Avatar>
-                       <div>
-                         <p className="text-sm font-medium" style={{ color: theme.text }}>{auth.user.name}</p>
-                         <p className="text-xs" style={{ color: theme.textMuted }}>{auth.user.email}</p>
-                       </div>
+                      <Avatar className="h-10 w-10">
+                        <AvatarImage src={auth.user.google_avatar || auth.user.avatar?.url} />
+                        <AvatarFallback>{getInitials(auth.user.name)}</AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <p className="text-sm font-medium" style={{ color: theme.text }}>{auth.user.name}</p>
+                        <p className="text-xs" style={{ color: theme.textMuted }}>{auth.user.email}</p>
+                      </div>
                     </div>
                     <Link href="/logout" method="post" as="button" className="w-full flex items-center px-4 py-2 text-sm text-red-500 hover:bg-red-50 rounded-md transition-colors">
                       <LogOut className="mr-2 h-4 w-4" />
@@ -377,7 +377,7 @@ const LayoutContent = ({ children, currentPage , seo}:LayoutProps) => {
 
       {/* Cart Sidebar */}
       {isCartOpen && (
-         <CartSideBar cartItems={sharedCartItems || []} total={total}  onClose={() => setIsCartOpen(false)}/>
+        <CartSideBar cartItems={sharedCartItems || []} total={total} onClose={() => setIsCartOpen(false)} />
       )}
 
       {/* Main Content */}
@@ -435,8 +435,8 @@ const LayoutContent = ({ children, currentPage , seo}:LayoutProps) => {
               <h3 className="text-lg font-bold mb-8 tracking-wider uppercase">Newsletter</h3>
               <form className="space-y-6">
                 <div className="relative border-b border-gray-700 pb-2">
-                  <input 
-                    type="email" 
+                  <input
+                    type="email"
                     placeholder="email@example.com"
                     className="w-full bg-transparent border-none outline-none text-sm placeholder-gray-500"
                   />
@@ -447,7 +447,7 @@ const LayoutContent = ({ children, currentPage , seo}:LayoutProps) => {
               </form>
             </div>
           </div>
-          
+
           <div className="mt-16 pt-8 border-t border-gray-800 text-center">
             <p className="text-gray-500 text-xs">
               Copyright &copy; {new Date().getFullYear()} All rights reserved | This template is made with <Heart className="inline-block w-3 h-3 text-red-500 mx-1" /> by COZA
