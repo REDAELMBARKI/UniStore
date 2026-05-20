@@ -18,7 +18,7 @@ class CouponController extends Controller
 
      public function getAll()
     {
-        $coupons = $this->couponService->getDbActiveCoupons() ;
+        $coupons = $this->couponService->getDbCoupons() ;
         return response()->json($coupons);
     }
 

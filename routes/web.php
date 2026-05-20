@@ -129,6 +129,10 @@ Route::post('admin/promotions', [AdminPromotionController::class, 'store'])->nam
 Route::get('admin/promotions/{promotion}/edit', [AdminPromotionController::class, 'edit'])->name('promotions.edit');
 Route::put('admin/promotions/{promotion}', [AdminPromotionController::class, 'update'])->name('promotions.update');
 Route::delete('admin/promotions/{promotion}', [AdminPromotionController::class, 'destroy'])->name('promotions.destroy');
+
+// API routes for products marketing
+Route::get('api/promotions', [PromotionController::class, 'getAll'])->name('get.promotions');
+Route::get('api/coupons', [CouponController::class, 'getAll'])->name('get.coupons');
 // ->middleware(['auth', 'verified'])->name('dashboard');
 
 // Route::middleware('auth')->group(function () {
@@ -209,8 +213,8 @@ Route::post('/coupon_feedback', [CouponController::class,'coupon_feedback'])->na
 
 // customer
 Route::prefix('customers')->group(function(){
-    Route::get('' , [CurstomerController::class, 'index'])->name('customers.index') ;
-    Route::get('/{id}' , [CurstomerController::class, 'show'])->name('customers.show') ;
+    Route::get('' , [CustomerController::class, 'index'])->name('customers.index') ;
+    Route::get('/{id}' , [CustomerController::class, 'show'])->name('customers.show') ;
 });
 
 // reviews
@@ -218,8 +222,6 @@ Route::prefix('reviews')->group(function(){
     Route::get('', [ReviewController::class, 'index'])->name('reviews.index');
     Route::get('/pending', [ReviewController::class, 'pending'])->name('reviews.pending');
 });
-Route::get('/customers' , [CustomerController::class, 'index'])->name('admin.customers.index') ;
-Route::get('/customers/{user}' , [CustomerController::class, 'show'])->name('admin.customers.show') ;
 
 // Roles
 Route::get('/roles', [RoleController::class, 'index'])->name('admin.roles.index');

@@ -53,11 +53,15 @@ class CouponService extends DiscountService
         return $this->couponRepository->delete($id);
     }
    
-        public function getDbCoupons(){
+        public function getDbActiveCoupons(){
             return Coupon::where('is_active', true)
             ->whereNull('valid_until')
             ->orWhere('valid_until', '>', now())
             ->get();
+        }
+
+        public function getDbCoupons(){
+            return $this->getDbActiveCoupons();
         }
 
         public function getDbCouponCodeMatch(string $coupon_code){

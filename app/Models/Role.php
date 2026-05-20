@@ -6,7 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Role extends Model
 {
-    protected $fillable = ['name'];
+    protected $fillable = ['name', 'claims'];
+
+    protected $casts = [
+        'claims' => 'array',
+    ];
 
     public function users()
     {

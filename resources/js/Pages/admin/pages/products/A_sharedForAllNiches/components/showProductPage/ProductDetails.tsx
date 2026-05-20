@@ -177,7 +177,7 @@ const DescriptionSection = ({ description, theme }: { description: string; theme
 const SpecsSection = ({ product, theme }: { product: any; theme: ThemePalette }) => {
   const t = theme;
   const rows = [
-    ...((product.product_attributes ?? []).map((a: any) => ({ label: a.key, value: a.value }))),
+    ...((product?.product_attributes ?? []).filter((a: any) => a !== null).map((a: any) => ({ label: a.key, value: a.value }))),
     product.madeCountry ? { label: "Made In", value: typeof product.madeCountry === "string" ? product.madeCountry : product.madeCountry?.name } : null,
     product.releaseDate ? { label: "Release Year", value: product.releaseDate } : null,
     product.brand ? { label: "Brand", value: product.brand } : null,
@@ -246,7 +246,7 @@ const ProductDetails = ({ onStepChange }: ProductDetailProps) => {
   const galleryRef = useRef<HTMLDivElement>(null);
   const relatedRef = useRef<HTMLDivElement>(null);
 
-  const defaultVariant = product.variants?.[0];
+  const defaultVariant = product?.variants?.[0];
 
   useEffect(() => {
     if (!galleryRef.current) return;
@@ -263,11 +263,14 @@ const ProductDetails = ({ onStepChange }: ProductDetailProps) => {
   }, []);
 
   const shouldShowVariantModal =
-    Array.isArray(product.variants) &&
+    Array.isArray(product?.variants) &&
     product.variants.length > 0 &&
     Number(product.variants[0]?.is_single) === 0;
 
-  const galleryMedia = (product.covers ?? []).map((c: any) => ({ id: c.id, url: c.url, variant_id: c.variant_id }));
+  const galleryMedia = (product?.covers ?? [])
+    .filter((c: any) => c !== null)
+    .map((c: any) => ({ id: c.id, url: c.url, variant_id: c.variant_id }));
+
 
   const handleAddToCart = () => {
     if (shouldShowVariantModal) { setModalMode("cart"); setModalOpen(true); }
@@ -301,9 +304,9 @@ const ProductDetails = ({ onStepChange }: ProductDetailProps) => {
         <div style={{ padding: "14px 0", fontSize: 12, color: t.textMuted }}>
           <span style={{ color: t.link ?? t.accent, cursor: "pointer" }}>Home</span>
           <span style={{ margin: "0 6px" }}>/</span>
-          <span style={{ color: t.link ?? t.accent, cursor: "pointer" }}>{product.nich_category?.name ?? "Category"}</span>
+          <span style={{ color: t.link ?? t.accent, cursor: "pointer" }}>{product?.nich_category?.name ?? "Category"}</span>
           <span style={{ margin: "0 6px" }}>/</span>
-          <span style={{ color: t.text }}>{product.name}</span>
+          <span style={{ color: t.text }}>{product?.name}</span>
         </div>
 
         {/* ══ 3-COL GRID ══ */}
@@ -333,13 +336,14 @@ const ProductDetails = ({ onStepChange }: ProductDetailProps) => {
               compareAtPrice={defaultVariant?.compare_price ? String(defaultVariant.compare_price) : undefined}
               stock={defaultVariant?.stock ?? 0}
               description={product.description ?? ""}
-              colors={product.colors ?? []}
-              sizes={product.sizes ?? []}
-              product_attributes={product.product_attributes ?? []}
-              subCategories={product.sub_categories ?? []}
-              variants={product.variants ?? []}
-              madeCountry={product.madeCountry ?? undefined}
-              showCountdown={product.show_countdown == 1 || product.show_countdown === true}
+              colors={(product?.colors ?? []).filter((c: any) => c !== null)}
+              sizes={(product?.sizes ?? []).filter((s: any) => s !== null)}
+              product_attributes={(product?.product_attributes ?? []).filter((a: any) => a !== null)}
+              subCategories={(product?.sub_categories ?? []).filter((sc: any) => sc !== null)}
+              variants={(product?.variants ?? []).filter((v: any) => v !== null)}
+              madeCountry={product?.madeCountry ?? undefined}
+              showCountdown={product?.show_countdown == 1 || product?.show_countdown === true}
+
               promotions={product.promotions ?? []}
               theme={t}
               onColorSelect={(color: Color & { variant_id: number }) => setSelectedColor(color)}
@@ -449,8 +453,8 @@ const ProductDetails = ({ onStepChange }: ProductDetailProps) => {
       <VariantModal
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
-        variants={product.variants ?? []}
-        covers={product.covers ?? []}
+        variants={(product?.variants ?? []).filter((v: any) => v !== null)}
+        covers={(product?.covers ?? []).filter((c: any) => c !== null)}
         productName={product.name}
         mode={modalMode}
         onConfirm={handleModalConfirm}

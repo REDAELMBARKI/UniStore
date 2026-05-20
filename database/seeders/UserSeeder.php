@@ -10,10 +10,32 @@ class UserSeeder extends Seeder{
 
     public function run()
     {
-        // Ensure roles exist
-        $adminRole = \App\Models\Role::firstOrCreate(['name' => 'admin']);
-        \App\Models\Role::firstOrCreate(['name' => 'super admin']);
-        \App\Models\Role::firstOrCreate(['name' => 'user']);
+        // Ensure roles exist with verb-based claims
+        $superAdminRole = \App\Models\Role::updateOrCreate(
+            ['name' => 'super admin'],
+            ['claims' => [
+                'manages-products', 'manages-orders', 'manages-customers', 
+                'views-reports', 'manages-settings', 'manages-roles', 
+                'manages-banners', 'manages-collections'
+            ]]
+        );
+
+        $adminRole = \App\Models\Role::updateOrCreate(
+            ['name' => 'admin'],
+            ['claims' => [
+                'manages-products', 'manages-orders', 'manages-customers', 
+                'views-reports', 'manages-banners', 'manages-collections'
+            ]]
+        );
+
+        $managerRole = \App\Models\Role::updateOrCreate(
+            ['name' => 'manager'],
+            ['claims' => [
+                'manages-products', 'manages-orders', 'manages-customers', 'views-reports'
+            ]]
+        );
+
+        \App\Models\Role::firstOrCreate(['name' => 'user'], ['claims' => []]);
 
         // Create the specific admin user
         $admin = User::firstOrCreate(

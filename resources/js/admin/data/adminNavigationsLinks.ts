@@ -119,9 +119,6 @@ export const menuItems: MenuItem[] = [
       { title: "Home editor", icon: SectionIcon, href: "home.editor.index", disabled: false },
       { title: "collections", icon: SectionIcon, href: "collections.index", disabled: false },
       { title: "banners", icon: SectionIcon, href: "banners.index", disabled: false },
-      { title: "Home editor", icon: SectionIcon, href: "home.editor.index", disabled: false },
-      { title: "collections", icon: SectionIcon, href: "collections.index", disabled: false },
-      { title: "banners", icon: SectionIcon, href: "banners.index", disabled: false },
     ]
   },
   {
@@ -199,8 +196,7 @@ export const menuItems: MenuItem[] = [
     title: "Admins",
     icon: Shield,
     subLinks: [
-      { title: "All Admins", icon: List, href: "" },  // ⚠ no route name
-      { title: "Add Admin", icon: Plus, href: "" },
+      { title: "All Admins", icon: List, href: "admins.index" },
       { title: "Roles & Permissions", icon: LockIcon, href: "admin.roles.index" },
       { title: "Activity Log", icon: HistoryIcon, href: "" },
     ]

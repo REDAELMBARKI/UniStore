@@ -22,7 +22,7 @@ class CustomerController extends Controller
                     'email' => $user->email,
                     'phone' => $user->phone ?? 'N/A', // Assuming phone exists or defaults
                     'totalOrders' => $user->orders_count,
-                    'totalSpent' => $user->orders()->sum('total_price'), // Assuming total_price exists
+                    'totalSpent' => $user->orders()->sum('total_amount'), 
                     'lastOrderDate' => $user->orders()->latest()->first()?->created_at->format('Y-m-d') ?? 'N/A',
                     'status' => 'active', // Placeholder logic
                     'joinedDate' => $user->created_at->format('Y-m-d'),
@@ -47,7 +47,7 @@ class CustomerController extends Controller
             'status' => 'Active',
             'memberSince' => $user->created_at->format('Y'),
             'totalOrders' => $user->orders()->count(),
-            'totalSpent' => $user->orders()->sum('total_price'),
+            'totalSpent' => $user->orders()->sum('total_amount'),
             'recentOrders' => $user->orders()->latest()->limit(5)->get(),
             'avatarUrl' => $user->avatar?->url ?? null,
             'primaryInterest' => null,
