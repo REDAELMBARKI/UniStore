@@ -3,6 +3,7 @@ import { User, Mail, Phone, MapPin, ShoppingBag, Star, Calendar, FileText, Bell,
 import EmptyListSection from '@/admin/components/partials/EmptyListSection';
 import { AdminLayout } from '@/admin/components/layout/AdminLayout';
 import { useToast } from '@/contextHooks/useToasts';
+import { useStoreConfigCtx } from '@/contextHooks/useStoreConfigCtx';
 import { router } from '@inertiajs/react';
 import { Button } from "@/components/ui/button";
 
@@ -32,6 +33,7 @@ interface CustomerData {
 export default function CustomerDetails({ customer: backendCustomer, allRoles }: { customer?: CustomerData, allRoles: Role[] }) {
   const [activeTab, setActiveTab] = useState<string>('overview');
   const { addToast } = useToast();
+  const { state: { currentTheme: theme } } = useStoreConfigCtx();
   
   // Default fallback if no data passed (though middleware/controller should handle this)
   const customer: CustomerData = backendCustomer || {
@@ -75,27 +77,41 @@ export default function CustomerDetails({ customer: backendCustomer, allRoles }:
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div 
+      className="min-h-screen p-6 transition-colors duration-300"
+      style={{ background: theme.bg }}
+    >
       {/* Back Button */}
       <button 
         onClick={handleBack}
-        className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6 transition-colors"
+        className="flex items-center gap-2 mb-6 transition-colors"
+        style={{ color: theme.textSecondary }}
       >
         <span className="text-xl">←</span>
         <span className="font-medium">Back to Customers</span>
       </button>
 
       {/* Customer Header Card */}
-      <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+      <div 
+        className="rounded-lg shadow-sm p-6 mb-6"
+        style={{ 
+          background: theme.bgSecondary,
+          border: `1px solid ${theme.border}`,
+          borderRadius: theme.borderRadius
+        }}
+      >
         {/* ... (existing header content) ... */}
         <div className="flex items-start justify-between mb-6">
           <div className="flex gap-6">
             {/* Avatar */}
-            <div className="w-32 h-32 bg-gradient-to-br from-slate-300 to-slate-400 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden">
+            <div 
+              className="w-32 h-32 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden"
+              style={{ background: `linear-gradient(135deg, ${theme.bg}, ${theme.border})`, border: `2px solid ${theme.border}` }}
+            >
               {customer.avatarUrl ? (
                 <img src={customer.avatarUrl} alt={customer.name} className="w-full h-full object-cover" />
               ) : (
-                <User className="w-16 h-16 text-slate-600" />
+                <User className="w-16 h-16" style={{ color: theme.textSecondary }} />
               )}
             </div>
 
@@ -103,73 +119,98 @@ export default function CustomerDetails({ customer: backendCustomer, allRoles }:
             <div className="space-y-3">
               <div>
                 <div className="flex items-center gap-3 mb-1">
-                  <h1 className="text-3xl font-bold text-gray-900">{customer.name}</h1>
-                  <button className="text-gray-400 hover:text-gray-600 transition-colors">
+                  <h1 className="text-3xl font-bold" style={{ color: theme.text }}>{customer.name}</h1>
+                  <button 
+                    className="transition-colors"
+                    style={{ color: theme.textMuted }}
+                  >
                     <Edit2 className="w-5 h-5" />
                   </button>
                 </div>
-                <p className="text-gray-600">
+                <p style={{ color: theme.textSecondary }}>
                   {customer.status} • Member since {customer.memberSince}
                 </p>
               </div>
 
-              <div className="flex items-center gap-2 text-gray-700">
-                <Mail className="w-4 h-4 text-gray-400" />
+              <div className="flex items-center gap-2" style={{ color: theme.textSecondary }}>
+                <Mail className="w-4 h-4" style={{ color: theme.textMuted }} />
                 <span>{customer.email}</span>
-                <button className="text-gray-400 hover:text-gray-600 transition-colors ml-1">
+                <button 
+                  className="transition-colors ml-1"
+                  style={{ color: theme.textMuted }}
+                >
                   <Edit2 className="w-4 h-4" />
                 </button>
               </div>
 
-              <div className="flex items-center gap-2 text-gray-700">
-                <MapPin className="w-4 h-4 text-gray-400" />
+              <div className="flex items-center gap-2" style={{ color: theme.textSecondary }}>
+                <MapPin className="w-4 h-4" style={{ color: theme.textMuted }} />
                 <span>{customer.address}</span>
               </div>
             </div>
           </div>
 
           {/* Status Badge */}
-          <span className={`px-4 py-2 rounded-md text-sm font-semibold ${
-            customer.status === 'Active' 
-              ? 'bg-green-500 text-white' 
-              : 'bg-gray-400 text-white'
-          }`}>
+          <span 
+            className="px-4 py-2 rounded-md text-sm font-semibold"
+            style={{
+              background: customer.status === 'Active' ? theme.success : theme.textMuted,
+              color: theme.textInverse
+            }}
+          >
             {customer.status}
           </span>
         </div>
 
         {/* Contact Row */}
-        <div className="flex items-center justify-between pt-4 border-t border-gray-200">
-          <div className="flex items-center gap-2 text-gray-700">
-            <Phone className="w-4 h-4 text-gray-400" />
+        <div 
+          className="flex items-center justify-between pt-4 border-t"
+          style={{ borderColor: theme.border }}
+        >
+          <div className="flex items-center gap-2" style={{ color: theme.textSecondary }}>
+            <Phone className="w-4 h-4" style={{ color: theme.textMuted }} />
             <span>{customer.phone}</span>
           </div>
-          <div className="flex items-center gap-2 text-gray-700">
-            <User className="w-4 h-4 text-gray-400" />
+          <div className="flex items-center gap-2" style={{ color: theme.textSecondary }}>
+            <User className="w-4 h-4" style={{ color: theme.textMuted }} />
             <span>Orders: {customer.totalOrders} • Spent: {customer.totalSpent} MAD</span>
           </div>
         </div>
       </div>
 
       {/* Navigation Tabs */}
-      <div className="bg-white rounded-lg shadow-sm mb-6 overflow-x-auto">
-        <div className="flex border-b border-gray-200 min-w-max">
+      <div 
+        className="rounded-lg shadow-sm mb-6 overflow-x-auto"
+        style={{ background: theme.bgSecondary, border: `1px solid ${theme.border}` }}
+      >
+        <div 
+          className="flex border-b min-w-max"
+          style={{ borderColor: theme.border }}
+        >
           {tabs.map((tab) => {
             const Icon = tab.icon;
+            const isActive = activeTab === tab.id;
             return (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
                 className={`flex items-center gap-2 px-6 py-4 font-medium transition-colors relative ${
-                  activeTab === tab.id
-                    ? 'text-emerald-600 bg-emerald-50'
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                  isActive
+                    ? ''
+                    : 'hover:bg-opacity-50'
                 }`}
+                style={{
+                  color: isActive ? theme.primary : theme.textSecondary,
+                  background: isActive ? `${theme.primary}10` : 'transparent',
+                }}
               >
                 <Icon className="w-5 h-5" />
                 <span>{tab.label}</span>
-                {activeTab === tab.id && (
-                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-emerald-600"></div>
+                {isActive && (
+                  <div 
+                    className="absolute bottom-0 left-0 right-0 h-0.5"
+                    style={{ background: theme.primary }}
+                  ></div>
                 )}
               </button>
             );
@@ -182,62 +223,91 @@ export default function CustomerDetails({ customer: backendCustomer, allRoles }:
         {activeTab === 'overview' && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Interests and Notes (same as before) */}
-            <div className="bg-white rounded-lg shadow-sm p-6">
+            <div 
+              className="rounded-lg shadow-sm p-6"
+              style={{ background: theme.bgSecondary, border: `1px solid ${theme.border}` }}
+            >
               <div className="flex items-center gap-2 mb-6">
-                <Heart className="w-5 h-5 text-gray-600" />
-                <h2 className="text-xl font-bold text-gray-900">Customer Interests</h2>
+                <Heart className="w-5 h-5" style={{ color: theme.textSecondary }} />
+                <h2 className="text-xl font-bold" style={{ color: theme.text }}>Customer Interests</h2>
               </div>
               <div className="space-y-4">
                 <div>
-                  <h3 className="text-sm font-medium text-gray-600 mb-2">Primary Interest</h3>
+                  <h3 className="text-sm font-medium mb-2" style={{ color: theme.textSecondary }}>Primary Interest</h3>
                   {customer.primaryInterest ? (
-                    <span className="inline-block bg-emerald-500 text-white px-4 py-2 rounded-md font-medium">{customer.primaryInterest}</span>
+                    <span 
+                      className="inline-block px-4 py-2 rounded-md font-medium"
+                      style={{ background: theme.primary, color: theme.textInverse }}
+                    >{customer.primaryInterest}</span>
                   ) : (
-                    <div className="text-gray-400 italic py-2">No primary interest set</div>
+                    <div className="italic py-2" style={{ color: theme.textMuted }}>No primary interest set</div>
                   )}
                 </div>
                 <div>
-                  <h3 className="text-sm font-medium text-gray-600 mb-2">All Interests</h3>
+                  <h3 className="text-sm font-medium mb-2" style={{ color: theme.textSecondary }}>All Interests</h3>
                   <div className="flex flex-wrap gap-2">
                     {customer.allInterests?.map((interest, i) => (
-                      <span key={i} className="bg-white border border-gray-300 text-gray-700 px-3 py-1.5 rounded-md text-sm font-medium">{interest}</span>
-                    )) || <div className="text-gray-400 italic py-2">No interests recorded</div>}
+                      <span 
+                        key={i} 
+                        className="border px-3 py-1.5 rounded-md text-sm font-medium"
+                        style={{ background: theme.bg, color: theme.text, borderColor: theme.border }}
+                      >{interest}</span>
+                    )) || <div className="italic py-2" style={{ color: theme.textMuted }}>No interests recorded</div>}
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="bg-white rounded-lg shadow-sm p-6">
+            <div 
+              className="rounded-lg shadow-sm p-6"
+              style={{ background: theme.bgSecondary, border: `1px solid ${theme.border}` }}
+            >
               <div className="flex items-center gap-2 mb-6">
-                <AlertTriangle className="w-5 h-5 text-red-500" />
-                <h2 className="text-xl font-bold text-gray-900">Important Notes</h2>
+                <AlertTriangle className="w-5 h-5" style={{ color: theme.error }} />
+                <h2 className="text-xl font-bold" style={{ color: theme.text }}>Important Notes</h2>
               </div>
               {customer.importantNotes && customer.importantNotes.length > 0 ? (
                 <div className="space-y-3">
                   {customer.importantNotes.map((note, i) => (
-                    <div key={i} className="bg-red-50 border border-red-200 rounded-md p-4 flex items-start gap-3">
-                      <AlertTriangle className="w-5 h-5 text-red-500 mt-0.5" />
-                      <span className="text-red-800 font-medium">{note}</span>
+                    <div 
+                      key={i} 
+                      className="border rounded-md p-4 flex items-start gap-3"
+                      style={{ background: `${theme.error}10`, borderColor: `${theme.error}30` }}
+                    >
+                      <AlertTriangle className="w-5 h-5 mt-0.5" style={{ color: theme.error }} />
+                      <span className="font-medium" style={{ color: theme.error }}>{note}</span>
                     </div>
                   ))}
                 </div>
               ) : (
-                <div className="bg-gray-50 border border-gray-200 rounded-md p-4 text-center text-gray-400 italic">No important notes</div>
+                <div 
+                  className="border rounded-md p-4 text-center italic"
+                  style={{ background: theme.bg, borderColor: theme.border, color: theme.textMuted }}
+                >No important notes</div>
               )}
             </div>
           </div>
         )}
 
         {activeTab === 'roles' && (
-          <div className="bg-white rounded-lg shadow-sm p-6">
+          <div 
+            className="rounded-lg shadow-sm p-6"
+            style={{ background: theme.bgSecondary, border: `1px solid ${theme.border}` }}
+          >
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-2">
-                <Shield className="w-6 h-6 text-slate-700" />
-                <h2 className="text-xl font-bold text-slate-900">Assigned Roles</h2>
+                <Shield className="w-6 h-6" style={{ color: theme.text }} />
+                <h2 className="text-xl font-bold" style={{ color: theme.text }}>Assigned Roles</h2>
               </div>
               <div className="flex gap-2">
                 <select 
-                  className="px-4 py-2 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 text-sm"
+                  className="px-4 py-2 rounded-lg border focus:outline-none focus:ring-2 text-sm"
+                  style={{ 
+                    background: theme.bg, 
+                    color: theme.text, 
+                    borderColor: theme.border,
+                    boxShadow: `0 0 0 2px ${theme.primary}20` 
+                  }}
                   onChange={(e) => handleAssignRole(e.target.value)}
                   defaultValue=""
                 >
@@ -252,23 +322,34 @@ export default function CustomerDetails({ customer: backendCustomer, allRoles }:
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {customer.roles && customer.roles.length > 0 ? (
                 customer.roles.map((role) => (
-                  <div key={role.id} className="flex items-center justify-between p-4 rounded-xl border border-slate-200 bg-slate-50 group">
+                  <div 
+                    key={role.id} 
+                    className="flex items-center justify-between p-4 rounded-xl border transition-all group"
+                    style={{ background: theme.bg, borderColor: theme.border }}
+                  >
                     <div className="flex items-center gap-3">
-                      <div className="p-2 bg-emerald-100 rounded-lg">
-                        <Shield className="w-4 h-4 text-emerald-600" />
+                      <div 
+                        className="p-2 rounded-lg"
+                        style={{ background: `${theme.success}20` }}
+                      >
+                        <Shield className="w-4 h-4" style={{ color: theme.success }} />
                       </div>
-                      <span className="font-semibold text-slate-900">{role.name}</span>
+                      <span className="font-semibold" style={{ color: theme.text }}>{role.name}</span>
                     </div>
                     <button 
                       onClick={() => handleRemoveRole(role.id)}
-                      className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all opacity-0 group-hover:opacity-100"
+                      className="p-2 rounded-lg transition-all opacity-0 group-hover:opacity-100"
+                      style={{ color: theme.textMuted }}
                     >
                       <Trash2 size={16} />
                     </button>
                   </div>
                 ))
               ) : (
-                <div className="col-span-full py-8 text-center bg-slate-50 rounded-xl border border-dashed border-slate-200 text-slate-400">
+                <div 
+                  className="col-span-full py-8 text-center rounded-xl border border-dashed italic"
+                  style={{ background: theme.bg, borderColor: theme.border, color: theme.textMuted }}
+                >
                   This user has no assigned roles.
                 </div>
               )}

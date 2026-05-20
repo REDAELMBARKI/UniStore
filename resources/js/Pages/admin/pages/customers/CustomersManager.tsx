@@ -6,7 +6,6 @@ import { Input } from '@/components/ui/input';
 import { Card, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import CustomerDetails from './CustomerDetails';
 import { SectionHeader } from '@/admin/components/layout/SectionHeader';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useStoreConfigCtx } from '@/contextHooks/useStoreConfigCtx';
@@ -14,7 +13,8 @@ import { AvatarImage } from '@/components/ui/avatar';
 import { TableMeta } from '@/components/ui/TableMeta';
 import { PaginationTable } from '@/admin/components/layout/Pagination';
 import MultiSelectDropdownForObject, { AllowedObjectsType } from '@/components/ui/MultiSelectDropdownForObject';
-import { usePage } from '@inertiajs/react';
+import { usePage, router } from '@inertiajs/react';
+import { route } from 'ziggy-js';
 
 // Types
 type CustomerStatus = 'active' | 'vip' | 'blocked';
@@ -367,8 +367,6 @@ export default function CustomersManager() {
 
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
-  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
-  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
 
   const filteredCustomers = useMemo(() => {
     return customers.filter((customer: any) => {
@@ -397,8 +395,7 @@ export default function CustomersManager() {
   }, [customers]);
 
   const handleViewDetails = (customer: Customer) => {
-    setSelectedCustomer(customer);
-    setIsDetailsOpen(true);
+    router.visit(route('customers.show', { id: customer.id }));
   };
 
   return (
@@ -407,19 +404,18 @@ export default function CustomersManager() {
         <SectionHeader
           title="Customers Management"
           description="View and manage your store customers"
-          actions={
-            <div className="flex gap-3">
-              <Button variant="outline" size="sm" className="h-9">
-                <Download className="mr-2 h-4 w-4" />
-                Export
-              </Button>
-              <Button size="sm" className="h-9">
-                <Plus className="mr-2 h-4 w-4" />
-                Add Customer
-              </Button>
-            </div>
-          }
-        />
+        >
+          <div className="flex gap-3">
+            <Button variant="outline" size="sm" className="h-9">
+              <Download className="mr-2 h-4 w-4" />
+              Export
+            </Button>
+            <Button size="sm" className="h-9">
+              <Plus className="mr-2 h-4 w-4" />
+              Add Customer
+            </Button>
+          </div>
+        </SectionHeader>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <StatsCard
@@ -466,11 +462,6 @@ export default function CustomersManager() {
           hasActiveFilters={searchQuery !== '' || statusFilter !== 'all'}
         />
 
-        <CustomerDetails
-          customer={selectedCustomer}
-          open={isDetailsOpen}
-          onClose={() => setIsDetailsOpen(false)}
-        />
       </div>
     </AdminLayout>
   );
