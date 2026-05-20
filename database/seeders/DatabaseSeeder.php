@@ -2,10 +2,6 @@
 
 namespace Database\Seeders;
 
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-
-use App\Models\Coupon;
-use App\Models\ProductAttribute;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -15,37 +11,33 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-     
-    
-
-       $this->call([
-           AppFactoryConfigSeeder::class ,
-           MediaSeeder::class ,
-           BannerSeeder::class, 
-           RuleBasedCollectionsSeeder::class , 
-           HomeLayoutOrcSeeder::class ,
-           storeSettingSeeder::class,
-           BadgeSeeder::class ,
-           UserSeeder::class ,
-           TagSeeder::class,
-           CategorySeeder::class,
-           ProductSeeder::class ,
-           ProductVariantSeeder::class ,
-           CouponSeeder::class ,
-           PromotionSeeder::class ,
-           OrderSeeder::class ,
+        $this->call([
+            AppFactoryConfigSeeder::class,
+            storeSettingSeeder::class,
+            UserSeeder::class,
+            TagSeeder::class,
+            
+            // Core Dependencies
+            CategorySeeder::class,
+            BadgeSeeder::class,
+            
+            // Content
+            ProductSeeder::class,
+            BannerSeeder::class,
+            RuleBasedCollectionsSeeder::class,
+            
+            // Orchestration
+            HomeLayoutOrcSeeder::class,
+            
+            // Other settings/support
+            CouponSeeder::class,
+            PromotionSeeder::class,
+            OrderSeeder::class,
             CartSeeder::class,
-            ShippingSettingSeeder::class ,
-            ShippingZoneSeeder::class ,
-            VariantOptionSeeder::class ,
+            ShippingSettingSeeder::class,
+            ShippingZoneSeeder::class,
+            VariantOptionSeeder::class,
             ReviewSeeder::class,
-            
-            
-            // AttributesSeeder::class , 
-
-          //  WishListSeeder::class,
-    
-        // Add more seeders here...
-      ]);
+        ]);
     }
 }
