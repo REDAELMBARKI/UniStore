@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Heart, ShoppingCart, Eye, Star } from 'lucide-react';
 import { ProductClient } from '@/types/clientSideTypes';
+import { getProductImage } from '@/lib/utils';
 
 interface ProductCardProps {
   product: ProductClient;
@@ -66,7 +67,7 @@ export const ProductCardMaster: React.FC<ProductCardProps> = ({
         {/* Image side */}
         <div style={{ position: 'relative', overflow: 'hidden', minHeight: 360 }}>
           <img
-            src={product.image}
+            src={getProductImage(product)}
             alt={product.name}
             style={{
               width: '100%',
@@ -231,7 +232,7 @@ export const ProductCardMaster: React.FC<ProductCardProps> = ({
         }}
       >
         <img
-          src={product.image}
+          src={getProductImage(product)}
           alt={product.name}
           style={{
             width: '100%',

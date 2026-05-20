@@ -20,6 +20,7 @@ export const Card5: React.FC<any> = ({ product, onAddToCart, onViewDetails }) =>
                     images={product.images || [product.image]} 
                     alt={product.name} 
                     className="w-full h-full grayscale group-hover:grayscale-0 transition-all duration-500" 
+                    productId={product.id}
                  />
                  <div className="absolute inset-0 bg-slate-900/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4">
                     <button 

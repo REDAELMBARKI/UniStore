@@ -1,18 +1,31 @@
 import React, { useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { getProductPlaceholder } from '@/lib/utils';
 
 interface ProductImageSlideshowProps {
-    images: string[];
+    images: any[];
     alt: string;
     className?: string;
+    productId?: string | number;
 }
 
-export default function ProductImageSlideshow({ images, alt, className = "" }: ProductImageSlideshowProps) {
+export default function ProductImageSlideshow({ images, alt, className = "", productId }: ProductImageSlideshowProps) {
     const [currentIndex, setCurrentIndex] = useState(0);
 
-    if (!images || images.length === 0) return null;
+    const getImageSrc = (img: any) => {
+        const url = typeof img === 'string' ? img : img?.url;
+        if (url && (url.startsWith('http') || (url.startsWith('/storage/') && !url.includes('/storage/products/')))) {
+            return url;
+        }
+        return getProductPlaceholder(productId || alt);
+    };
+
+    if (!images || images.length === 0) {
+        return <img src={getProductPlaceholder(productId || alt)} alt={alt} className={className} />;
+    }
+
     if (images.length === 1) {
-        return <img src={images[0]} alt={alt} className={className} />;
+        return <img src={getImageSrc(images[0])} alt={alt} className={className} />;
     }
 
     const nextImage = (e: React.MouseEvent) => {
@@ -30,7 +43,7 @@ export default function ProductImageSlideshow({ images, alt, className = "" }: P
     return (
         <div className={`relative group/slideshow ${className}`}>
             <img 
-                src={images[currentIndex]} 
+                src={getImageSrc(images[currentIndex])} 
                 alt={`${alt} - ${currentIndex + 1}`} 
                 className="w-full h-full object-cover transition-opacity duration-300" 
             />

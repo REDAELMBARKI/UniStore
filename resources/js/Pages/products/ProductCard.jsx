@@ -1,5 +1,6 @@
 import React from 'react';
 import { Heart, ShoppingCart, Star, Eye } from 'lucide-react';
+import { getProductImage } from '../../lib/utils';
 // import { motion } from 'framer-motion';
 // import { Product } from '../../types';
 import { useCart } from '../../context/CartContext';
@@ -55,7 +56,7 @@ export const ProductCard= ({
                   {/* Image Container */}
                   <div className="relative overflow-hidden aspect-square">
                       <img
-                          src={product.image}
+                          src={getProductImage(product)}
                           alt={product.name}
                           className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                       />

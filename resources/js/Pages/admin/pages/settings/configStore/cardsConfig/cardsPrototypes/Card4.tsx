@@ -16,6 +16,7 @@ const Card4 = ({ product, onAddToCart, onViewDetails }:{product : any, onAddToCa
         images={product.images || [product.image]} 
         alt={product.name} 
         className="w-full h-64 transition-transform duration-500 group-hover:scale-105" 
+        productId={product.id}
       />
       <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent flex flex-col justify-end p-4 pointer-events-none">
         <div className="pointer-events-auto">

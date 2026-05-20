@@ -1,5 +1,6 @@
 import type { Product, CollectionSortable } from '@/types/homeEditor';
 import { ThemePalette } from '@/types/ThemeTypes';
+import { getProductPlaceholder } from '@/lib/utils';
 
 type ProductCardProps = {
   product: Product;
@@ -9,6 +10,10 @@ type ProductCardProps = {
 };
 
 export function ProductCard({ product, cardConfig, isLast, theme }: ProductCardProps) {
+  const thumbnail = (product.thumbnail && (product.thumbnail.startsWith('http') || (product.thumbnail.startsWith('/storage/') && !product.thumbnail.includes('/storage/products/')))) 
+    ? product.thumbnail 
+    : getProductPlaceholder(product.id);
+
   return (
     <div style={{
       flex: 1,
@@ -19,7 +24,7 @@ export function ProductCard({ product, cardConfig, isLast, theme }: ProductCardP
     }}>
       <div style={{ aspectRatio: cardConfig.aspectRatio, background: theme.card, overflow: 'hidden' }}>
         <img
-          src={product.thumbnail}
+          src={thumbnail}
           alt={product.name}
           style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.9 }}
         />

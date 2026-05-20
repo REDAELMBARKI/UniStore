@@ -14,6 +14,7 @@ const Card2 = ({ product, onAddToCart, onViewDetails }:{product : any, onAddToCa
                     images={product.images || [product.image]} 
                     alt={product.name ?? 'image'} 
                     className="w-full h-80 transition-transform duration-500 group-hover:scale-110" 
+                    productId={product.id}
                   />
                   
                   {/* Product Actions */}

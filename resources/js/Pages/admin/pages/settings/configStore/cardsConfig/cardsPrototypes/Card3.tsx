@@ -17,6 +17,7 @@ const Card3 = ({ product, onAddToCart, onViewDetails }:{product : any, onAddToCa
           images={product.images || [product.image]} 
           alt={product.name} 
           className="w-full h-52" 
+          productId={product.id}
         />
         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
           <button 

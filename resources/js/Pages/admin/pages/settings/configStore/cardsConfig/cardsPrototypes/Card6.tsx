@@ -16,6 +16,7 @@ export const Card6 = ({ product, onAddToCart, onViewDetails }:{product:any, onAd
         images={product.images || [product.image]} 
         alt={product.name} 
         className="w-full h-full transition-transform duration-700 group-hover:scale-110" 
+        productId={product.id}
       />
       <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent flex flex-col justify-end p-6 pointer-events-none">
         <div className="pointer-events-auto">
