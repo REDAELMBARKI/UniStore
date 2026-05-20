@@ -19,7 +19,6 @@ return new class extends Migration {
             $table->json('card_config')->nullable();   // aspectRatio, borderRadius, textAlign
             
             $table->boolean('is_active')->default(true);
-            $table->integer('order')->default(0);      // Removed unique() to allow easier re-ordering logic
             $table->timestamps();
         });
     }

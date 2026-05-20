@@ -207,10 +207,12 @@ export default function CollectionEditor() {
   const {
     collections = [],
     app_factory_config = [],
-    selectedCollection
+    selectedCollection,
+    errors // Added errors from usePage props
   } = usePage().props as any;
 
   const [isSaving, setIsSaving] = useState(false);
+  const [showToast, setShowToast] = useState<{ show: boolean, message: string, type: 'success' | 'error' }>({ show: false, message: '', type: 'success' });
   const [sections, setSections] = useState<any[]>(collections);
   const [activeId, setActiveId] = useState<number>(selectedCollection?.id || collections[0]?.id);
   const [globalCardConfig, setGlobalCardConfig] = useState<any>(
@@ -282,7 +284,6 @@ export default function CollectionEditor() {
     const payload = {
       ...activeSection,
       card_config: globalCardConfig,
-      order_manifest: sections.map((s, idx) => ({ id: s.id, order: idx }))
     };
 
     router.put(
@@ -292,7 +293,6 @@ export default function CollectionEditor() {
         onBefore: () => setIsSaving(true),
         onSuccess: (page) => {
           const freshSections = page.props.collections as any[];
-          // Extract specific card_config for the current active section from refreshed data
           const freshActiveConfig = freshSections.find(s => s.id === activeId)?.card_config;
 
           setSavedSnapshot({
@@ -301,6 +301,18 @@ export default function CollectionEditor() {
           });
           setSections(freshSections);
           setGlobalCardConfig(freshActiveConfig);
+          
+          setShowToast({ show: true, message: 'Collection published successfully!', type: 'success' });
+          setTimeout(() => setShowToast(prev => ({ ...prev, show: false })), 3000);
+        },
+        onError: (err) => {
+          console.error('Publish errors:', err);
+          setShowToast({ 
+            show: true, 
+            message: `Publish failed: ${Object.values(err)[0] || 'Unknown validation error'}`, 
+            type: 'error' 
+          });
+          setTimeout(() => setShowToast(prev => ({ ...prev, show: false })), 5000);
         },
         onFinish: () => setIsSaving(false),
         preserveScroll: true,
@@ -309,15 +321,19 @@ export default function CollectionEditor() {
   };
 
   const resetToFactory = () => {
-    const factory = app_factory_config.find((f: any) => f.config_key === activeSection.key.startsWith("collections") ? activeSection.key : `collections.${activeSection.key}`);
+    // Find factory config matching current collection key
+    const factory = app_factory_config.find((f: any) => f.config_key === activeSection.key);
+    
     if (factory) {
       updateSection({
         layout_config: { ...factory.layout_config },
         rules: [...factory.rules],
-        active: factory.active,
+        is_active: factory.is_active ?? true,
         name: factory.name,
       });
       setGlobalCardConfig({ ...factory.card_config });
+    } else {
+      console.warn("No factory config found for key:", activeSection.key);
     }
   };
 
@@ -368,6 +384,51 @@ export default function CollectionEditor() {
           onDiscard={handleDiscard}
           onKeep={() => setPendingSwitchId(null)}
         />
+      )}
+
+      {/* Custom Toast Feedback */}
+      {showToast.show && (
+        <div 
+          className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[100] px-6 py-3 rounded-2xl border shadow-2xl flex items-center gap-3 animate-in fade-in slide-in-from-bottom-4 duration-300"
+          style={{ 
+            backgroundColor: theme.bgSecondary, 
+            borderColor: showToast.type === 'success' ? `${theme.primary}40` : `${theme.error || '#ef4444'}40`,
+            color: theme.text
+          }}
+        >
+          <div 
+            className="w-8 h-8 rounded-full flex items-center justify-center"
+            style={{ backgroundColor: showToast.type === 'success' ? `${theme.primary}20` : `${theme.error || '#ef4444'}20` }}
+          >
+            {showToast.type === 'success' ? (
+              <Save size={14} style={{ color: theme.primary }} />
+            ) : (
+              <AlertTriangle size={14} style={{ color: theme.error || '#ef4444' }} />
+            )}
+          </div>
+          <span className="text-xs font-black uppercase tracking-wider">{showToast.message}</span>
+        </div>
+      )}
+
+      {/* Validation Errors Display below preview */}
+      {Object.keys(errors).length > 0 && (
+        <div className="fixed top-20 right-80 z-50 max-w-xs animate-in fade-in slide-in-from-top-4">
+          <div 
+            className="p-4 rounded-xl border-l-4 shadow-lg bg-red-50 border-red-500"
+          >
+            <div className="flex items-center gap-2 mb-2 text-red-800">
+              <AlertTriangle size={16} />
+              <span className="text-[10px] font-black uppercase">Validation Errors</span>
+            </div>
+            <ul className="space-y-1">
+              {Object.entries(errors).map(([key, msg]: [string, any]) => (
+                <li key={key} className="text-[10px] text-red-600 font-bold leading-tight">
+                  • {msg}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
       )}
     </div>
   );

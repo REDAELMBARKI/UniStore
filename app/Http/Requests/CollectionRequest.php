@@ -21,31 +21,43 @@ class CollectionRequest extends FormRequest
      */
     public function rules(): array
     {
-            return [
-                'identifier'    => ['nullable', 'string', 'max:100', 'unique:rule_based_collections,identifier,' . $this->route('collection')],
-                'name'          => ['nullable', 'string', 'max:255'],
-                'section_type'  => ['nullable', 'string', 'in:deals,category,featured,default'],
-                'is_active'     => ['boolean'],
-                'order'         => ['integer', 'min:0'],
-                
-                'rules'         => ['nullable', 'array'],
-                'rules.*.id'    => ['nullable', 'string'],
-                'rules.*.field' => ['nullable', 'string', 'in:discount,price,stock,category_id,brand_id'],
-                'rules.*.operator' => ['nullable', 'string', 'in:=,>=,<=,>,<,like'],
-                'rules.*.value' => ['nullable', 'string'],
-
-                'layout_config'               => ['nullable', 'array'],
-                'layout_config.displayLimit'  => ['nullable', 'integer', 'min:1', 'max:50'],
-                'layout_config.gap'           => ['nullable', 'integer', 'min:0'],
-                'layout_config.paddingInline' => ['nullable', 'integer', 'min:0'],
-
-                'card_config'              => ['nullable', 'array'],
-                'card_config.aspectRatio'  => ['nullable', 'string', 'regex:/^\d+\/\d+$/'], // e.g., 1/1, 3/4
-                'card_config.borderRadius' => ['nullable', 'integer', 'min:0'],
-                'card_config.showPrice'    => ['boolean'],
-                'card_config.showBadge'    => ['boolean'],
-                'card_config.textAlign'    => ['nullable', 'in:left,center,right'],
-                'card_config.hoverEffect'  => ['nullable', 'in:none,zoom,fade,lift'],
-            ];
+        $collection = $this->route('collection');
+        
+        // Handle both model binding and raw ID/slug from route
+        $id = null;
+        if ($collection instanceof \App\Models\RuleBasedCollection) {
+            $id = $collection->id;
+        } elseif (is_string($collection) || is_numeric($collection)) {
+            // If it's a slug or ID string, find the ID
+            $found = \App\Models\RuleBasedCollection::where('id', $collection)
+                ->orWhere('slug', $collection)
+                ->first();
+            $id = $found ? $found->id : null;
         }
+
+        return [
+            'key'           => ['required', 'string', 'max:100', 'unique:rule_based_collections,key,' . $id],
+            'name'          => ['required', 'string', 'max:255'],
+            'is_active'     => ['nullable', 'boolean'],
+            
+            'rules'         => ['nullable', 'array'],
+            'rules.*.id'    => ['nullable', 'string'],
+            'rules.*.field' => ['nullable', 'string'],
+            'rules.*.operator' => ['nullable', 'string'],
+            'rules.*.value' => ['nullable'],
+
+            'layout_config'               => ['nullable', 'array'],
+            'layout_config.displayLimit'  => ['nullable', 'integer', 'min:1', 'max:100'],
+            'layout_config.gap'           => ['nullable', 'integer', 'min:0'],
+            'layout_config.paddingInline' => ['nullable', 'integer', 'min:0'],
+
+            'card_config'              => ['nullable', 'array'],
+            'card_config.aspectRatio'  => ['nullable', 'string'],
+            'card_config.borderRadius' => ['nullable', 'integer', 'min:0'],
+            'card_config.showPrice'    => ['nullable', 'boolean'],
+            'card_config.showBadge'    => ['nullable', 'boolean'],
+            'card_config.textAlign'    => ['nullable', 'string'],
+            'card_config.hoverEffect'  => ['nullable', 'string'],
+        ];
+    }
 }

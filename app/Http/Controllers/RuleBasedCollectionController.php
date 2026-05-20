@@ -14,10 +14,18 @@ class RuleBasedCollectionController extends Controller
     public function index()
     {
         $collections = RuleBasedCollection::orderBy('id')->get();
+        $app_factory_config = AppFactoryConfig::where("config_key" , "LIKE", "collections.%")
+                                                ->get(['id' , 'config_key', 'payload'])
+                                                ->map(function($config) { 
+                                                    return array_merge($config->payload , [
+                                                        "id" => $config->id,
+                                                        "config_key" => $config->config_key
+                                                    ]); 
+                                                });
 
         return Inertia::render('admin/pages/store/RuleBasedCollections/CollectionEditor', [
               "collections" => $collections,
-              "app_factory_config" => [],
+              "app_factory_config" => $app_factory_config,
               "selectedCollection" => null
         ]);
     }
@@ -25,9 +33,13 @@ class RuleBasedCollectionController extends Controller
     {
         $collections = RuleBasedCollection::orderBy('id')->get();
         $app_factory_config = AppFactoryConfig::where("config_key" , "LIKE", "collections.%")
-                                                ->where("config_key" , $collection->key)
                                                 ->get(['id' , 'config_key', 'payload'])
-                                                ->map(function($config) { return array_merge($config->payload , ["id" => $config->id]) ; })  ;
+                                                ->map(function($config) { 
+                                                    return array_merge($config->payload , [
+                                                        "id" => $config->id,
+                                                        "config_key" => $config->config_key
+                                                    ]); 
+                                                });
        
         return Inertia::render('admin/pages/store/RuleBasedCollections/CollectionEditor', [
               "collections" => $collections,
@@ -37,17 +49,28 @@ class RuleBasedCollectionController extends Controller
     }
 
 
-    public function update(RuleBasedCollection $collection , CollectionRequest $collection_request)
+    public function update(RuleBasedCollection $collection, CollectionRequest $request)
     {
-        $collection->update($collection_request->validated()) ;
-        $app_factory_config = AppFactoryConfig::where("config_key" , "LIKE", "collections.%")->get(['id' , 'payload'])
-        ->map(function($config) { return array_merge($config->payload , ["id" => $config->id]) ; })  ;
+        $collection->update($request->validated());
+
+        // Refresh model to get latest data
+        $collection->refresh();
+
         $collections = RuleBasedCollection::orderBy('id')->get();
+        $app_factory_config = AppFactoryConfig::where("config_key", "LIKE", "collections.%")
+            ->get(['id', 'config_key', 'payload'])
+            ->map(function ($config) {
+                return array_merge($config->payload, [
+                    "id" => $config->id,
+                    "config_key" => $config->config_key
+                ]);
+            });
+
         return Inertia::render('admin/pages/store/RuleBasedCollections/CollectionEditor', [
-              "collections" => $collections,
-              "app_factory_config" => $app_factory_config,
+            "collections" => $collections,
+            "app_factory_config" => $app_factory_config,
+            "selectedCollection" => $collection
         ]);
-       
     }
 
 

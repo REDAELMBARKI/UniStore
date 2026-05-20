@@ -216,7 +216,7 @@ export default function CollectionEditorInspector({
             {[
               { label: 'Show Price',        key: 'showPrice', target: 'card'    },
               { label: 'Show Promo Badges', key: 'showBadge', target: 'card'    },
-              { label: 'Visible to Public', key: 'active',    target: 'section' },
+              { label: 'Visible to Public', key: 'is_active', target: 'section' },
             ].map((item) => (
               <div
                 key={item.key}

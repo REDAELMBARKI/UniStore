@@ -22,7 +22,7 @@ class AppFactoryConfigSeeder extends Seeder
                 'payload' => [
                     'section_type' => 'deals',
                     'name' => 'Top Deals',
-                    'active' => true,
+                    'is_active' => true,
                     'layout_config' => [
                         'displayLimit' => 4, 
                         'gap' => 16, 
@@ -47,7 +47,7 @@ class AppFactoryConfigSeeder extends Seeder
                 'payload' => [
                     'section_type' => 'category',
                     'name' => 'Featured Footwear',
-                    'active' => true,
+                    'is_active' => true,
                     'layout_config' => [
                         'displayLimit' => 3, 
                         'gap' => 24, 
