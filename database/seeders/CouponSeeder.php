@@ -15,10 +15,13 @@ class CouponSeeder extends Seeder
      */
     public function run(): void
     {
+        // Clear existing coupons to avoid duplicates during presentation seeding
+        \DB::table('coupons')->delete();
+
         // 1. No Rules Coupon - Perfect for testing basic flow
         Coupon::create([
             'code' => 'allcanuseitnorules',
-            'name' => 'Unlimited General Discount',
+            'description' => 'Unlimited General Discount',
             'type' => 'fixed',
             'value' => 10,
             'is_active' => true,
@@ -34,7 +37,7 @@ class CouponSeeder extends Seeder
         // 2. High Value - Minimum Amount Required
         Coupon::create([
             'code' => 'BIGSPENDER50',
-            'name' => 'Premium Order Discount',
+            'description' => 'Premium Order Discount (Requires $200 min spend)',
             'type' => 'fixed',
             'value' => 50,
             'is_active' => true,
@@ -47,7 +50,7 @@ class CouponSeeder extends Seeder
         // 3. Percentage - Minimum Items Required
         Coupon::create([
             'code' => 'BUYMORE20',
-            'name' => 'Bulk Purchase Reward',
+            'description' => 'Bulk Purchase Reward (Requires 3+ items)',
             'type' => 'percentage',
             'value' => 20,
             'is_active' => true,
@@ -60,7 +63,7 @@ class CouponSeeder extends Seeder
         // 4. Usage Limited - Already Sold Out
         Coupon::create([
             'code' => 'LIMITED10',
-            'name' => 'Flash Sale (Expired)',
+            'description' => 'Flash Sale (Fully used up)',
             'type' => 'fixed',
             'value' => 10,
             'is_active' => true,
@@ -72,7 +75,7 @@ class CouponSeeder extends Seeder
         // 5. Time Limited - Not Yet Active
         Coupon::create([
             'code' => 'FUTURE15',
-            'name' => 'Upcoming Holiday Sale',
+            'description' => 'Upcoming Holiday Sale (Starts in a week)',
             'type' => 'percentage',
             'value' => 15,
             'is_active' => true,
@@ -81,9 +84,9 @@ class CouponSeeder extends Seeder
         ]);
 
         // 6. Basic Active Percentage
-        Coupon::factory()->active()->percentage()->create(['code' => 'SAVE10', 'value' => 10]);
+        Coupon::factory()->active()->percentage()->create(['code' => 'SAVE10', 'value' => 10, 'description' => 'Save 10% on your order']);
         
         // 7. Basic Active Fixed
-        Coupon::factory()->active()->fixed()->create(['code' => 'FLAT25', 'value' => 25]);
+        Coupon::factory()->active()->fixed()->create(['code' => 'FLAT25', 'value' => 25, 'description' => 'Flat $25 discount']);
     }
 }
