@@ -89,6 +89,9 @@ Route::post('/order/buy-now/now', [OrderController::class , 'store'])->name('ord
 
 // cart
 Route::get('/cart', [CartController::class , 'index'])->name('shoppingCart.index');
+Route::post('/cart', [CartController::class , 'store'])->name('cart.store');
+Route::patch('/cart/{id}', [CartController::class , 'update'])->name('cart.update');
+Route::delete('/cart/clear', [CartController::class , 'clear'])->name('cart.clear');
 Route::delete('/cart/{id}', [CartController::class , 'destroy'])->name('cart.destroy');
 
 // checkout steps routes (this fakes the url to make steps work fine)
@@ -134,6 +137,9 @@ Route::delete('admin/promotions/{promotion}', [AdminPromotionController::class, 
 
 Route::get('/marketplace', [MarketplaceController::class, 'index'])->name('marketplace.index');
 
+// Public Product Detail
+Route::get('/products/{product}', [ProductController::class, 'show'])->name('product.show');
+
 // products
 // Route::resource('/products', ProductController::class );
 Route::prefix('products')->group(function(){
@@ -141,7 +147,7 @@ Route::prefix('products')->group(function(){
     Route::get('/drafts' , [ProductController::class, 'drafts'])->name('drafts.index') ;
     Route::get('/create' , [ProductController::class, 'create'])->name('products.create') ;
     Route::get('/{product}/edit' , [ProductController::class, 'edit'])->name('product.edit') ;
-    Route::get('/{product}' , [ProductController::class, 'show'])->name('product.show') ;
+    // Route::get('/{product}' , [ProductController::class, 'show'])->name('product.show') ;
   // drafts
     Route::post('/drafts' , [ProductController::class, 'storeDraft'])->name('products.storeDraft');
     Route::patch('/{product}/publish' , [ProductController::class, 'publish'])->name('product.publish');

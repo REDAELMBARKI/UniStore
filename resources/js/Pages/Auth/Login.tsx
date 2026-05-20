@@ -24,8 +24,8 @@ export default function Login() {
                 {/* Google Login Button */}
                 <button
                     type="button"
-                    onClick={() => post('google.login') }
-                    className="w-full mb-6 flex items-center justify-center gap-3 bg-white border border-gray-300 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-50 transition"
+                    onClick={() => window.location.href = route('google.login')}
+                    className="w-full mb-6 flex items-center justify-center gap-3 bg-white border border-gray-300 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-50 transition font-medium"
                 >
                     <svg className="w-5 h-5" viewBox="0 0 24 24">
                         <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>

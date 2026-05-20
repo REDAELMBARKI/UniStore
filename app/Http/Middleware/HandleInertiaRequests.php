@@ -41,6 +41,8 @@ class HandleInertiaRequests extends Middleware
                 'error'   => $request->session()->get('error'),
                 'errors'  => $request->session()->get('errors'), 
             ],
+            'cartCount' => $request->user() ? \App\Models\Cart::where('user_id', $request->user()->id)->sum('quantity') : 0,
+            'cartItems' => $request->user() ? app(\App\Services\CartService::class)->getCartItems(false) : [],
         ];
     }
 }

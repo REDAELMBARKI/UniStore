@@ -15,10 +15,12 @@ import {
   Instagram,
   Twitter
 } from 'lucide-react';
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, usePage } from '@inertiajs/react';
 import CartSideBar from '@/Pages/cart/cartlisting/CartSideBar';
 import StoreConfigProvider from '@/contextProvoders/StoreConfigProvider';
 import { ToastProvider } from '@/contextProvoders/ToastProvider';
+import { useToast } from '@/contextHooks/useToasts';
+import { useEffect } from 'react';
 
 
 interface LayoutProps {
@@ -33,7 +35,6 @@ interface LayoutProps {
 const Layout = ({ children, currentPage = 'home' , seo }:LayoutProps) => {
      return (
        <ToastProvider>
-         
           <StoreConfigProvider >
                       <LayoutContent {...{children , currentPage , seo}}/>
           </StoreConfigProvider>
@@ -42,9 +43,37 @@ const Layout = ({ children, currentPage = 'home' , seo }:LayoutProps) => {
 } 
 
 const LayoutContent = ({ children, currentPage , seo}:LayoutProps) => {
+  const { props } = usePage();
+  const { flash, cartCount, cartItems: sharedCartItems, auth } = props as any;
+  const { addToast } = useToast();
+  
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+
+  useEffect(() => {
+    if (flash?.success) {
+      addToast({
+        type: 'success',
+        title: 'Success',
+        description: flash.success
+      });
+    }
+    if (flash?.error) {
+      addToast({
+        type: 'error',
+        title: 'Error',
+        description: flash.error
+      });
+    }
+    if (flash?.errors?.error) {
+      addToast({
+        type: 'error',
+        title: 'Error',
+        description: flash.errors.error
+      });
+    }
+  }, [flash]);
 
   const navigation = [
     { name: 'Home', href: '/', active: currentPage === 'home'},
@@ -55,13 +84,7 @@ const LayoutContent = ({ children, currentPage , seo}:LayoutProps) => {
     { name: 'Contact', href: '/contact' }
   ];
 
-  const cartItems = [
-    { id: 1, name: 'White Shirt Pleat', price: 19.00, quantity: 1, image: 'https://images.pexels.com/photos/996329/pexels-photo-996329.jpeg?auto=compress&cs=tinysrgb&w=100' },
-    { id: 2, name: 'Converse All Star', price: 39.00, quantity: 1, image: 'https://images.pexels.com/photos/2529148/pexels-photo-2529148.jpeg?auto=compress&cs=tinysrgb&w=100' },
-    { id: 3, name: 'Nixon Porter Leather', price: 17.00, quantity: 1, image: 'https://images.pexels.com/photos/190819/pexels-photo-190819.jpeg?auto=compress&cs=tinysrgb&w=100' }
-  ];
-
-  const total = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const total = (sharedCartItems || []).reduce((sum, item) => sum + (item.price_snapshot * item.quantity), 0);
 
   return (<>
     {/* header and meta data for seo */}
@@ -83,7 +106,14 @@ const LayoutContent = ({ children, currentPage , seo}:LayoutProps) => {
               </div>
               <div className="hidden md:flex space-x-6 text-gray-600">
                 <a href="#" className="hover:text-gray-900 transition-colors">Help & FAQs</a>
-                <a href="#" className="hover:text-gray-900 transition-colors">My Account</a>
+                {auth?.user ? (
+                  <Link href={route('dashboard.overview')} className="hover:text-gray-900 transition-colors">My Account</Link>
+                ) : (
+                  <>
+                    <Link href={route('login')} className="hover:text-gray-900 transition-colors">Login</Link>
+                    <Link href={route('register')} className="hover:text-gray-900 transition-colors">Register</Link>
+                  </>
+                )}
                 <a href="#" className="hover:text-gray-900 transition-colors">EN</a>
                 <a href="#" className="hover:text-gray-900 transition-colors">USD</a>
               </div>
@@ -154,7 +184,7 @@ const LayoutContent = ({ children, currentPage , seo}:LayoutProps) => {
                 >
                   <ShoppingCart className="w-5 h-5" />
                   <span className="absolute -top-1 -right-1 bg-blue-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                    {cartItems.length}
+                    {cartCount || 0}
                   </span>
                 </button>
                 <button className="relative p-2 text-gray-600 hover:text-gray-900 transition-colors">
@@ -259,7 +289,7 @@ const LayoutContent = ({ children, currentPage , seo}:LayoutProps) => {
 
       {/* Cart Sidebar */}
       {isCartOpen && (
-         <CartSideBar cartItems={cartItems} total={total}  onClose={() => setIsCartOpen(false)}/>
+         <CartSideBar cartItems={sharedCartItems || []} total={total}  onClose={() => setIsCartOpen(false)}/>
       )}
 
       {/* Main Content */}

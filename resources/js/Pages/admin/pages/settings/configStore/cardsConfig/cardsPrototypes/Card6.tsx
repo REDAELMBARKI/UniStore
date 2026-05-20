@@ -1,20 +1,23 @@
 import { useStoreConfigCtx } from "@/contextHooks/useStoreConfigCtx";
 import ProductImageSlideshow from "@/components/partials/ProductImageSlideshow";
 import { ProductClient } from "@/types/clientSideTypes";
-import { Star } from "lucide-react";
+import { Star, Eye, ShoppingCart } from "lucide-react";
 
 // Card 4: Overlay Card
-export const Card6 = ({ product }:{product:any}) => {
+export const Card6 = ({ product, onAddToCart, onViewDetails }:{product:any, onAddToCart: any, onViewDetails: any}) => {
     const {state :{currentCardConf :{isRounded , showPrice , showRating , showBorder}} } = useStoreConfigCtx()
 
   return (
-    <div className={`relative rounded-xl overflow-hidden group h-full aspect-[4/5] ${showBorder ? 'border-2 border-slate-300' : 'shadow-lg'}`}>
+    <div 
+      className={`relative rounded-xl overflow-hidden group h-full aspect-[4/5] cursor-pointer ${showBorder ? 'border-2 border-slate-300' : 'shadow-lg'}`}
+      onClick={onViewDetails}
+    >
       <ProductImageSlideshow 
         images={product.images || [product.image]} 
         alt={product.name} 
         className="w-full h-full transition-transform duration-700 group-hover:scale-110" 
       />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent flex flex-col justify-end p-6 pointer-events-none">
+      <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent flex flex-col justify-end p-6 pointer-events-none">
         <div className="pointer-events-auto">
             <h3 className="font-bold text-white text-xl mb-2">{product.name}</h3>
             <div className="flex flex-col gap-3">
@@ -29,9 +32,21 @@ export const Card6 = ({ product }:{product:any}) => {
                         </div>
                     )}
                 </div>
-                <button className="w-full bg-white text-black py-2.5 rounded-lg text-sm font-bold hover:bg-slate-100 transition-colors">
-                Add to Cart
-                </button>
+                <div className="flex gap-2">
+                  <button 
+                    className="flex-1 bg-white text-black py-2.5 rounded-lg text-sm font-bold hover:bg-orange-500 hover:text-white transition-all flex items-center justify-center gap-2"
+                    onClick={onAddToCart}
+                  >
+                    <ShoppingCart className="w-4 h-4" />
+                    Cart
+                  </button>
+                  <button 
+                    className="bg-white/20 backdrop-blur-sm text-white p-2.5 rounded-lg hover:bg-white hover:text-black transition-all"
+                    onClick={(e) => { e.stopPropagation(); onViewDetails(e); }}
+                  >
+                    <Eye className="w-5 h-5" />
+                  </button>
+                </div>
             </div>
         </div>
       </div>

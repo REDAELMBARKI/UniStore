@@ -10,10 +10,56 @@ import { Card5 } from '@/Pages/admin/pages/settings/configStore/cardsConfig/card
 import { Card6 } from '@/Pages/admin/pages/settings/configStore/cardsConfig/cardsPrototypes/Card6'
 import { ProductClient } from '@/types/clientSideTypes'
 import {  CardOption } from '@/types/StoreConfigTypes'
-import { Link } from '@inertiajs/react'
+import { router } from '@inertiajs/react'
+import { useToast } from '@/contextHooks/useToasts'
 
 export default function ProductCardMaster({product}:{product : any}) {
   const {state : {currentCardConf : {cardId}}} = useStoreConfigCtx()
+  const { addToast } = useToast()
+
+  const handleAddToCart = (e?: React.MouseEvent) => {
+    e?.preventDefault();
+    e?.stopPropagation();
+
+    const variantId = product.variant_id || product.variants?.[0]?.variant_id || product.variants?.[0]?.id;
+
+    if (!variantId) {
+      addToast({
+        type: 'error',
+        title: 'Selection Error',
+        description: 'No product variant found'
+      });
+      return;
+    }
+
+    router.post(route('cart.store'), { 
+      product_id: product.id,
+      variant_id: variantId,
+      quantity: 1 
+    }, {
+      preserveScroll: true,
+      onSuccess: () => {
+        addToast({
+          type: 'success',
+          title: 'Success',
+          description: 'Added to your bag'
+        });
+      },
+      onError: (errors) => {
+        addToast({
+          type: 'error',
+          title: 'Bag Error',
+          description: errors.error || 'Please login to add items to your cart.'
+        });
+      }
+    });
+  };
+
+  const handleViewDetails = (e?: React.MouseEvent) => {
+    e?.preventDefault();
+    e?.stopPropagation();
+    router.get(route('product.show', product.slug || product.id));
+  };
 
   const cardsMap : Record<CardOption , any>  =  {
     'card-1'  : Card1 ,
@@ -26,8 +72,12 @@ export default function ProductCardMaster({product}:{product : any}) {
 
   const Card = cardsMap[cardId] ;
   return (
-    <Link href={route('product.show', product.slug || product.id)} className="block h-full">
-      <Card product={product} />
-    </Link>
+    <div className="h-full">
+      <Card 
+        product={product} 
+        onAddToCart={handleAddToCart} 
+        onViewDetails={handleViewDetails} 
+      />
+    </div>
   )
 }

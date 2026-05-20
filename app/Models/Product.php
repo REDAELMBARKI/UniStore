@@ -146,4 +146,9 @@ class Product extends Model
     {
         return $this->belongsTo(Badge::class);
     }
+
+    public function getRouteKeyName()
+    {
+        return 'slug';
+    }
 }

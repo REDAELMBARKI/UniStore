@@ -41,6 +41,7 @@ class ProductResources extends JsonResource
              "originalPrice" =>  $single ?  $single->compare_price :  0 ,
              "stock" =>   $single ? $single->stock :  0 ,
             "sku" =>   $single ? $single->sku : "",
+            "variant_id" => $single ? ($single->variant_id ?? $single->id) : null,
             "image" => $this->thumbnail ? $this->thumbnail->url : ($single && $single->images->first() ? $single->images->first()->url : ""),
             "images" => $allImages->unique()->values()->toArray(),
             "category" => $this->nichCategory ? $this->nichCategory->name : "Uncategorized",

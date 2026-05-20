@@ -12,11 +12,7 @@ import {
     X,
     Check,
     MapPin,
-    ShoppingCart,
-    Heart,
-    ChevronRight,
-    ArrowUpDown,
-    SlidersHorizontal
+    ArrowUpDown
 } from 'lucide-react';
 import { debounce } from 'lodash';
 import { ProductClient } from '@/types/clientSideTypes';
@@ -149,10 +145,10 @@ export default function Marketplace({ products, categories, brands, priceRange, 
     ].filter(Boolean);
 
     return (
-        <Layout currentPage="shop" seo={{ title: "Marketplace - OdaPlace Style", description: "Find the best products on our marketplace" }}>
-            <div className="bg-[#f4f7f9] min-h-screen">
+        <Layout currentPage="shop" seo={{ title: "Marketplace", description: "Find the best products on our marketplace" }}>
+            <div style={{ backgroundColor: theme.bg, color: theme.text }} className="min-h-screen">
                 {/* Marketplace Header (Sub-header) */}
-                <div className="bg-white border-b sticky top-0 z-40">
+                <div style={{ backgroundColor: theme.bgSecondary, borderBottom: `1px solid ${theme.border}` }} className="sticky top-0 z-40 shadow-sm">
                     <div className="max-w-[1440px] mx-auto px-4 lg:px-8">
                         <div className="flex items-center h-16 gap-8">
                             {/* Categories Dropdown */}
@@ -161,16 +157,19 @@ export default function Marketplace({ products, categories, brands, priceRange, 
                                     value={filters.category || "all"} 
                                     onValueChange={(val) => handleFilterChange('category', val === 'all' ? null : val)}
                                 >
-                                    <SelectTrigger className="w-[200px] border-none font-bold text-slate-700 bg-slate-50 hover:bg-slate-100">
+                                    <SelectTrigger 
+                                        style={{ border: `1px solid ${theme.border}`, backgroundColor: theme.bg, color: theme.text }}
+                                        className="w-[200px] font-bold hover:opacity-80"
+                                    >
                                         <div className="flex items-center gap-2">
-                                            <Filter className="w-4 h-4" />
+                                            <Filter className="w-4 h-4" style={{ color: theme.accent }} />
                                             <SelectValue placeholder="Categories" />
                                         </div>
                                     </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="all">All Categories</SelectItem>
+                                    <SelectContent style={{ backgroundColor: theme.modal, border: `1px solid ${theme.border}` }}>
+                                        <SelectItem value="all" style={{ color: theme.text }}>All Categories</SelectItem>
                                         {categories.map(cat => (
-                                            <SelectItem key={cat.id} value={cat.id.toString()}>
+                                            <SelectItem key={cat.id} value={cat.id.toString()} style={{ color: theme.text }}>
                                                 {cat.name}
                                             </SelectItem>
                                         ))}
@@ -182,17 +181,24 @@ export default function Marketplace({ products, categories, brands, priceRange, 
                             <div className="flex-1 flex items-center gap-2">
                                 <div className="relative flex-1 group">
                                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                        <Search className="h-5 w-5 text-slate-400 group-focus-within:text-orange-500 transition-colors" />
+                                        <Search className="h-5 w-5" style={{ color: theme.textMuted }} />
                                     </div>
                                     <input
                                         type="text"
                                         value={localSearch}
                                         onChange={handleSearchChange}
                                         placeholder="What are you looking for..."
-                                        className="block w-full pl-12 pr-4 py-3 bg-slate-50 border-2 border-transparent rounded-full text-slate-900 focus:bg-white focus:border-orange-500 focus:ring-0 transition-all outline-none"
+                                        style={{ 
+                                            backgroundColor: theme.bg, 
+                                            color: theme.text, 
+                                            borderColor: theme.border,
+                                            outline: 'none'
+                                        }}
+                                        className="block w-full pl-12 pr-4 py-3 border-2 rounded-full focus:border-opacity-50 transition-all"
                                     />
                                     <button 
-                                        className="absolute right-2 top-1.5 bottom-1.5 px-6 bg-orange-500 text-white font-bold rounded-full hover:bg-orange-600 transition-colors"
+                                        style={{ backgroundColor: theme.primary, color: theme.textInverse }}
+                                        className="absolute right-2 top-1.5 bottom-1.5 px-6 font-bold rounded-full hover:opacity-90 transition-all"
                                         onClick={() => handleFilterChange('search', localSearch)}
                                     >
                                         Search
@@ -202,12 +208,12 @@ export default function Marketplace({ products, categories, brands, priceRange, 
                         </div>
 
                         {/* Secondary Nav Links */}
-                        <div className="flex items-center gap-6 py-3 overflow-x-auto scrollbar-hide text-sm font-semibold text-slate-600">
-                            <Link href="#" className="whitespace-nowrap hover:text-orange-500 transition-colors">Ready to ship</Link>
-                            <Link href="#" className="whitespace-nowrap hover:text-orange-500 transition-colors">Personal Protective</Link>
-                            <Link href="#" className="whitespace-nowrap hover:text-orange-500 transition-colors">Buyer Central</Link>
-                            <Link href="#" className="whitespace-nowrap hover:text-orange-500 transition-colors">Sell on Store</Link>
-                            <Link href="#" className="whitespace-nowrap hover:text-orange-500 transition-colors flex items-center gap-1">
+                        <div className="flex items-center gap-6 py-3 overflow-x-auto scrollbar-hide text-sm font-semibold">
+                            <Link href="#" style={{ color: theme.textSecondary }} className="whitespace-nowrap hover:opacity-80 transition-colors">Ready to ship</Link>
+                            <Link href="#" style={{ color: theme.textSecondary }} className="whitespace-nowrap hover:opacity-80 transition-colors">Personal Protective</Link>
+                            <Link href="#" style={{ color: theme.textSecondary }} className="whitespace-nowrap hover:opacity-80 transition-colors">Buyer Central</Link>
+                            <Link href="#" style={{ color: theme.textSecondary }} className="whitespace-nowrap hover:opacity-80 transition-colors">Sell on Store</Link>
+                            <Link href="#" style={{ color: theme.textSecondary }} className="whitespace-nowrap hover:opacity-80 transition-colors flex items-center gap-1">
                                 Help <ChevronDown className="w-3 h-3" />
                             </Link>
                         </div>
@@ -218,12 +224,13 @@ export default function Marketplace({ products, categories, brands, priceRange, 
                     <div className="flex gap-8">
                         {/* Sidebar Filters */}
                         <aside className="hidden lg:block w-72 flex-shrink-0 space-y-6">
-                            <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
+                            <div style={{ backgroundColor: theme.bgSecondary, border: `1px solid ${theme.border}`, borderRadius: theme.borderRadius }} className="p-6 shadow-sm">
                                 <div className="flex items-center justify-between mb-6">
-                                    <h2 className="text-lg font-bold text-slate-800">Filter</h2>
+                                    <h2 className="text-lg font-bold" style={{ color: theme.text }}>Filter</h2>
                                     <button 
                                         onClick={clearFilters}
-                                        className="text-xs font-bold text-orange-500 hover:text-orange-600 uppercase tracking-wider"
+                                        style={{ color: theme.accent }}
+                                        className="text-xs font-bold uppercase tracking-wider hover:opacity-80"
                                     >
                                         Clear All
                                     </button>
@@ -232,7 +239,7 @@ export default function Marketplace({ products, categories, brands, priceRange, 
                                 <div className="space-y-8">
                                     {/* Brands (Sync with project) */}
                                     <div>
-                                        <h3 className="text-sm font-bold text-slate-900 mb-4 uppercase tracking-widest">Brands</h3>
+                                        <h3 className="text-sm font-bold mb-4 uppercase tracking-widest" style={{ color: theme.textSecondary }}>Brands</h3>
                                         <div className="space-y-3 max-h-60 overflow-y-auto pr-2 custom-scrollbar">
                                             {brands.map(brand => (
                                                 <div key={brand} className="flex items-center gap-3">
@@ -240,8 +247,9 @@ export default function Marketplace({ products, categories, brands, priceRange, 
                                                         id={`brand-${brand}`} 
                                                         checked={filters.brand?.split(',').includes(brand)}
                                                         onCheckedChange={() => handleBrandToggle(brand)}
+                                                        style={{ borderColor: theme.border }}
                                                     />
-                                                    <label htmlFor={`brand-${brand}`} className="text-sm font-medium text-slate-600 cursor-pointer hover:text-orange-500 transition-colors">
+                                                    <label htmlFor={`brand-${brand}`} style={{ color: theme.textSecondary }} className="text-sm font-medium cursor-pointer hover:opacity-80 transition-colors">
                                                         {brand}
                                                     </label>
                                                 </div>
@@ -251,7 +259,7 @@ export default function Marketplace({ products, categories, brands, priceRange, 
 
                                     {/* Price Range */}
                                     <div>
-                                        <h3 className="text-sm font-bold text-slate-900 mb-4 uppercase tracking-widest">Price</h3>
+                                        <h3 className="text-sm font-bold mb-4 uppercase tracking-widest" style={{ color: theme.textSecondary }}>Price</h3>
                                         <div className="space-y-6">
                                             <Slider 
                                                 defaultValue={priceValues} 
@@ -267,24 +275,26 @@ export default function Marketplace({ products, categories, brands, priceRange, 
                                             />
                                             <div className="flex items-center gap-2">
                                                 <div className="relative flex-1">
-                                                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">$</span>
+                                                    <span style={{ color: theme.textMuted }} className="absolute left-3 top-1/2 -translate-y-1/2 text-sm">$</span>
                                                     <input 
                                                         type="number" 
                                                         value={priceValues[0]}
                                                         onChange={(e) => setPriceValues([Number(e.target.value), priceValues[1]])}
                                                         onBlur={() => handleFilterChange('min_price', priceValues[0])}
-                                                        className="w-full pl-7 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-bold focus:border-orange-500 focus:ring-0 outline-none"
+                                                        style={{ backgroundColor: theme.bg, color: theme.text, borderColor: theme.border }}
+                                                        className="w-full pl-7 pr-3 py-2 border rounded-lg text-sm font-bold focus:opacity-80 outline-none"
                                                     />
                                                 </div>
-                                                <span className="text-slate-400">-</span>
+                                                <span style={{ color: theme.textMuted }}>-</span>
                                                 <div className="relative flex-1">
-                                                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">$</span>
+                                                    <span style={{ color: theme.textMuted }} className="absolute left-3 top-1/2 -translate-y-1/2 text-sm">$</span>
                                                     <input 
                                                         type="number" 
                                                         value={priceValues[1]}
                                                         onChange={(e) => setPriceValues([priceValues[0], Number(e.target.value)])}
                                                         onBlur={() => handleFilterChange('max_price', priceValues[1])}
-                                                        className="w-full pl-7 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-bold focus:border-orange-500 focus:ring-0 outline-none"
+                                                        style={{ backgroundColor: theme.bg, color: theme.text, borderColor: theme.border }}
+                                                        className="w-full pl-7 pr-3 py-2 border rounded-lg text-sm font-bold focus:opacity-80 outline-none"
                                                     />
                                                 </div>
                                             </div>
@@ -293,19 +303,24 @@ export default function Marketplace({ products, categories, brands, priceRange, 
 
                                     {/* Rating */}
                                     <div>
-                                        <h3 className="text-sm font-bold text-slate-900 mb-4 uppercase tracking-widest">Min Rating</h3>
+                                        <h3 className="text-sm font-bold mb-4 uppercase tracking-widest" style={{ color: theme.textSecondary }}>Min Rating</h3>
                                         <div className="space-y-2">
                                             {[4, 3, 2, 1].map((stars) => (
                                                 <button 
                                                     key={stars}
                                                     onClick={() => handleFilterChange('rating', stars)}
-                                                    className={`w-full flex items-center justify-between p-2 rounded-lg transition-colors ${Number(filters.rating) === stars ? 'bg-orange-50 text-orange-600' : 'hover:bg-slate-50'}`}
+                                                    style={{ 
+                                                        backgroundColor: Number(filters.rating) === stars ? `${theme.accent}15` : 'transparent',
+                                                        color: Number(filters.rating) === stars ? theme.accent : theme.text
+                                                    }}
+                                                    className="w-full flex items-center justify-between p-2 rounded-lg transition-colors hover:bg-opacity-10"
                                                 >
                                                     <div className="flex items-center gap-1">
                                                         {[...Array(5)].map((_, i) => (
                                                             <Star 
                                                                 key={i} 
-                                                                className={`w-3.5 h-3.5 ${i < stars ? 'fill-orange-400 text-orange-400' : 'text-slate-200'}`} 
+                                                                className={`w-3.5 h-3.5 ${i < stars ? 'fill-current' : ''}`}
+                                                                style={{ color: i < stars ? theme.starColor : theme.textMuted }} 
                                                             />
                                                         ))}
                                                         <span className="ml-2 text-sm font-bold">& Up</span>
@@ -317,11 +332,12 @@ export default function Marketplace({ products, categories, brands, priceRange, 
                                     </div>
 
                                     {/* Availability */}
-                                    <div className="flex items-center justify-between pt-4 border-t">
-                                        <span className="text-sm font-bold text-slate-900">In Stock Only</span>
+                                    <div className="flex items-center justify-between pt-4 border-t" style={{ borderTopColor: theme.border }}>
+                                        <span className="text-sm font-bold" style={{ color: theme.text }}>In Stock Only</span>
                                         <Checkbox 
                                             checked={filters.in_stock === 'true'}
                                             onCheckedChange={(checked) => handleFilterChange('in_stock', checked ? 'true' : null)}
+                                            style={{ borderColor: theme.border }}
                                         />
                                     </div>
                                 </div>
@@ -331,11 +347,11 @@ export default function Marketplace({ products, categories, brands, priceRange, 
                         {/* Main Grid Area */}
                         <div className="flex-1">
                             {/* Toolbar & Chips */}
-                            <div className="bg-white rounded-2xl p-6 mb-6 shadow-sm border border-slate-100">
+                            <div style={{ backgroundColor: theme.bgSecondary, border: `1px solid ${theme.border}`, borderRadius: theme.borderRadius }} className="p-6 mb-6 shadow-sm">
                                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
-                                    <div className="text-slate-600 font-medium">
-                                        <span className="text-slate-900 font-bold">{products.meta.total}</span> results found
-                                        {filters.search && <span> for "<span className="text-orange-500 font-bold">{filters.search}</span>"</span>}
+                                    <div style={{ color: theme.textSecondary }} className="font-medium">
+                                        <span style={{ color: theme.text }} className="font-bold">{products.meta.total}</span> results found
+                                        {filters.search && <span> for "<span style={{ color: theme.accent }} className="font-bold">{filters.search}</span>"</span>}
                                     </div>
 
                                     <div className="flex items-center gap-4">
@@ -343,15 +359,15 @@ export default function Marketplace({ products, categories, brands, priceRange, 
                                             value={filters.sort || 'newest'}
                                             onValueChange={(val) => handleFilterChange('sort', val)}
                                         >
-                                            <SelectTrigger className="w-[180px] border-slate-200 font-bold">
+                                            <SelectTrigger style={{ backgroundColor: theme.bg, color: theme.text, borderColor: theme.border }} className="w-[180px] font-bold">
                                                 <div className="flex items-center gap-2">
-                                                    <ArrowUpDown className="w-4 h-4" />
+                                                    <ArrowUpDown className="w-4 h-4" style={{ color: theme.accent }} />
                                                     <SelectValue placeholder="Sort by" />
                                                 </div>
                                             </SelectTrigger>
-                                            <SelectContent>
+                                            <SelectContent style={{ backgroundColor: theme.modal, border: `1px solid ${theme.border}` }}>
                                                 {SORT_OPTIONS.map(opt => (
-                                                    <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                                                    <SelectItem key={opt.value} value={opt.value} style={{ color: theme.text }}>{opt.label}</SelectItem>
                                                 ))}
                                             </SelectContent>
                                         </Select>
@@ -360,12 +376,12 @@ export default function Marketplace({ products, categories, brands, priceRange, 
 
                                 {/* Filter Chips */}
                                 {activeFilterChips.length > 0 && (
-                                    <div className="flex flex-wrap gap-2 pt-4 border-t border-slate-50">
+                                    <div className="flex flex-wrap gap-2 pt-4 border-t" style={{ borderTopColor: theme.border }}>
                                         {activeFilterChips.map((chip: any, i) => (
                                             <Badge 
                                                 key={i} 
-                                                variant="secondary"
-                                                className="bg-slate-100 text-slate-700 hover:bg-slate-200 pl-3 pr-1 py-1 gap-1 border-none rounded-full font-bold"
+                                                style={{ backgroundColor: `${theme.accent}15`, color: theme.accent }}
+                                                className="pl-3 pr-1 py-1 gap-1 border-none rounded-full font-bold"
                                             >
                                                 {chip.label}
                                                 <button 
@@ -376,7 +392,7 @@ export default function Marketplace({ products, categories, brands, priceRange, 
                                                             handleFilterChange(chip.key, null);
                                                         }
                                                     }}
-                                                    className="p-0.5 rounded-full hover:bg-slate-300 transition-colors"
+                                                    className="p-0.5 rounded-full hover:bg-black/10 transition-colors"
                                                 >
                                                     <X className="w-3 h-3" />
                                                 </button>
@@ -390,7 +406,7 @@ export default function Marketplace({ products, categories, brands, priceRange, 
                             {isLoading ? (
                                 <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
                                     {[...Array(8)].map((_, i) => (
-                                        <div key={i} className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 space-y-4">
+                                        <div key={i} style={{ backgroundColor: theme.bgSecondary, border: `1px solid ${theme.border}`, borderRadius: theme.borderRadius }} className="p-4 shadow-sm space-y-4">
                                             <Skeleton className="h-64 w-full rounded-xl" />
                                             <Skeleton className="h-4 w-3/4" />
                                             <Skeleton className="h-4 w-1/2" />
@@ -419,17 +435,18 @@ export default function Marketplace({ products, categories, brands, priceRange, 
                                     </div>
                                 </>
                             ) : (
-                                <div className="bg-white rounded-3xl p-20 text-center shadow-sm border border-slate-100">
-                                    <div className="inline-flex items-center justify-center w-24 h-24 rounded-full mb-6 bg-slate-50">
-                                        <Search className="w-10 h-10 text-slate-300" />
+                                <div style={{ backgroundColor: theme.bgSecondary, border: `1px solid ${theme.border}`, borderRadius: theme.borderRadius }} className="p-20 text-center shadow-sm">
+                                    <div className="inline-flex items-center justify-center w-24 h-24 rounded-full mb-6" style={{ backgroundColor: theme.bg }}>
+                                        <Search className="w-10 h-10" style={{ color: theme.textMuted }} />
                                     </div>
-                                    <h2 className="text-2xl font-black text-slate-800 mb-2">No matching products</h2>
-                                    <p className="text-slate-500 mb-8 max-w-md mx-auto">
+                                    <h2 className="text-2xl font-black mb-2" style={{ color: theme.text }}>No matching products</h2>
+                                    <p style={{ color: theme.textSecondary }} className="mb-8 max-w-md mx-auto">
                                         We couldn't find anything matching your current filters. Try adjusting your search or clear all filters to start over.
                                     </p>
                                     <Button 
                                         onClick={clearFilters}
-                                        className="bg-orange-500 hover:bg-orange-600 text-white font-bold px-8 py-4 rounded-2xl shadow-lg shadow-orange-500/20"
+                                        style={{ backgroundColor: theme.primary, color: theme.textInverse }}
+                                        className="font-bold px-8 py-4 rounded-2xl shadow-lg shadow-opacity-20"
                                     >
                                         Reset All Filters
                                     </Button>
