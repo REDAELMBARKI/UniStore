@@ -43,7 +43,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         style={{
           "--input-accent": accentColor,
           "--input-border": currentTheme.border,
-          "--input-text":   currentTheme.textSecondary,
+          "--input-text":   currentTheme.text,
         } as React.CSSProperties}
       >
         <style>{`
