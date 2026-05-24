@@ -20,6 +20,7 @@ class MediaService
                 'video'     => 'products/videos',
                 'avatar' => 'users/avatars',
                 'brand_logo' => 'brands',
+                'banner'     => 'banners',
                 'general'   => 'general',
         ] ;
     

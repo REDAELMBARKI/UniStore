@@ -3,7 +3,7 @@ import { Banner, BannerSlot } from "@/types/bannerTypes";
 import { Link, router } from "@inertiajs/react";
 import { EyeOff, Upload } from "lucide-react";
 
-export default function BannerRenderer({
+export default function  BannerRenderer({
   banner,
   activeSlotKey,
   activeElementKey,
@@ -21,7 +21,14 @@ export default function BannerRenderer({
   onUpdate?: (path: string, value: any) => void;
 }) {
   const { state: { currentTheme: theme } } = useStoreConfigCtx();
-  const visibleSlots = banner.slots.filter(s => s.is_visible);
+  const sortSlots = (slots: BannerSlot[]) => 
+    [...slots].sort((a, b) => {
+      const order: Record<string, number> = { left: 0, middle: 1, right: 2 };
+      return (order[a.slot_key] ?? 0) - (order[b.slot_key] ?? 0);
+    });
+
+  const allSortedSlots = sortSlots(banner.slots);
+  const visibleSlots   = allSortedSlots.filter(s => s.is_visible);
 
   return (
     <div
@@ -36,7 +43,7 @@ export default function BannerRenderer({
         // kill all pointer interaction when not in editor
       }}
     >
-      {banner.slots.map((slot) => {
+      {allSortedSlots.map((slot) => {
         const isActive      = isEditor && slot.slot_key === activeSlotKey;
         const isVisible     = slot.is_visible;
         const visibleIdx    = visibleSlots.findIndex(s => s.slot_key === slot.slot_key);
@@ -125,25 +132,39 @@ function SlotContent({
   isEditor: boolean;
 }) {
   const select = (key: string) => onElementSelect?.(slotKey, key);
+  const hasMainImage = !!slot.main_media?.url;
 
-  if (slot.main_media?.url) {
-    return (
-      <>
-        <ElementWrapper
-          elementKey="main_media"
-          activeElementKey={activeElementKey}
-          onSelect={select}
-          theme={theme}
-          display="block"
-          isEditor={isEditor}
-        >
-          <img
-            src={slot.main_media.url}
-            alt=""
-            style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-          />
-        </ElementWrapper>
-        {slot.secondary_media?.url && (
+  return (
+    <div style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden' }}>
+      {/* 1. Main Background Media */}
+      {hasMainImage && (
+        <div style={{ position: 'absolute', inset: 0, zIndex: 0 }}>
+          <ElementWrapper
+            elementKey="main_media"
+            activeElementKey={activeElementKey}
+            onSelect={select}
+            theme={theme}
+            display="block"
+            isEditor={isEditor}
+            fullHeight
+          >
+            <img
+              src={slot.main_media!.url}
+              alt=""
+              style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+            />
+          </ElementWrapper>
+        </div>
+      )}
+
+      {/* 2. Secondary Overlay Media */}
+      {slot.secondary_media?.url && (
+        <div style={{ 
+          position: 'absolute', bottom: 16, right: 16, zIndex: 10,
+          width: 110, height: 88, borderRadius: 6, overflow: 'hidden',
+          border: `3px solid ${theme.card ?? '#fff'}`,
+          boxShadow: '0 4px 16px rgba(0,0,0,0.3)',
+        }}>
           <ElementWrapper
             elementKey="secondary_media"
             activeElementKey={activeElementKey}
@@ -151,94 +172,128 @@ function SlotContent({
             theme={theme}
             display="block"
             isEditor={isEditor}
+            fullHeight
           >
-            <div style={{
-              position: 'absolute', bottom: 16, right: 16,
-              width: 110, height: 88, borderRadius: 6, overflow: 'hidden',
-              border: `3px solid ${theme.card ?? '#fff'}`,
-              boxShadow: '0 4px 16px rgba(0,0,0,0.3)',
-            }}>
-              <img
-                src={slot.secondary_media.url}
-                alt=""
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-              />
-            </div>
+            <img
+              src={slot.secondary_media.url}
+              alt=""
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+            />
           </ElementWrapper>
-        )}
-      </>
-    );
-  }
+        </div>
+      )}
 
-  if (slot.elements) {
-    return (
-      <div style={{
-        height: '100%', display: 'flex', flexDirection: 'column',
-        justifyContent: 'center', padding: '40px 36px', gap: 12,
-      }}>
-        {slot.elements.eyebrow?.visible && (
-          <ElementWrapper elementKey="eyebrow" activeElementKey={activeElementKey} onSelect={select} theme={theme} display="inline-block" isEditor={isEditor}>
-            <span style={{
-              fontSize: 11, fontWeight: 700, letterSpacing: '0.18em',
-              textTransform: 'uppercase', color: slot.elements.eyebrow.color,
-            }}>
-              {slot.elements.eyebrow.text}
-            </span>
-          </ElementWrapper>
-        )}
-        {slot.elements.title?.visible && (
-          <ElementWrapper elementKey="title" activeElementKey={activeElementKey} onSelect={select} theme={theme} display="block" isEditor={isEditor}>
-            <h2 style={{
-              fontSize: 'clamp(1.4rem, 2.5vw, 2.2rem)', fontWeight: 700,
-              color: slot.elements.title.color, lineHeight: 1.15,
-              letterSpacing: '-0.02em', margin: 0,
-            }}>
-              {slot.elements.title.text}
-            </h2>
-          </ElementWrapper>
-        )}
-        {slot.elements.paragraph?.visible && (
-          <ElementWrapper elementKey="paragraph" activeElementKey={activeElementKey} onSelect={select} theme={theme} display="block" isEditor={isEditor}>
-            <p style={{ fontSize: 13, color: slot.elements.paragraph.color, lineHeight: 1.7, margin: 0 }}>
-              {slot.elements.paragraph.text}
-            </p>
-          </ElementWrapper>
-        )}
-        {slot.elements.button?.visible && (
-          <ElementWrapper elementKey="button" activeElementKey={activeElementKey} onSelect={select} theme={theme} display="inline-block" isEditor={isEditor}>
-              <button 
-               onClick={isEditor ? undefined : () => {
-                const href = slot.elements?.button?.link;
-                if (href) router.visit(href);
-               }}
-              
-               style={{
-                
-                padding: '9px 22px',
-                background: slot.elements.button.bg_color,
-                color: slot.elements.button.text_color,
-                border: 'none', fontSize: 11, fontWeight: 700,
-                letterSpacing: '0.12em', cursor: 'pointer',
-                borderRadius: 3, textTransform: 'uppercase',
-              }}>
-                {slot.elements.button.text}
-              </button>
-          
-          </ElementWrapper>
-        )}
-      </div>
-    );
-  }
-
-  // Empty placeholder — editor only, pointless to show on storefront
-  if (!isEditor) return null;
-  return (
-    <div style={{
-      width: '100%', height: '100%', minHeight: 200,
-      display: 'grid', placeItems: 'center',
-      background: theme.bgSecondary ?? '#f3f4f6',
-    }}>
-      <Upload size={24} style={{ opacity: 0.25 }} />
+      {/* 3. Text & Button Elements */}
+      {slot.elements && (
+        <div style={{
+          position: hasMainImage ? 'absolute' : 'relative',
+          inset: 0,
+          zIndex: 5,
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 
+            slot.elements.settings?.vertical_position === 'top' ? 'flex-start' :
+            slot.elements.settings?.vertical_position === 'bottom' ? 'flex-end' : 'center',
+          alignItems: 
+            slot.elements.settings?.horizontal_position === 'left' ? 'flex-start' :
+            slot.elements.settings?.horizontal_position === 'right' ? 'flex-end' : 'center',
+          padding: '40px 36px',
+          gap: 12,
+          // In the editor, text container needs pointer-events: none so we can click the background image
+          // On the live site, it should be auto so buttons/links are clickable
+          pointerEvents: (isEditor && hasMainImage) ? 'none' : 'auto',
+        }}>
+          <div style={{ 
+            pointerEvents: 'auto',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 8,
+            alignItems: 
+              slot.elements.settings?.horizontal_position === 'left' ? 'flex-start' :
+              slot.elements.settings?.horizontal_position === 'right' ? 'flex-end' : 'center',
+            textAlign: slot.elements.settings?.horizontal_position || 'center',
+          }}>
+            {slot.elements.eyebrow?.visible && (
+              <ElementWrapper elementKey="eyebrow" activeElementKey={activeElementKey} onSelect={select} theme={theme} display="inline-block" isEditor={isEditor}>
+                <span 
+                  onClick={(!isEditor && slot.elements.eyebrow.link) ? () => router.visit(slot.elements!.eyebrow.link) : undefined}
+                  style={{
+                    fontSize: 11, fontWeight: 700, letterSpacing: '0.18em',
+                    textTransform: 'uppercase', color: slot.elements.eyebrow.color,
+                    cursor: (!isEditor && slot.elements.eyebrow.link) ? 'pointer' : 'default',
+                  }}>
+                  {slot.elements.eyebrow.text}
+                </span>
+              </ElementWrapper>
+            )}
+            {slot.elements.title?.visible && (
+              <div style={{ marginTop: 8 }}>
+                <ElementWrapper elementKey="title" activeElementKey={activeElementKey} onSelect={select} theme={theme} display="block" isEditor={isEditor}>
+                  <h2 
+                    onClick={(!isEditor && slot.elements.title.link) ? () => router.visit(slot.elements!.title.link) : undefined}
+                    style={{
+                      fontSize: 'clamp(1.4rem, 2.5vw, 2.2rem)', fontWeight: 700,
+                      color: slot.elements.title.color, lineHeight: 1.15,
+                      letterSpacing: '-0.02em', margin: 0,
+                      cursor: (!isEditor && slot.elements.title.link) ? 'pointer' : 'default',
+                    }}>
+                    {slot.elements.title.text}
+                  </h2>
+                </ElementWrapper>
+              </div>
+            )}
+            {slot.elements.paragraph?.visible && (
+              <div style={{ marginTop: 8 }}>
+                <ElementWrapper elementKey="paragraph" activeElementKey={activeElementKey} onSelect={select} theme={theme} display="block" isEditor={isEditor}>
+                  <p 
+                    onClick={(!isEditor && slot.elements.paragraph.link) ? () => router.visit(slot.elements!.paragraph.link) : undefined}
+                    style={{ 
+                      fontSize: 13, color: slot.elements.paragraph.color, lineHeight: 1.7, margin: 0,
+                      cursor: (!isEditor && slot.elements.paragraph.link) ? 'pointer' : 'default',
+                    }}>
+                    {slot.elements.paragraph.text}
+                  </p>
+                </ElementWrapper>
+              </div>
+            )}
+            {slot.elements.button?.visible && (
+              <div style={{ marginTop: 16 }}>
+                <ElementWrapper elementKey="button" activeElementKey={activeElementKey} onSelect={select} theme={theme} display="inline-block" isEditor={isEditor}>
+                   {isEditor ? (
+                    <button
+                      style={{
+                        padding: '9px 22px',
+                        background: slot.elements.button.bg_color,
+                        color: slot.elements.button.text_color,
+                        border: 'none', fontSize: 11, fontWeight: 700,
+                        letterSpacing: '0.12em', cursor: 'pointer',
+                        borderRadius: 3, textTransform: 'uppercase',
+                      }}>
+                      {slot.elements.button.text}
+                    </button>
+                   ) : (
+                    <Link
+                      href={slot.elements.button.link || '/'}
+                      style={{
+                        display: 'inline-block',
+                        padding: '9px 22px',
+                        background: slot.elements.button.bg_color,
+                        color: slot.elements.button.text_color,
+                        border: 'none', fontSize: 11, fontWeight: 700,
+                        letterSpacing: '0.12em', cursor: 'pointer',
+                        borderRadius: 3, textTransform: 'uppercase',
+                        textDecoration: 'none',
+                      }}>
+                      {slot.elements.button.text}
+                    </Link>
+                   )}
+                </ElementWrapper>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -251,6 +306,7 @@ function ElementWrapper({
   theme,
   display = 'block',
   isEditor,
+  fullHeight = false,
 }: {
   elementKey: string;
   activeElementKey: string | null;
@@ -259,6 +315,7 @@ function ElementWrapper({
   theme: any;
   display?: string;
   isEditor: boolean;
+  fullHeight?: boolean;
 }) {
   // In non-editor mode, render children directly — zero wrapper overhead
   if (!isEditor) return <>{children}</>;
@@ -277,6 +334,8 @@ function ElementWrapper({
       }}
       style={{
         display,
+        height: fullHeight ? '100%' : 'auto',
+        width: fullHeight ? '100%' : 'auto',
         cursor: 'pointer',
         borderRadius: 4,
         outline: isSelected ? `2px solid ${theme.primary}` : '2px solid transparent',

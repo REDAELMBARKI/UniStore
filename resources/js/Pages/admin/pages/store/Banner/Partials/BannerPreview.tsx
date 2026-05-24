@@ -1,6 +1,6 @@
 import { useStoreConfigCtx } from "@/contextHooks/useStoreConfigCtx";
 import { Banner, BannerSlot } from "@/types/bannerTypes";
-import { RotateCcw, Save, Upload, Eye, EyeOff, Plus, X } from "lucide-react";
+import { RotateCcw, Save, Upload, Eye, EyeOff, Plus, X, AlertTriangle } from "lucide-react";
 import React, { useState } from "react";
 import BannerRenderer from "./BannerRenderer";
 
@@ -114,13 +114,16 @@ function SlotTab({
   onToggleVisibility: () => void;
   theme: any;
 }) {
+  const is_visible = slot.is_visible;
+  
   return (
     <div style={{
       display: 'flex',
       borderRadius: 20,
       overflow: 'hidden',
-      border: `0.5px solid ${isActive ? theme.primary : theme.border}`,
+      border: `0.5px solid ${isActive ? theme.primary : is_visible ? theme.border : `${theme.border}50`}`,
       transition: 'border-color 0.15s',
+      opacity: is_visible || isActive ? 1 : 0.6,
     }}>
       {/* Navigate button — primary action */}
       <button
@@ -129,7 +132,7 @@ function SlotTab({
           display: 'flex', alignItems: 'center', gap: 5,
           padding: '5px 12px', border: 'none',
           background: isActive ? theme.primary : theme.bg,
-          color: isActive ? '#fff' : slot.is_visible ? theme.text : theme.textMuted,
+          color: isActive ? '#fff' : is_visible ? theme.text : theme.textMuted,
           fontSize: 10, fontWeight: 700, textTransform: 'uppercase',
           letterSpacing: '0.08em', cursor: 'pointer',
           transition: 'background 0.15s, color 0.15s',
@@ -152,7 +155,7 @@ function SlotTab({
         title={
           isLastVisible
             ? 'At least one slot must be visible'
-            : slot.is_visible ? 'Hide slot' : 'Show slot'
+            : is_visible ? 'Hide slot' : 'Show slot'
         }
         style={{
           display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -171,7 +174,7 @@ function SlotTab({
           (e.currentTarget as HTMLElement).style.color = isActive ? '#ffffffcc' : theme.textMuted;
         }}
       >
-        {slot.is_visible ? <Eye size={10} /> : <EyeOff size={10} />}
+        {is_visible ? <Eye size={10} /> : <EyeOff size={10} />}
       </button>
     </div>
   );
@@ -191,6 +194,7 @@ export default function BannerCenterPanel({
   onUpdate,
   onAddBanner,
   availableBannerTemplates = [],
+  errors = {},
 }: {
   activeBanner: Banner | undefined;
   activeSlotKey: string;
@@ -205,6 +209,7 @@ export default function BannerCenterPanel({
   onUpdate: (path: string, value: any) => void;
   onAddBanner?: (key: string) => void;
   availableBannerTemplates?: { key: string; name: string }[];
+  errors?: any;
 }) {
   const { state: { currentTheme: theme } } = useStoreConfigCtx();
   const [showAddModal, setShowAddModal] = useState(false);
@@ -315,18 +320,27 @@ export default function BannerCenterPanel({
 
             {/* Compound slot tabs — navigate + visibility toggle */}
             <div style={{ marginTop: 12, display: 'flex', gap: 8, alignItems: 'center' }}>
-              {activeBanner.slots.map(slot => {
-                const visibleCount   = activeBanner.slots.filter(s => s.is_visible).length;
-                const isLastVisible  = slot.is_visible && visibleCount === 1;
+              {['left', 'middle', 'right'].map(slotKey => {
+                const slot = activeBanner.slots.find(s => s.slot_key === slotKey);
+                const is_visible = slot?.is_visible ?? false;
+                const visibleCount = activeBanner.slots.filter(s => s.is_visible).length;
+                const isLastVisible = is_visible && visibleCount === 1;
 
                 return (
                   <SlotTab
-                    key={slot.slot_key}
-                    slot={slot}
-                    isActive={slot.slot_key === activeSlotKey}
+                    key={slotKey}
+                    slot={slot || { slot_key: slotKey, is_visible: false } as any}
+                    isActive={slotKey === activeSlotKey}
                     isLastVisible={isLastVisible}
-                    onSelect={() => onSlotSelect(slot.slot_key)}
-                    onToggleVisibility={() => onToggleSlotVisibility(slot.slot_key)}
+                    onSelect={() => {
+                        if (slot && is_visible) {
+                            onSlotSelect(slotKey);
+                        } else {
+                            onToggleSlotVisibility(slotKey);
+                            onSlotSelect(slotKey);
+                        }
+                    }}
+                    onToggleVisibility={() => onToggleSlotVisibility(slotKey)}
                     theme={theme}
                   />
                 );
@@ -342,7 +356,7 @@ export default function BannerCenterPanel({
               </span>
             </div>
 
-            {/* Meta strip */}
+              {/* Meta strip */}
             <div style={{
               marginTop: 8, padding: '8px 14px',
               background: theme.bg, borderRadius: 8, border: `0.5px solid ${theme.border}`,
@@ -364,6 +378,45 @@ export default function BannerCenterPanel({
                 </div>
               ))}
             </div>
+
+            {/* Validation Errors Display bellow preview */}
+            {Object.keys(errors).length > 0 && (
+              <div style={{ marginTop: 24 }} className="animate-in fade-in slide-in-from-top-4">
+                <div 
+                  style={{ 
+                    padding: '20px', 
+                    borderRadius: '12px', 
+                    borderLeft: `4px solid #ef4444`, 
+                    backgroundColor: `${theme.bg}`,
+                    border: `1px solid ${theme.border}`,
+                    borderLeftWidth: 4,
+                    boxShadow: '0 10px 30px rgba(0,0,0,0.1)'
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12, color: '#ef4444' }}>
+                    <AlertTriangle size={18} />
+                    <span style={{ fontSize: 11, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                      Publish Validation Errors
+                    </span>
+                  </div>
+                  <ul style={{ display: 'flex', flexDirection: 'column', gap: 8, margin: 0, padding: 0, listStyle: 'none' }}>
+                    {Object.entries(errors).map(([key, msg]: [string, any]) => (
+                      <li key={key} style={{ 
+                        fontSize: 12, 
+                        color: theme.text, 
+                        fontWeight: 600, 
+                        display: 'flex', 
+                        alignItems: 'baseline',
+                        gap: 8
+                      }}>
+                        <span style={{ color: '#ef4444', fontSize: 14 }}>•</span>
+                        <span>{msg}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>

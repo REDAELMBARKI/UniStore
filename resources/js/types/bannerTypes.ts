@@ -25,8 +25,14 @@ export interface BannerSlot {
   secondary_media?: BannerMedia | null;
   
   elements?: {
+    settings?: {
+      vertical_position?: 'top' | 'center' | 'bottom';
+      horizontal_position?: 'left' | 'center' | 'right';
+      text_align?: 'left' | 'center' | 'right';
+    };
     eyebrow: BannerElement;
     title: BannerElement;
+    
     paragraph: BannerElement;
     button: BannerElement;
   };

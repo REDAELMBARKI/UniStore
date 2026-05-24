@@ -13,7 +13,13 @@ class RuleBasedCollectionController extends Controller
 
     public function index()
     {
-        $collections = RuleBasedCollection::orderBy('id')->get();
+        $collections = RuleBasedCollection::join('home_layout_orcs' , function($join){
+                $join->on('home_layout_orcs.sortable_id' , '=' , 'rule_based_collections.id')
+                      ->where('home_layout_orcs.sortable_type'  , 'product_collection') ;
+            })
+            ->orderBy('home_layout_orcs.order')
+            ->get();
+            
         // Updated to match the actual keys used in the seeder (home.X, etc.)
         $app_factory_config = AppFactoryConfig::where("config_key" , "LIKE", "home.%")
                                                 ->orWhere("config_key", "LIKE", "collections.%")

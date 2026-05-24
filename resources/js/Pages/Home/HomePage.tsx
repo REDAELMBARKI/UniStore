@@ -29,7 +29,6 @@ import BannerRenderer from '../admin/pages/store/Banner/Partials/BannerRenderer'
 //  renderBlock  — the single switch that maps type → component
 // ─────────────────────────────────────────────────────────────────────────────
 const renderBlock = (item: FeedItem, onViewAll: (key: string) => void) => {
-  console.log(item.type)
   switch (item.type) {
     case 'collection': return <ScrollRow key={item.data.key} section={item.data} onViewAll={onViewAll} />;
     case 'banner': return <BannerRenderer isEditor={false} key={item.data.id} banner={item.data} />;

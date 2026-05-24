@@ -3,6 +3,7 @@ import { Banner, BannerSlot } from "@/types/bannerTypes";
 import {
   PanelRight, ChevronLeft, ChevronDown, Upload,
   Image, Type, MousePointerClick, AlignLeft, Sparkles, Eye, EyeOff,
+  AlignCenter, AlignRight, Layout, Loader2
 } from "lucide-react";
 import React, { useRef } from "react";
 
@@ -95,6 +96,40 @@ function ColorInput({ value, onChange }: { value: string; onChange: (v: string) 
         style={{ width: 28, height: 28, border: 'none', borderRadius: 4, cursor: 'pointer', padding: 2 }}
       />
       <span style={{ fontSize: 11, fontFamily: 'monospace' }}>{value}</span>
+    </div>
+  );
+}
+
+function AlignmentButtons({
+  value,
+  onChange,
+  options,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  options: { label: React.ReactNode; value: string }[];
+}) {
+  const { state: { currentTheme: theme } } = useStoreConfigCtx();
+  return (
+    <div style={{ display: 'flex', gap: 2, background: theme.bg, padding: 2, borderRadius: 6, border: `0.5px solid ${theme.border}` }}>
+      {options.map(opt => {
+        const isActive = value === opt.value;
+        return (
+          <button
+            key={opt.value}
+            onClick={() => onChange(opt.value)}
+            style={{
+              flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
+              padding: '6px 0', border: 'none', borderRadius: 4, cursor: 'pointer',
+              background: isActive ? theme.primary : 'transparent',
+              color: isActive ? '#fff' : theme.textMuted,
+              transition: 'all 0.15s',
+            }}
+          >
+            {opt.label}
+          </button>
+        );
+      })}
     </div>
   );
 }
@@ -290,7 +325,7 @@ function ActiveSlotPanel({
   const DEFAULT_BUTTON    = { text: 'Shop Now', bg_color: '#ffffff', text_color: '#000000', visible: true };
 
   const toggleElement = (key: 'eyebrow' | 'title' | 'paragraph' | 'button', defaultVal: any) => {
-    const currentElements = slot.elements ?? {};
+    const currentElements: any = slot.elements ?? {};
     if (currentElements[key]) {
       const next = { ...currentElements };
       delete next[key];
@@ -408,6 +443,35 @@ function ActiveSlotPanel({
 
       <hr style={{ opacity: 0.08, margin: '14px 0' }} />
 
+      {/* ── Alignment (Positioning) ── */}
+      <SectionLabel>Alignment & Positioning</SectionLabel>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 20 }}>
+        <Field label="Vertical Position">
+          <AlignmentButtons 
+            value={slot.elements?.settings?.vertical_position ?? 'center'}
+            onChange={v => onUpdate(`${base}.elements.settings.vertical_position`, v)}
+            options={[
+              { label: 'Top', value: 'top' },
+              { label: 'Center', value: 'center' },
+              { label: 'Bottom', value: 'bottom' },
+            ]}
+          />
+        </Field>
+        <Field label="Horizontal Position">
+          <AlignmentButtons 
+            value={slot.elements?.settings?.horizontal_position ?? 'center'}
+            onChange={v => onUpdate(`${base}.elements.settings.horizontal_position`, v)}
+            options={[
+              { label: <AlignLeft size={14} />, value: 'left' },
+              { label: <AlignCenter size={14} />, value: 'center' },
+              { label: <AlignRight size={14} />, value: 'right' },
+            ]}
+          />
+        </Field>
+      </div>
+
+      <hr style={{ opacity: 0.08, margin: '14px 0' }} />
+
       {/* ── Content blocks — accordion ── */}
       <SectionLabel>Content blocks</SectionLabel>
 
@@ -478,6 +542,12 @@ function ActiveSlotPanel({
                 onChange={v => onUpdate(`${base}.elements.eyebrow.color`, v)}
               />
             </Field>
+            <Field label="Link">
+              <TextInput
+                value={slot.elements?.eyebrow?.link ?? ''}
+                onChange={v => onUpdate(`${base}.elements.eyebrow.link`, v)}
+              />
+            </Field>
           </div>
         </AccordionBlock>
 
@@ -502,6 +572,12 @@ function ActiveSlotPanel({
               <ColorInput
                 value={slot.elements?.title?.color ?? '#ffffff'}
                 onChange={v => onUpdate(`${base}.elements.title.color`, v)}
+              />
+            </Field>
+            <Field label="Link">
+              <TextInput
+                value={slot.elements?.title?.link ?? ''}
+                onChange={v => onUpdate(`${base}.elements.title.link`, v)}
               />
             </Field>
           </div>
@@ -530,6 +606,12 @@ function ActiveSlotPanel({
                 onChange={v => onUpdate(`${base}.elements.paragraph.color`, v)}
               />
             </Field>
+            <Field label="Link">
+              <TextInput
+                value={slot.elements?.paragraph?.link ?? ''}
+                onChange={v => onUpdate(`${base}.elements.paragraph.link`, v)}
+              />
+            </Field>
           </div>
         </AccordionBlock>
 
@@ -550,10 +632,10 @@ function ActiveSlotPanel({
                 onChange={v => onUpdate(`${base}.elements.button.text`, v)}
               />
             </Field>
-            <Field label="Link (href)">
+            <Field label="Link">
               <TextInput
-                value={slot.elements?.button?.href ?? ''}
-                onChange={v => onUpdate(`${base}.elements.button.href`, v)}
+                value={slot.elements?.button?.link ?? ''}
+                onChange={v => onUpdate(`${base}.elements.button.link`, v)}
               />
             </Field>
             <div style={{ display: 'flex', gap: 16 }}>

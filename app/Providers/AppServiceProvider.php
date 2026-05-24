@@ -56,6 +56,8 @@ class AppServiceProvider extends ServiceProvider
             'product' => 'App\Models\Product',
             'variant' => 'App\Models\ProductVariant',
             'user' => 'App\Models\User',
+            'banner' => 'App\Models\Banner',
+            'product_collection' => 'App\Models\RuleBasedCollection',
         ]);
     
     }

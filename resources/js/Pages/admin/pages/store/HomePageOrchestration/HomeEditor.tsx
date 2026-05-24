@@ -14,7 +14,7 @@ interface HomeEditorProps {
 
 export default function HomeEditor({ sections: initialSections }: HomeEditorProps) {
   const { state: { currentTheme: theme } } = useStoreConfigCtx();
-
+  console.log('initialsecitons' , initialSections);
   const [sections,      setSections]      = useState<Section[]>(initialSections || []);
   const [sidebarOpen,   setSidebarOpen]   = useState(true);
   const [openMenuId,    setOpenMenuId]    = useState<number | null>(null);

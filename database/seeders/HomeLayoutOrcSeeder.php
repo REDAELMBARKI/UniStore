@@ -24,49 +24,49 @@ class HomeLayoutOrcSeeder extends Seeder
             // 1. First Banner
             [
                 'sortable_id' => $banners[0]->id,
-                'sortable_type' => 'App\Models\Banner',
+                'sortable_type' => 'banner',
                 'order' => 1,
             ],
             // 2. New Arrivals (First Collection)
             [
                 'sortable_id' => $collections->where('key', 'home.new_arrivals')->first()->id ?? $collections[0]->id,
-                'sortable_type' => 'App\Models\RuleBasedCollection',
+                'sortable_type' => 'product_collection',
                 'order' => 2,
             ],
             // 3. Second Banner
             [
                 'sortable_id' => $banners[1]->id ?? $banners[0]->id,
-                'sortable_type' => 'App\Models\Banner',
+                'sortable_type' => 'banner',
                 'order' => 3,
             ],
             // 4. Featured Picks (Second Collection)
             [
                 'sortable_id' => $collections->where('key', 'home.featured')->first()->id ?? $collections[1]->id ?? $collections[0]->id,
-                'sortable_type' => 'App\Models\RuleBasedCollection',
+                'sortable_type' => 'product_collection',
                 'order' => 4,
             ],
             // 5. Third Banner
             [
                 'sortable_id' => $banners[2]->id ?? $banners[0]->id,
-                'sortable_type' => 'App\Models\Banner',
+                'sortable_type' => 'banner',
                 'order' => 5,
             ],
             // 6. Performance Footwear (Third Collection)
             [
                 'sortable_id' => $collections->where('key', 'home.shoes')->first()->id ?? $collections[2]->id ?? $collections[0]->id,
-                'sortable_type' => 'App\Models\RuleBasedCollection',
+                'sortable_type' => 'product_collection',
                 'order' => 6,
             ],
             // 7. Fourth Banner
             [
                 'sortable_id' => $banners[3]->id ?? $banners[0]->id,
-                'sortable_type' => 'App\Models\Banner',
+                'sortable_type' => 'banner',
                 'order' => 7,
             ],
             // 8. Luxury Timepieces (Fourth Collection)
             [
                 'sortable_id' => $collections->where('key', 'home.watches')->first()->id ?? $collections[3]->id ?? $collections[0]->id,
-                'sortable_type' => 'App\Models\RuleBasedCollection',
+                'sortable_type' => 'product_collection',
                 'order' => 8,
             ],
         ];

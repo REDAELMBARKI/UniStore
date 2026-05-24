@@ -83,9 +83,10 @@ interface CenterPanelProps {
   isSaving: boolean;
   onReset: () => void;
   onPublish: () => void;
+  errors: any;
 }
 
-function CenterPanel({ activeSection, globalCardConfig, isDirty, isSaving, onReset, onPublish }: CenterPanelProps) {
+function CenterPanel({ activeSection, globalCardConfig, isDirty, isSaving, onReset, onPublish, errors }: CenterPanelProps) {
   const { state: { currentTheme: theme } } = useStoreConfigCtx();
 
   // Safety guard for empty states
@@ -192,6 +193,35 @@ function CenterPanel({ activeSection, globalCardConfig, isDirty, isSaving, onRes
               </div>
             ))}
           </div>
+
+          {/* Validation Errors Display below preview */}
+          {Object.keys(errors).length > 0 && (
+            <div className="mt-12 animate-in fade-in slide-in-from-top-4">
+              <div 
+                className="p-6 rounded-2xl border-l-4 shadow-xl"
+                style={{ 
+                  backgroundColor: theme.bg, 
+                  borderColor: theme.error || '#ef4444',
+                  borderTop: `1px solid ${theme.border}`,
+                  borderRight: `1px solid ${theme.border}`,
+                  borderBottom: `1px solid ${theme.border}`,
+                }}
+              >
+                <div className="flex items-center gap-3 mb-4" style={{ color: theme.error || '#ef4444' }}>
+                  <AlertTriangle size={20} />
+                  <span className="text-xs font-black uppercase tracking-widest">Publish Validation Errors</span>
+                </div>
+                <ul className="space-y-2">
+                  {Object.entries(errors).map(([key, msg]: [string, any]) => (
+                    <li key={key} className="text-xs font-bold flex items-baseline gap-3" style={{ color: theme.text }}>
+                      <span style={{ color: theme.error || '#ef4444' }} className="text-lg">•</span>
+                      <span>{msg}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </main>
@@ -378,6 +408,7 @@ export default function CollectionEditor() {
             onReset={resetToFactory}
             onPublish={handlePublish}
             isSaving={isSaving}
+            errors={errors}
           />
 
           <CollectionEditorInspector
@@ -424,26 +455,6 @@ export default function CollectionEditor() {
         </div>
       )}
 
-      {/* Validation Errors Display below preview */}
-      {Object.keys(errors).length > 0 && (
-        <div className="fixed top-20 right-80 z-50 max-w-xs animate-in fade-in slide-in-from-top-4">
-          <div 
-            className="p-4 rounded-xl border-l-4 shadow-lg bg-red-50 border-red-500"
-          >
-            <div className="flex items-center gap-2 mb-2 text-red-800">
-              <AlertTriangle size={16} />
-              <span className="text-[10px] font-black uppercase">Validation Errors</span>
-            </div>
-            <ul className="space-y-1">
-              {Object.entries(errors).map(([key, msg]: [string, any]) => (
-                <li key={key} className="text-[10px] text-red-600 font-bold leading-tight">
-                  • {msg}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

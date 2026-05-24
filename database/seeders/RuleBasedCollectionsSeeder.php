@@ -23,7 +23,6 @@ class RuleBasedCollectionsSeeder extends Seeder
                 'slug' => 'new-season-arrivals',
                 'key' => 'home.new_arrivals',
                 'is_active' => true,
-                'order' => 0,
                 'layout_config' => [
                     'displayLimit' => 12,
                     'gap' => 24,
@@ -46,7 +45,6 @@ class RuleBasedCollectionsSeeder extends Seeder
                 'slug' => 'the-featured-edit',
                 'key' => 'home.featured',
                 'is_active' => true,
-                'order' => 0,
                 'layout_config' => [
                     'displayLimit' => 12,
                     'gap' => 24,
@@ -69,7 +67,6 @@ class RuleBasedCollectionsSeeder extends Seeder
                 'slug' => 'performance-footwear',
                 'key' => 'home.shoes',
                 'is_active' => true,
-                'order' => 0,
                 'layout_config' => [
                     'displayLimit' => 10,
                     'gap' => 24,
@@ -92,7 +89,6 @@ class RuleBasedCollectionsSeeder extends Seeder
                 'slug' => 'luxury-timepieces',
                 'key' => 'home.watches',
                 'is_active' => true,
-                'order' => 0,
                 'layout_config' => [
                     'displayLimit' => 10,
                     'gap' => 24,

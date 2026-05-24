@@ -3,59 +3,27 @@ import { router, usePage } from '@inertiajs/react';
 import { useStoreConfigCtx } from '@/contextHooks/useStoreConfigCtx';
 import { route } from 'ziggy-js';
 import { Banner } from '@/types/bannerTypes';
+import axios from 'axios';
+import { productFilesUploaderCleaner } from '@/functions/product/productFilesUploaderCleaner';
 import BannerNav from './Partials/BannerNav';
 import BannerCenterPanel from './Partials/BannerPreview';
 import BannerInspector from './Partials/BannerInspector';
 import { AdminLayout } from '@/admin/components/layout/AdminLayout';
+import { useToast } from '@/contextHooks/useToasts';
 
-const FALLBACK_BANNERS: Banner[] = [
-  {
-    id: 101,
-    key: "spring_2026",
-    name: "Spring Collection 2026",
-    slug: "spring-2026",
-    is_active: true,
-    direction: 'ltr',
-    aspect_ratio: "21:9",
-    border_radius: "12px",
-    bg_color: "#1a1a1a",
-    slots: [
-      {
-        slot_key: "left",
-        is_visible: true,
-        width: "50",
-        bg_color: "#1a1a1a",
-        main_media: { id: null, url: '', media_type: 'image' },
-      },
-      {
-        slot_key: "middle",
-        is_visible: false,
-        width: "50",
-        bg_color: "#222222",
-        elements: {
-          eyebrow:   { text: "NEW ARRIVALS",  color: "#ffd700", visible: true },
-          title:     { text: "Premium Gear",  color: "#ffffff", visible: true },
-          paragraph: { text: "Discover the latest 2026 release.", color: "#cccccc", visible: true },
-          button:    { text: "Shop Now", bg_color: "#ffffff", text_color: "#000000", visible: true }
-        }
-      },
-      {
-        slot_key: "right",
-        is_visible: true,
-        width: "50",
-        bg_color: "#1a1a1a",
-        main_media: { id: 1, url: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f", media_type: 'image' }
-      }
-    ]
-  }
-];
 
 export default function BannerEditor() {
   const { state: { currentTheme: theme } } = useStoreConfigCtx();
-  const { banners = [], app_factory_config = [], selectedBanner, available_banner_templates = [] } = usePage().props as any;
+  const { 
+    banners = [], 
+    app_factory_config = [], 
+    selectedBanner, 
+    available_banner_templates = [],
+    errors = {} // Added errors
+  } = usePage().props as any;
 
   const initialData = useMemo(() => {
-    return banners.length > 0 ? banners : FALLBACK_BANNERS;
+    return banners.length > 0 ? banners : [];
   }, [banners]);
 
   const [localBanners, setLocalBanners]     = useState<Banner[]>(initialData);
@@ -66,8 +34,9 @@ export default function BannerEditor() {
   const [savedSnapshot, setSavedSnapshot]   = useState<string>(JSON.stringify(initialData));
   const [leftOpen, setLeftOpen]             = useState(true);
   const [rightOpen, setRightOpen]           = useState(true);
-
-  const pendingFiles = useRef<Record<string, File>>({});
+  const [uploadingMedia, setUploadingMedia] = useState<Record<string, boolean>>({});
+  const { uploadProductFiles }              = productFilesUploaderCleaner();
+  const { addToast }                        = useToast();
 
   // Sync when Inertia refreshes props after a server round-trip
   useEffect(() => {
@@ -111,14 +80,21 @@ export default function BannerEditor() {
     [localBanners, savedSnapshot]
   );
 
-  // ── Path-based updater ────────────────────────────────────────────────────────
   const updateBanner = (bannerId: number, path: string, value: any) => {
     setLocalBanners(prev => prev.map(banner => {
       if (banner.id !== bannerId) return banner;
       const updated = structuredClone(banner);
       const keys = path.split('.');
       let cursor: any = updated;
-      for (let i = 0; i < keys.length - 1; i++) cursor = cursor[keys[i]];
+      
+      for (let i = 0; i < keys.length - 1; i++) {
+        const key = keys[i];
+        if (cursor[key] === undefined || cursor[key] === null) {
+          cursor[key] = {};
+        }
+        cursor = cursor[key];
+      }
+      
       cursor[keys[keys.length - 1]] = value;
       return updated;
     }));
@@ -131,14 +107,32 @@ export default function BannerEditor() {
     setLocalBanners(prev => prev.map(banner => {
       if (banner.id !== activeId) return banner;
       const cloned = structuredClone(banner);
-      const target = cloned.slots.find(s => s.slot_key === slotKey);
-      if (!target) return banner;
+      let target = cloned.slots.find(s => s.slot_key === slotKey);
 
-      // Prevent hiding the last visible slot
-      const visibleCount = cloned.slots.filter(s => s.is_visible).length;
-      if (target.is_visible && visibleCount === 1) return banner;
+      if (!target) {
+        // Create new slot if it doesn't exist (Activating it)
+        target = {
+          slot_key: slotKey,
+          is_visible: true,
+          width: '100', // Will be redistributed
+          bg_color: banner.bg_color,
+          elements: {
+            eyebrow: { text: '', visible: false },
+            title: { text: 'New Slot', visible: true },
+            paragraph: { text: '', visible: false },
+            button: { text: 'Learn More', visible: false },
+          },
+          main_media: null,
+          secondary_media: null,
+        } as any;
+        cloned.slots.push(target as any);
+      } else {
+        // Prevent hiding the last visible slot
+        const visibleCount = cloned.slots.filter(s => s.is_visible).length;
+        if (target.is_visible && visibleCount === 1) return banner;
 
-      target.is_visible = !target.is_visible;
+        target.is_visible = !target.is_visible;
+      }
 
       // Redistribute 100% equally across all now-visible slots
       const visible = cloned.slots.filter(s => s.is_visible);
@@ -153,16 +147,41 @@ export default function BannerEditor() {
   };
 
   // ── Media ─────────────────────────────────────────────────────────────────────
-  const handleMediaChange = (slotIndex: number, file: File, isSecondary = false) => {
-    const previewUrl = URL.createObjectURL(file);
-    const slot       = activeBanner.slots[slotIndex];
-    const fileKey    = `${activeId}_slot_${slot.slot_key}_${isSecondary ? 'sec' : 'main'}`;
-    const mediaPath  = isSecondary
-      ? `slots.${slotIndex}.secondary_media.url`
-      : `slots.${slotIndex}.main_media.url`;
+  const handleMediaChange = async (slotIndex: number, file: File, isSecondary = false) => {
+    const slot = activeBanner.slots[slotIndex];
+    if (!slot) return;
+    
+    const mediaPath = isSecondary ? 'secondary_media' : 'main_media';
+    const basePath = `slots.${slotIndex}.${mediaPath}`;
+    const uploadKey = `${slotIndex}_${isSecondary ? 'sec' : 'main'}`;
 
-    pendingFiles.current[fileKey] = file;
-    updateBanner(activeId, mediaPath, previewUrl);
+    try {
+      setUploadingMedia(prev => ({ ...prev, [uploadKey]: true }));
+      
+      // 1. Perform real-time upload with 30s timeout
+      const uploadPromise = uploadProductFiles(file, "banner", "banner", String(activeId));
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Upload timed out. Please try again.')), 30000)
+      );
+
+      const data = await Promise.race([uploadPromise, timeoutPromise]) as any;
+      
+      // 2. Update state with the returned ID and URL from the server
+      if (data.media) {
+        updateBanner(activeId, `${basePath}.id`,  data.media.id);
+        updateBanner(activeId, `${basePath}.url`, data.media.url);
+        updateBanner(activeId, `${basePath}.media_type`, data.media.media_type || 'image');
+      }
+    } catch (error: any) {
+      console.error('Real-time upload failed:', error);
+      addToast({
+        title: "Upload Failed",
+        description: error.message || "Failed to upload image. Please try again.",
+        type: "error",
+      });
+    } finally {
+      setUploadingMedia(prev => ({ ...prev, [uploadKey]: false }));
+    }
   };
 
   // ── Publish ───────────────────────────────────────────────────────────────────
@@ -178,15 +197,12 @@ export default function BannerEditor() {
     form.append('slots',         JSON.stringify(activeBanner.slots));
     form.append('_method',       'PUT');
 
-    Object.entries(pendingFiles.current).forEach(([key, file]) => form.append(key, file));
-
     router.post(route('banners.update', { banner: activeBanner.slug }), form, {
       onBefore:  () => setIsSaving(true),
       onSuccess: (page) => {
         const freshBanners = (page.props.banners as Banner[]) ?? localBanners;
         setLocalBanners(freshBanners);
         setSavedSnapshot(JSON.stringify(freshBanners));
-        pendingFiles.current = {};
       },
       onFinish: () => setIsSaving(false),
     });
@@ -234,7 +250,6 @@ export default function BannerEditor() {
 
     setActiveSlotKey(payload.slots?.[0]?.slot_key ?? 'left');
     setActiveElementKey(null);
-    pendingFiles.current = {};
   };
 
   return (
@@ -269,6 +284,8 @@ export default function BannerEditor() {
             onUpdate={(path: string, value: any) => updateBanner(activeBanner.id, path, value)}
             onAddBanner={handleAddBanner}
             availableBannerTemplates={available_banner_templates}
+            errors={errors}
+            uploadingMedia={uploadingMedia}
           />
 
           <BannerInspector
@@ -280,6 +297,7 @@ export default function BannerEditor() {
             onElementSelect={handleElementSelect}
             onUpdate={(path: string, value: any) => updateBanner(activeBanner.id, path, value)}
             onMediaChange={handleMediaChange}
+            uploadingMedia={uploadingMedia}
           />
         </>
       )}
