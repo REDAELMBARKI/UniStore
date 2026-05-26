@@ -3,9 +3,9 @@ import { User, Mail, Phone, MapPin, ShoppingBag, Star, Calendar, FileText, Bell,
 import EmptyListSection from '@/admin/components/partials/EmptyListSection';
 import { AdminLayout } from '@/admin/components/layout/AdminLayout';
 import { useToast } from '@/contextHooks/useToasts';
-import { useStoreConfigCtx } from '@/contextHooks/useStoreConfigCtx';
+import { useAdminThemeCtx } from '@/contextHooks/useAdminThemeCtx';
 import { router } from '@inertiajs/react';
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 
 interface Role {
   id: number;
@@ -33,7 +33,7 @@ interface CustomerData {
 export default function CustomerDetails({ customer: backendCustomer, allRoles }: { customer?: CustomerData, allRoles: Role[] }) {
   const [activeTab, setActiveTab] = useState<string>('overview');
   const { addToast } = useToast();
-  const { state: { currentTheme: theme } } = useStoreConfigCtx();
+  const { state: { currentTheme: theme } } = useAdminThemeCtx();
   
   // Default fallback if no data passed (though middleware/controller should handle this)
   const customer: CustomerData = backendCustomer || {
@@ -366,3 +366,4 @@ export default function CustomerDetails({ customer: backendCustomer, allRoles }:
 
 
 CustomerDetails.layout = (page : any) => <AdminLayout children={page}/> 
+

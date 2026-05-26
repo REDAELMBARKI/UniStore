@@ -1,20 +1,19 @@
-
-
-
 import { ReactNode, useState } from "react";
 import { useAuth } from "../../hooks/useAuth";
 import { Header } from "./Header";
 import { AuthProvider } from "@/admin/context/AuthContext";
 import { Sidebar } from "./SideBar";
-import StoreConfigProvider from "@/contextProvoders/StoreConfigProvider";
-import { useStoreConfigCtx } from "@/contextHooks/useStoreConfigCtx";
+import { AdminThemeProvider } from "@/contextProvoders/AdminThemeProvider";
+import { useTheme } from "@/contextHooks/useTheme";
 import { ToastProvider } from "@/contextProvoders/ToastProvider";
 
 export function AdminLayout({ children }: { children: ReactNode }) {
 
   return<>
         <AuthProvider>
+          <AdminThemeProvider>
             <AdminLayoutContent children={children} />
+          </AdminThemeProvider>
         </AuthProvider>
   </>
 }
@@ -22,7 +21,7 @@ export function AdminLayout({ children }: { children: ReactNode }) {
 
 const AdminLayoutContent = ({ children }: { children: ReactNode }) => {
   const { isLoading } = useAuth();
-  const { state: { currentTheme } } = useStoreConfigCtx();
+  const { theme: currentTheme } = useTheme();
   const [collapsed, setCollapsed] = useState(false); // ← lift state here
 
   return (

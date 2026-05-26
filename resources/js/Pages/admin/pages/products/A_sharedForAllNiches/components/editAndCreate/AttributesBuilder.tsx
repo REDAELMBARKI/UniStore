@@ -1,5 +1,5 @@
 import { useProductDataCtx } from '@/contextHooks/product/useProductDataCtx';
-import { useStoreConfigCtx } from '@/contextHooks/useStoreConfigCtx';
+import { useAdminThemeCtx } from '@/contextHooks/useAdminThemeCtx';
 import { Plus, Trash2, Tag, GripVertical, Check, ChevronDown } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -179,7 +179,7 @@ function EmptyAttributes({ currentTheme }: { currentTheme: any }) {
 // ─── Main Section ─────────────────────────────────────────────────────────────
 function AttributesBuilder() {
   const { watch, setValue } = useProductDataCtx();
-  const { state: { currentTheme } } = useStoreConfigCtx();
+  const { state: { currentTheme } } = useAdminThemeCtx();
 
   const attributes: ProductAttribute[] = watch('product_attributes') || [];
   const [openIndexes, setOpenIndexes] = useState<number[]>([]);
@@ -262,3 +262,4 @@ function AttributesBuilder() {
 }
 
 export default AttributesBuilder;
+

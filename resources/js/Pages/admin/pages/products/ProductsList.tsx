@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { router, usePage } from "@inertiajs/react";
 import { route } from "ziggy-js";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -20,7 +20,7 @@ import { Cover } from "@/types/inventoryTypes";
 import { DeleteConfirmationModal } from "@/components/ui/DeleteConfirmationModal";
 import { SectionHeader } from "@/admin/components/layout/SectionHeader";
 import { PaginationSlide } from "@/components/ui/PaginationSlide";
-import { useStoreConfigCtx } from "@/contextHooks/useStoreConfigCtx";
+import { useAdminThemeCtx } from "@/contextHooks/useAdminThemeCtx";
 import MultiSelectDropdownForObject, { AllowedObjectsType } from "@/components/ui/MultiSelectDropdownForObject";
 
 // ===================== TYPES =====================
@@ -50,7 +50,7 @@ export interface ProductListItem {
 // ===================== COMPONENT =====================
 export default function ProductsList() {
   const { products = [] } = usePage().props as { products: ProductListItem[] };
-  const { state: { currentTheme: theme } } = useStoreConfigCtx();
+  const { state: { currentTheme: theme } } = useAdminThemeCtx();
 
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -413,3 +413,4 @@ export default function ProductsList() {
 }
 
 ProductsList.layout = (page: React.ReactNode) => <AdminLayout>{page}</AdminLayout>;
+

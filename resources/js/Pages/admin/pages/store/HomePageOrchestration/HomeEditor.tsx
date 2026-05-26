@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { AdminLayout } from '@/admin/components/layout/AdminLayout';
-import { useStoreConfigCtx } from '@/contextHooks/useStoreConfigCtx';
+import { useAdminThemeCtx } from '@/contextHooks/useAdminThemeCtx';
 import type { Section } from '@/types/homeEditor';
 import { Sidebar } from './Partials/Sidebar';
 import { PreviewPanel } from './Partials/PreviewPanel';
@@ -13,7 +13,7 @@ interface HomeEditorProps {
 }
 
 export default function HomeEditor({ sections: initialSections }: HomeEditorProps) {
-  const { state: { currentTheme: theme } } = useStoreConfigCtx();
+  const { state: { currentTheme: theme } } = useAdminThemeCtx();
   console.log('initialsecitons' , initialSections);
   const [sections,      setSections]      = useState<Section[]>(initialSections || []);
   const [sidebarOpen,   setSidebarOpen]   = useState(true);
@@ -144,3 +144,4 @@ export default function HomeEditor({ sections: initialSections }: HomeEditorProp
 }
 
 HomeEditor.layout = (page: React.ReactNode) => <AdminLayout>{page}</AdminLayout>;
+

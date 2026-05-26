@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Attribute   , AttributeValue} from './types';
-import { useStoreConfigCtx } from '@/contextHooks/useStoreConfigCtx';
+import { useTheme } from '@/contextHooks/useTheme';
 import { resolveCreateValuePlaceholder } from '@/functions/attributes/createValuePlaceholder';
 import { route } from 'ziggy-js';
 import { router } from '@inertiajs/react';
@@ -51,7 +51,7 @@ export function AddValueModal(props: Readonly<AddValueModalProps>) {
     }
     
   };
-  const {state : {currentTheme}} = useStoreConfigCtx();
+  const { theme: currentTheme } = useTheme();
   
 
 
@@ -128,3 +128,4 @@ export function AddValueModal(props: Readonly<AddValueModalProps>) {
     </Dialog>
   );
 }
+

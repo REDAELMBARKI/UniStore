@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useStoreConfigCtx } from '@/contextHooks/useStoreConfigCtx';
+import { useTheme } from '@/contextHooks/useTheme';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import type { Attribute, DisplayType } from './types';
 
@@ -36,7 +36,7 @@ export function AddAttributeModal(props: Readonly<AddAttributeModalProps>) {
     if (!name.trim()) return;
     onSubmit({ name: name.trim(), displayType });
   };
-  const {state : {currentTheme}} = useStoreConfigCtx();
+  const { theme: currentTheme } = useTheme();
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -83,3 +83,4 @@ export function AddAttributeModal(props: Readonly<AddAttributeModalProps>) {
     </Dialog>
   );
 }
+

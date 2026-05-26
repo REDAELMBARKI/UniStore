@@ -6,7 +6,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 import { Pencil, Trash2 } from 'lucide-react';
 import type { AttributeValue } from './types';
-import { useStoreConfigCtx } from '@/contextHooks/useStoreConfigCtx';
+import { useTheme } from '@/contextHooks/useTheme';
 
 interface AttributeValuesTableProps {
   values: AttributeValue[];
@@ -18,7 +18,7 @@ interface AttributeValuesTableProps {
 
 export function AttributeValuesTable({ values, isColorAttribute, onEdit, onDelete, onBulkDelete }: AttributeValuesTableProps) {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const {state : {currentTheme}} = useStoreConfigCtx(); // color all the page sing this theme
+  const { theme: currentTheme } = useTheme(); // color all the page sing this theme
   useEffect(() => {
     setSelectedIds([]);
   }, [values]);
@@ -118,3 +118,4 @@ export function AttributeValuesTable({ values, isColorAttribute, onEdit, onDelet
     </div>
   );
 }
+

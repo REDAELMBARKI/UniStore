@@ -1,9 +1,9 @@
 import { useState, useRef, useEffect } from 'react';
 import { Plus, Tag, TagIcon, Trash2, Loader2 } from 'lucide-react';
-import { Button } from './ui/button';
-import { useStoreConfigCtx } from '@/contextHooks/useStoreConfigCtx';
+import { Button } from './ui/Button';
+import { useTheme } from '@/contextHooks/useTheme';
 import { useProductDataCtx } from '@/contextHooks/product/useProductDataCtx';
-import { Input } from './ui/input';
+import { Input } from './ui/Input';
 import EmptyListSection from '@/admin/components/partials/EmptyListSection';
 import { route } from 'ziggy-js';
 import axios from 'axios';
@@ -22,7 +22,7 @@ const TagSection: React.FC<TagInputProps> = ({ tags }) => {
 
   const [suggestions, setSuggestions] = useState<string[]>([]);
 
-  const { state: { currentTheme } } = useStoreConfigCtx();
+  const { theme: currentTheme } = useTheme();
   const { setValue } = useProductDataCtx();
 
   useEffect(() => {

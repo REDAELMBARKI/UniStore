@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import { Plus, Zap, AlertCircle, PackageSearch, MousePointerClick } from "lucide-react";
-import { useStoreConfigCtx } from "@/contextHooks/useStoreConfigCtx";
+import { useAdminThemeCtx } from "@/contextHooks/useAdminThemeCtx";
 import { Variant } from "@/types/products/productVariantType";
 import OptionSelector from "./OptionSelector";
 import VariantCard from "./VariantCard";
@@ -9,10 +9,10 @@ import { useProductDataCtx } from "@/contextHooks/product/useProductDataCtx";
 import { ProductSchemaType, variantSchema } from "@/shemas/productSchema";
 import { useFieldArray } from "react-hook-form";
 import { useToast } from "@/contextHooks/useToasts";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 
 export default function VariantBuilder() {
-  const { state: { currentTheme: theme } } = useStoreConfigCtx();
+  const { state: { currentTheme: theme } } = useAdminThemeCtx();
   const [activeOptions, setActiveOptions] = useState<string[]>([]);
   const [colorImages, setColorImages] = useState<Record<string, string>>({});
   const [showModal, setShowModal] = useState(false);
@@ -376,3 +376,4 @@ export default function VariantBuilder() {
     </div>
   );
 }
+

@@ -1,4 +1,4 @@
-import { useStoreConfigCtx } from "@/contextHooks/useStoreConfigCtx";
+import { useAdminThemeCtx } from "@/contextHooks/useAdminThemeCtx";
 import { ChevronLeft, Maximize2, PanelRight, Sliders, Trash2 } from "lucide-react";
 
 interface CollectionEditorInspectorProps {
@@ -24,7 +24,7 @@ export default function CollectionEditorInspector({
   onUpdateLayout,
   onUpdateGlobalCard,
 }: CollectionEditorInspectorProps) {
-  const { state: { currentTheme: theme } } = useStoreConfigCtx();
+  const { state: { currentTheme: theme } } = useAdminThemeCtx();
 
   return (
     <aside
@@ -247,3 +247,4 @@ export default function CollectionEditorInspector({
     </aside>
   );
 }
+

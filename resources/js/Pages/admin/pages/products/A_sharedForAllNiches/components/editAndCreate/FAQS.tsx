@@ -1,5 +1,5 @@
 import { useProductDataCtx } from '@/contextHooks/product/useProductDataCtx';
-import { useStoreConfigCtx } from '@/contextHooks/useStoreConfigCtx';
+import { useAdminThemeCtx } from '@/contextHooks/useAdminThemeCtx';
 import { Plus, Trash2, HelpCircle, GripVertical, Check, ChevronDown } from 'lucide-react';
 import React, { useState } from 'react';
 import { useFieldArray } from 'react-hook-form';
@@ -184,7 +184,7 @@ function EmptyFaqs({ currentTheme }: { currentTheme: any }) {
 // ─── Main FAQs Section ────────────────────────────────────────────────────────
 function FaqsSection() {
   const { control, watch } = useProductDataCtx();
-  const { state: { currentTheme } } = useStoreConfigCtx();
+  const { state: { currentTheme } } = useAdminThemeCtx();
 
   const { fields, append, remove, update } = useFieldArray<ProductBase, 'faqs'>({
     control,
@@ -272,3 +272,4 @@ function FaqsSection() {
 }
 
 export default FaqsSection;
+

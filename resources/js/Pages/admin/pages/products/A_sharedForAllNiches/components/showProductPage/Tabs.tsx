@@ -1,5 +1,5 @@
-import { Button } from "@/components/ui/button";
-import { useStoreConfigCtx } from "@/contextHooks/useStoreConfigCtx";
+import { Button } from "@/components/ui/Button";
+import { useAdminThemeCtx } from "@/contextHooks/useAdminThemeCtx";
 import React, { useState } from "react";
 
 
@@ -17,7 +17,7 @@ interface TabsProps {
 
 export const Tabs: React.FC<TabsProps> = ({ tabs, defaultTab }) => {
   const [activeTab, setActiveTab] = useState(defaultTab || tabs[0]?.id || "");
-  const {state : {currentTheme}} = useStoreConfigCtx()
+  const {state : {currentTheme}} = useAdminThemeCtx()
   return (
     <div className="shadow-lg  overflow-hidden w-full "
      style={{background : currentTheme.bg , color : currentTheme.text}}
@@ -69,3 +69,4 @@ export const Tabs: React.FC<TabsProps> = ({ tabs, defaultTab }) => {
 };
 
 export default Tabs;
+

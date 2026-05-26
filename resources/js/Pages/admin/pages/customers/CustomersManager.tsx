@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { SectionHeader } from '@/admin/components/layout/SectionHeader';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { useStoreConfigCtx } from '@/contextHooks/useStoreConfigCtx';
+import { useAdminThemeCtx } from '@/contextHooks/useAdminThemeCtx';
 import { AvatarImage } from '@/components/ui/avatar';
 import { TableMeta } from '@/components/ui/TableMeta';
 import { PaginationTable } from '@/admin/components/layout/Pagination';
@@ -141,7 +141,7 @@ const CustomersTable: FC<CustomersTableProps> = ({
 }) => {
   const {
     state: { currentTheme: theme },
-  } = useStoreConfigCtx();
+  } = useAdminThemeCtx();
   const [perPage, setPerPage] = useState<string>('10');
 
   return (
@@ -363,7 +363,7 @@ export default function CustomersManager() {
   const { customers = [] } = usePage().props as any;
   const {
     state: { currentTheme: theme },
-  } = useStoreConfigCtx();
+  } = useAdminThemeCtx();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
@@ -466,3 +466,4 @@ export default function CustomersManager() {
     </AdminLayout>
   );
 }
+

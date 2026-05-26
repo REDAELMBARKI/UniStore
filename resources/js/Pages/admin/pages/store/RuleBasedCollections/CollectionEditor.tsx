@@ -5,7 +5,7 @@ import {
   PanelLeft, PanelRight, Maximize2, ChevronRight, ChevronLeft,
   RotateCcw, Save, AlertTriangle
 } from 'lucide-react';
-import { useStoreConfigCtx } from '@/contextHooks/useStoreConfigCtx';
+import { useAdminThemeCtx } from '@/contextHooks/useAdminThemeCtx';
 import { AdminLayout } from '@/admin/components/layout/AdminLayout';
 import CollectionEditorNav from './Partials/CollectionEditorNav';
 import CollectionEditorInspector from './Partials/CollectionEditorInspector';
@@ -22,7 +22,7 @@ interface UnsavedModalProps {
 }
 
 function UnsavedModal({ sectionName, onDiscard, onKeep }: UnsavedModalProps) {
-  const { state: { currentTheme: theme } } = useStoreConfigCtx();
+  const { state: { currentTheme: theme } } = useAdminThemeCtx();
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -87,7 +87,7 @@ interface CenterPanelProps {
 }
 
 function CenterPanel({ activeSection, globalCardConfig, isDirty, isSaving, onReset, onPublish, errors }: CenterPanelProps) {
-  const { state: { currentTheme: theme } } = useStoreConfigCtx();
+  const { state: { currentTheme: theme } } = useAdminThemeCtx();
 
   // Safety guard for empty states
   if (!activeSection) return null;
@@ -233,7 +233,7 @@ function CenterPanel({ activeSection, globalCardConfig, isDirty, isSaving, onRes
 // ─────────────────────────────────────────────
 
 export default function CollectionEditor() {
-  const { state: { currentTheme: theme } } = useStoreConfigCtx();
+  const { state: { currentTheme: theme } } = useAdminThemeCtx();
   const {
     collections = [],
     app_factory_config = [],
@@ -460,3 +460,4 @@ export default function CollectionEditor() {
 }
 
 CollectionEditor.layout = (page: any) => <AdminLayout>{page}</AdminLayout>;
+

@@ -1,6 +1,6 @@
 import { useState, ReactNode } from 'react';
 import { LucideIcon } from 'lucide-react';
-import { useStoreConfigCtx } from '@/contextHooks/useStoreConfigCtx';
+import { useAdminThemeCtx } from '@/contextHooks/useAdminThemeCtx';
 import { CollapsibleButton } from './collapsiblebutton';
 
 interface SectionWrapperProps {
@@ -18,7 +18,7 @@ export function SectionWrapper({
 }: SectionWrapperProps) {
   const {
     state: { currentTheme },
-  } = useStoreConfigCtx();
+  } = useAdminThemeCtx();
 
   const [isOpen, setIsOpen] = useState(defaultOpen);
   const sectionId = `section-${title.replace(/\s+/g, '-').toLowerCase()}`;
@@ -69,3 +69,4 @@ export function SectionWrapper({
     </div>
   );
 }
+

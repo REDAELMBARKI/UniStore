@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { AdminLayout } from '@/admin/components/layout/AdminLayout';
-import { useStoreConfigCtx } from '@/contextHooks/useStoreConfigCtx';
+import { useAdminThemeCtx } from '@/contextHooks/useAdminThemeCtx';
 import { usePage, Link } from '@inertiajs/react';
 import { route } from 'ziggy-js';
 import {
@@ -76,7 +76,7 @@ function fmtDate(d: string) {
 // ─── Main ─────────────────────────────────────────────────────────────────────
 
 export default function Index() {
-  const { state: { currentTheme: t } } = useStoreConfigCtx();
+  const { state: { currentTheme: t } } = useAdminThemeCtx();
   const { categories: rawCategories } = usePage().props as Props;
   const [expandedId, setExpandedId] = useState<number | null>(null);
   const [filterMode, setFilterMode] = useState<FilterMode>('all');
@@ -365,3 +365,4 @@ export default function Index() {
 }
 
 Index.layout = (page: any) => <AdminLayout>{page}</AdminLayout>;
+

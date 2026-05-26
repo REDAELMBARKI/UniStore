@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button';
 import SelectByRadix from '@/components/ui/SelectByRadix';
 import { SectionHeader } from '@/admin/components/layout/SectionHeader';
 import { PaginationTable } from '@/admin/components/layout/Pagination';
-import { useStoreConfigCtx } from '@/contextHooks/useStoreConfigCtx';
+import { useAdminThemeCtx } from '@/contextHooks/useAdminThemeCtx';
 import { TableMeta } from '@/components/ui/TableMeta';
 import { Order, OrdersResponse } from '@/types/orders/ordersTypes';
 import { router, usePage } from '@inertiajs/react';
@@ -30,7 +30,7 @@ function OrderManager({orders : paginatedOrders , statistics : stats  , sheetUrl
   const [currentPage , setCurrentPage] = useState(paginatedOrders.current_page) ; 
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [detailsOpen, setDetailsOpen] = useState(false);
-  const {state : {currentTheme}} =  useStoreConfigCtx()
+  const {state : {currentTheme}} =  useAdminThemeCtx()
   const allOrders = generateOrders();
 
   const filteredOrders = useMemo(() => {
@@ -201,4 +201,5 @@ function OrderManager({orders : paginatedOrders , statistics : stats  , sheetUrl
 export default OrderManager;
 
 OrderManager.layout = (page:any) => <AdminLayout children={page} />
+
 

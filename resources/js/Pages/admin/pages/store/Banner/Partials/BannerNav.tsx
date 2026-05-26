@@ -1,4 +1,4 @@
-import { useStoreConfigCtx } from "@/contextHooks/useStoreConfigCtx";
+import { useAdminThemeCtx } from "@/contextHooks/useAdminThemeCtx";
 import { Banner } from "@/types/bannerTypes";
 import { PanelLeft, MoreVertical, ArrowUp, ArrowDown, ArrowUpToLine, ArrowDownToLine } from "lucide-react";
 import { useState } from "react";
@@ -23,7 +23,7 @@ interface ReorderItem {
 
 
 export default function BannerNav({ open, onToggle, banners, activeId, onSelect }: BannerNavProps) {
-  const { state: { currentTheme: theme } } = useStoreConfigCtx();
+  const { state: { currentTheme: theme } } = useAdminThemeCtx();
   const [menuOpenId, setMenuOpenId] = useState<number | null>(null);
 
   const getThumbnailUrl = (banner: Banner): string | null => {
@@ -185,3 +185,4 @@ export default function BannerNav({ open, onToggle, banners, activeId, onSelect 
     </aside>
   );
 }
+

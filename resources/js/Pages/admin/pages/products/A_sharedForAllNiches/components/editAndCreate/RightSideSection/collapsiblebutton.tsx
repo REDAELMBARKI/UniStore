@@ -1,5 +1,5 @@
 import { ChevronDown } from 'lucide-react';
-import { useStoreConfigCtx } from '@/contextHooks/useStoreConfigCtx';
+import { useAdminThemeCtx } from '@/contextHooks/useAdminThemeCtx';
 
 interface CollapsibleButtonProps {
   isOpen: boolean;
@@ -18,7 +18,7 @@ export function CollapsibleButton({
 }: CollapsibleButtonProps) {
   const {
     state: { currentTheme },
-  } = useStoreConfigCtx();
+  } = useAdminThemeCtx();
 
   return (
     <button
@@ -49,3 +49,4 @@ export function CollapsibleButton({
     </button>
   );
 }
+

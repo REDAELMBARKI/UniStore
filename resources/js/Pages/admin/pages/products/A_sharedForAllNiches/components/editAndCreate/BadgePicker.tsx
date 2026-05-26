@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import { useProductDataCtx } from "@/contextHooks/product/useProductDataCtx";
 import { Flame, Sparkles, Tag, Zap, Rocket, Ban } from "lucide-react";
 

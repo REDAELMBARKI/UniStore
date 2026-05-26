@@ -1,5 +1,5 @@
 import { useProductDataCtx } from '@/contextHooks/product/useProductDataCtx';
-import { useStoreConfigCtx } from '@/contextHooks/useStoreConfigCtx';
+import { useAdminThemeCtx } from '@/contextHooks/useAdminThemeCtx';
 import { Search, X, Link2, PackageSearch, TrashIcon } from 'lucide-react';
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
@@ -60,7 +60,7 @@ function SelectedProduct({ product, onRemove, currentTheme }: {
 // ─── Main ─────────────────────────────────────────────────────────────────────
 function RelatedProductsSection() {
   const { watch, setValue , getValues } = useProductDataCtx();
-  const { state: { currentTheme } } = useStoreConfigCtx();
+  const { state: { currentTheme } } = useAdminThemeCtx();
 
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<SearchProduct[]>([]);
@@ -253,3 +253,4 @@ function RelatedProductsSection() {
 }
 
 export default RelatedProductsSection;
+

@@ -7,9 +7,9 @@ import {
 } from 'lucide-react';
 import { router, usePage } from '@inertiajs/react';
 import { route } from 'ziggy-js';
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import { useToast } from '@/contextHooks/useToasts';
-import { useStoreConfigCtx } from '@/contextHooks/useStoreConfigCtx';
+import { useTheme } from '@/contextHooks/useTheme';
 
 interface Role {
   id: number;
@@ -33,7 +33,7 @@ export default function RoleManager({ roles, availableClaims }: { roles: Role[],
   const [selectedClaims, setSelectedClaims] = useState<string[]>([]);
   const [inviteEmail, setInviteEmail] = useState('');
   const { addToast } = useToast();
-  const { state: { currentTheme: theme } } = useStoreConfigCtx();
+  const { theme } = useTheme();
 
   const filteredRoles = roles.filter(role => 
     role.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -480,3 +480,4 @@ export default function RoleManager({ roles, availableClaims }: { roles: Role[],
     </AdminLayout>
   );
 }
+

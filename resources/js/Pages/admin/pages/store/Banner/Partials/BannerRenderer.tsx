@@ -1,4 +1,4 @@
-import { useStoreConfigCtx } from "@/contextHooks/useStoreConfigCtx";
+import { useAdminThemeCtx } from "@/contextHooks/useAdminThemeCtx";
 import { Banner, BannerSlot } from "@/types/bannerTypes";
 import { Link, router } from "@inertiajs/react";
 import { EyeOff, Upload } from "lucide-react";
@@ -20,7 +20,7 @@ export default function  BannerRenderer({
   onElementSelect?: (slotKey: string, elementKey: string) => void;
   onUpdate?: (path: string, value: any) => void;
 }) {
-  const { state: { currentTheme: theme } } = useStoreConfigCtx();
+  const { state: { currentTheme: theme } } = useAdminThemeCtx();
   const sortSlots = (slots: BannerSlot[]) => 
     [...slots].sort((a, b) => {
       const order: Record<string, number> = { left: 0, middle: 1, right: 2 };
@@ -347,3 +347,4 @@ function ElementWrapper({
     </div>
   );
 }
+

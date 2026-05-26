@@ -16,7 +16,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import MultiSelectDropdownForObject, { AllowedObjectsType } from '@/components/ui/MultiSelectDropdownForObject';
 import { useForm } from '@inertiajs/react';
-import { useStoreConfigCtx } from "@/contextHooks/useStoreConfigCtx";
+import { useTheme } from "@/contextHooks/useTheme";
 import { Badge } from '@/components/ui/badge';
 import { CustomDateTimePicker } from '@/components/ui/CustomDateTimePicker';
 import { addWeeks, addMonths, format, parseISO } from 'date-fns';
@@ -56,7 +56,7 @@ interface Props {
 }
 
 export default function Create() {
-  const { state: { currentTheme: theme } } = useStoreConfigCtx();
+  const { theme } = useTheme();
   const { promotion, products, categories, subCategories } = usePage().props as unknown as Props;
   const isEditing = !!promotion;
 
@@ -514,3 +514,4 @@ export default function Create() {
 }
 
 Create.layout = (page: React.ReactNode) => <AdminLayout>{page}</AdminLayout>;
+

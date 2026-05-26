@@ -1,8 +1,8 @@
-import { useStoreConfigCtx } from "@/contextHooks/useStoreConfigCtx";
+import { useTheme } from "@/contextHooks/useTheme";
 import { InfoIcon } from "lucide-react";
 
 const NotifyUser = ({Icon  = InfoIcon  ,  message = "" }) => {
-const {state : {currentTheme}} = useStoreConfigCtx()
+const { theme: currentTheme } = useTheme();
   return (
     <div className="flex items-center gap-2 rounded-xl overflow-hidden shadow-lg mt-3"
     style={{background : `${currentTheme.badge}30`}}

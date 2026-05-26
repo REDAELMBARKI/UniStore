@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Plus, Pencil } from 'lucide-react';
 import { AttributeValuesTable } from './AttributeValuesTable';
 import type { Attribute, AttributeValue } from './types';
-import { useStoreConfigCtx } from '@/contextHooks/useStoreConfigCtx';
+import { useTheme } from '@/contextHooks/useTheme';
 
 interface AttributeWorkspaceProps {
   attribute: Attribute;
@@ -34,7 +34,7 @@ export function AttributeWorkspace({
   onEditAttribute,
 }: AttributeWorkspaceProps) {
   const isColorAttribute = attribute.name.trim().toLocaleLowerCase() === 'color';
-  const {state : {currentTheme}} = useStoreConfigCtx(); // color all the page using this theme
+  const { theme: currentTheme } = useTheme(); // color all the page using this theme
   
   return (
     <CardContent className="p-6" style={{ background: currentTheme.card, color: currentTheme.text, borderColor: currentTheme.border }}>
@@ -68,3 +68,4 @@ export function AttributeWorkspace({
     </CardContent>
   );
 }
+

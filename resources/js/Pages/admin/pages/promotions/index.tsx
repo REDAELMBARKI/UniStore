@@ -14,7 +14,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { DeleteConfirmationModal } from '@/components/ui/DeleteConfirmationModal';
 import { SectionHeader } from "@/admin/components/layout/SectionHeader";
-import { useStoreConfigCtx } from "@/contextHooks/useStoreConfigCtx";
+import { useTheme } from "@/contextHooks/useTheme";
 import MultiSelectDropdownForObject, { AllowedObjectsType } from "@/components/ui/MultiSelectDropdownForObject";
 
 interface Promotion {
@@ -37,7 +37,7 @@ interface Props {
 }
 
 export default function Index() {
-  const { state: { currentTheme: theme } } = useStoreConfigCtx();
+  const { theme } = useTheme();
   const { promotions } = usePage().props as unknown as Props;
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
@@ -300,3 +300,4 @@ export default function Index() {
 }
 
 Index.layout = (page: React.ReactNode) => <AdminLayout>{page}</AdminLayout>;
+

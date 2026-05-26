@@ -1,12 +1,8 @@
-import { useStoreConfigCtx } from "@/contextHooks/useStoreConfigCtx";
+import { useTheme } from "@/contextHooks/useTheme";
 import React from "react";
 
-
-
-
-
 export const SectionHeader = ({title , description , Icon ,  children}:{title:string  , Icon? : React.ElementType; description? : string ; children? : React.ReactNode}) => {
-  const {state : {currentTheme : theme}} = useStoreConfigCtx();  
+  const { theme } = useTheme();  
   return (
       <>
       

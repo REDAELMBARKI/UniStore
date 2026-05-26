@@ -4,7 +4,7 @@ import { isEmpty, set } from "lodash";
 import { router, useForm, usePage } from "@inertiajs/react";
 import Layout from "@/Layouts/Layout";
 import { ArrowLeft } from "lucide-react";
-import { useStoreConfigCtx } from "@/contextHooks/useStoreConfigCtx";
+import { useAdminThemeCtx } from "@/contextHooks/useAdminThemeCtx";
 import { route } from "ziggy-js";
 import StepIndicator from "@/Pages/cart/shared/StepIndicator";
 import ProductDetails from "./A_sharedForAllNiches/components/showProductPage/ProductDetails";
@@ -42,7 +42,7 @@ export default function Show({tax =  2}: ShowPageMasterProps) {
 
     const {
         state: { currentTheme: theme },
-    } = useStoreConfigCtx();
+    } = useAdminThemeCtx();
     
 
     const stepUrls: Record<number, string> = {
@@ -140,3 +140,4 @@ export default function Show({tax =  2}: ShowPageMasterProps) {
 }
 
 Show.layout = (page : any) => <StoreConfigProvider >{page}</StoreConfigProvider>
+

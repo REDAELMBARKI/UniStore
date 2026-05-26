@@ -4,7 +4,7 @@ import { DayPicker } from "react-day-picker"
 
 import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/Button"
-import { useStoreConfigCtx } from "@/contextHooks/useStoreConfigCtx"
+import { useTheme } from "@/contextHooks/useTheme"
 
 export type CalendarProps = React.ComponentProps<typeof DayPicker>
 
@@ -14,7 +14,7 @@ function Calendar({
   showOutsideDays = true,
   ...props
 }: CalendarProps) {
-  const { state: { currentTheme: theme } } = useStoreConfigCtx();
+  const { theme } = useTheme();
 
   return (
     <DayPicker

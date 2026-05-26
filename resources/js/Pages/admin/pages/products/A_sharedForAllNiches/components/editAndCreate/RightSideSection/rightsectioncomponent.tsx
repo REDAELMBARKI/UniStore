@@ -15,7 +15,7 @@ import MultiSelectDropdownForObject, { AllowedObjectsType } from '@/components/u
 import countries from "i18n-iso-countries";
 import enLocale from "i18n-iso-countries/langs/en.json";
 import TagSection from '@/components/TagSection';
-import { useStoreConfigCtx } from '@/contextHooks/useStoreConfigCtx';
+import { useAdminThemeCtx } from '@/contextHooks/useAdminThemeCtx';
 import adapters from '@/functions/product/adapters';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
@@ -39,7 +39,7 @@ const firstVal = (selected: AllowedObjectsType[]) => selected[0]?.value ?? '';
 
 export function RightSectionComponent() {
   const { watch, register, control, setValue, formState: { errors } , shipping_class = []} = useProductDataCtx();
-  const { state: { currentTheme } } = useStoreConfigCtx()
+  const { state: { currentTheme } } = useAdminThemeCtx()
   const [subCategories, setSubCategories] = useState<Category[]>([]);
 
   const category = watch('category_niche_id');
@@ -599,3 +599,4 @@ export function RightSectionComponent() {
     </div>
   );
 }
+

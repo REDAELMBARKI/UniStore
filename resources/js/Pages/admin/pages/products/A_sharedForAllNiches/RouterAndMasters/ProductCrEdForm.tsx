@@ -16,11 +16,11 @@ import {
 } from "@/types/inventoryTypes";
 import BaseSharedForm from "../components/editAndCreate/BaseSharedForm";
 
-import { useStoreConfigCtx } from "@/contextHooks/useStoreConfigCtx";
+import { useAdminThemeCtx } from "@/contextHooks/useAdminThemeCtx";
 
 import CollapsibleFrendlySection from "@/components/CollapsibleFrendlySection";
 import adapters from "@/functions/product/adapters";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import VisibilitySettings from "../components/editAndCreate/VisibilitySettings";
 import RelatedProductsSection from "../components/editAndCreate/RelatedProductsSection";
 import PricingOrVariants from "../components/editAndCreate/PricingOrVariants";
@@ -38,7 +38,7 @@ const ProductCrEdForm = ({} : ProductCrEdFormFormProps) => {
     const { toSelectOptionAdapter } = adapters()
     const {
         state: { currentTheme },
-    } = useStoreConfigCtx();
+    } = useAdminThemeCtx();
 
     const covers = watch('covers');
     const video = watch('video');
@@ -246,3 +246,4 @@ const ProductCrEdForm = ({} : ProductCrEdFormFormProps) => {
 };
 
 export default ProductCrEdForm;
+

@@ -1,4 +1,4 @@
-import { useStoreConfigCtx } from "@/contextHooks/useStoreConfigCtx";
+import { useAdminThemeCtx } from "@/contextHooks/useAdminThemeCtx";
 import { Banner, BannerSlot } from "@/types/bannerTypes";
 import { RotateCcw, Save, Upload, Eye, EyeOff, Plus, X, AlertTriangle } from "lucide-react";
 import React, { useState } from "react";
@@ -13,7 +13,7 @@ function AddBannerModal({
   onSelect: (key: string) => void;
   onClose: () => void;
 }) {
-  const { state: { currentTheme: theme } } = useStoreConfigCtx();
+  const { state: { currentTheme: theme } } = useAdminThemeCtx();
 
   return (
     <>
@@ -211,7 +211,7 @@ export default function BannerCenterPanel({
   availableBannerTemplates?: { key: string; name: string }[];
   errors?: any;
 }) {
-  const { state: { currentTheme: theme } } = useStoreConfigCtx();
+  const { state: { currentTheme: theme } } = useAdminThemeCtx();
   const [showAddModal, setShowAddModal] = useState(false);
 
   return (
@@ -432,3 +432,4 @@ export default function BannerCenterPanel({
     </main>
   );
 }
+

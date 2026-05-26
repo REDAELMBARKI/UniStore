@@ -1,6 +1,6 @@
 import TagSection from "@/components/TagSection"
 import { useProductDataCtx } from "@/contextHooks/product/useProductDataCtx"
-import { useStoreConfigCtx } from "@/contextHooks/useStoreConfigCtx";
+import { useAdminThemeCtx } from "@/contextHooks/useAdminThemeCtx";
 
 import { generateSKU } from "@/functions/product/generateSku";
 
@@ -11,7 +11,7 @@ import { v4 } from "uuid";
 
 export default function ProductMetaData(){
     const {basicInfoForm , setBasicInfoForm} = useProductDataCtx()
-         const {state :{currentTheme}} = useStoreConfigCtx()
+         const {state :{currentTheme}} = useAdminThemeCtx()
 
     
     return (<>
@@ -43,3 +43,4 @@ export default function ProductMetaData(){
               
               </>)
 }
+

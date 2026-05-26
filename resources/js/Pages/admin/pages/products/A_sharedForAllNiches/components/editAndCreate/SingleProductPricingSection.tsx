@@ -1,5 +1,5 @@
 import { useProductDataCtx } from '@/contextHooks/product/useProductDataCtx';
-import { useStoreConfigCtx } from '@/contextHooks/useStoreConfigCtx';
+import { useAdminThemeCtx } from '@/contextHooks/useAdminThemeCtx';
 import { Wand2 } from 'lucide-react';
 import React from 'react';
 import PricePreview from './PricePreview';
@@ -16,7 +16,7 @@ function SingleProductPricingSection() {
   const {  control ,  register , formState :{errors} } = useProductDataCtx();
   const {
     state: { currentTheme },
-  } = useStoreConfigCtx();
+  } = useAdminThemeCtx();
   const price = useWatch({ control, name: 'price' });
   const compare_price = useWatch({ control, name: 'compare_price' });
   const sku = useWatch({ control, name: 'sku' });
@@ -159,3 +159,4 @@ function SingleProductPricingSection() {
 }
 
 export default SingleProductPricingSection;
+

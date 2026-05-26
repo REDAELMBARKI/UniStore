@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { useStoreConfigCtx } from "@/contextHooks/useStoreConfigCtx";
+import { useTheme } from "@/contextHooks/useTheme";
 import { Input } from "@/components/ui/Input";
 
 interface CustomDateTimePickerProps {
@@ -27,7 +27,7 @@ export function CustomDateTimePicker({
   label,
   disabled = false,
 }: CustomDateTimePickerProps) {
-  const { state: { currentTheme: theme } } = useStoreConfigCtx();
+  const { theme } = useTheme();
 
   return (
     <div className="space-y-2">

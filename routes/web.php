@@ -50,21 +50,31 @@ Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])
 
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
-// home layout orchestration
-Route::get('/store/home-editor', [HomeLayoutOrcController::class, 'index'])->name('home.editor.index');
-Route::post('/store/home-editor/publish', [HomeLayoutOrcController::class, 'publish'])->name('home.editor.publish');
 
-//collecctions
-Route::get('/store/collections', [RuleBasedCollectionController::class, 'index'])->name('collections.index');
-Route::get('/store/collections/{collection:slug}', [RuleBasedCollectionController::class, 'edit'])->name('collections.edit');
-Route::put('/store/collections/{collection:slug}', [RuleBasedCollectionController::class, 'update'])->name('collections.update');
-Route::patch('/store/collections/{collection:slug}', [RuleBasedCollectionController::class, 'reorder'])->name('collections.reorder');
+// store management section
+Route::prefix('store')->group(function() {
+    // home layout orchestration
+    Route::get('/home-editor', [HomeLayoutOrcController::class, 'index'])->name('home.editor.index');
+    Route::post('/home-editor/publish', [HomeLayoutOrcController::class, 'publish'])->name('home.editor.publish');
 
-// banners
-Route::get('/store/banners', [BannerController::class, 'index'])->name('banners.index');
-Route::get('/store/banners/{banner:slug}', [BannerController::class, 'edit'])->name('banners.edit');
-Route::put('/store/banners/{banner:slug}', [BannerController::class, 'update'])->name('banners.update');
+    // collections
+    Route::get('/collections', [RuleBasedCollectionController::class, 'index'])->name('collections.index');
+    Route::get('/collections/{collection:slug}', [RuleBasedCollectionController::class, 'edit'])->name('collections.edit');
+    Route::put('/collections/{collection:slug}', [RuleBasedCollectionController::class, 'update'])->name('collections.update');
+    Route::patch('/collections/{collection:slug}', [RuleBasedCollectionController::class, 'reorder'])->name('collections.reorder');
 
+    // banners
+    Route::get('/banners', [BannerController::class, 'index'])->name('banners.index');
+    Route::get('/banners/{banner:slug}', [BannerController::class, 'edit'])->name('banners.edit');
+    Route::put('/banners/{banner:slug}', [BannerController::class, 'update'])->name('banners.update');
+
+    // store configurations
+    Route::get('/theme', [StoreConfigController::class, 'theme'])->name('store.theme');
+    Route::get('/cards', [StoreConfigController::class, 'cards'])->name('store.cards');
+    Route::put('/update', [StoreConfigController::class, 'update'])->name('store.update');
+});
+
+// end store configs 
 // catalog 
 Route::get('/shop', function () {
     return redirect()->route('marketplace.index');
@@ -188,8 +198,11 @@ Route::prefix('attributes')->group(function(){
     Route::post('' , [AttributesController::class, 'store'])->name('store.attributes');
 });
 
-// settings 
-Route::get("/store" , [StoreConfigController::class ,  'index'])->name("store") ; 
+// settings
+
+Route::get("/admin/theme" , function() {
+    return Inertia::render("admin/pages/settings/AdminThemeConfig");
+})->name("admin.theme");
 
 // admin
 Route::get('/admins' , [AdminController::class, 'index'])->name('admins.index') ;

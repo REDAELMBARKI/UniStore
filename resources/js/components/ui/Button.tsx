@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Button as MaterialUIButton, ButtonProps as MuiButtonProps } from "@mui/material";
-import { useStoreConfigCtx } from "@/contextHooks/useStoreConfigCtx";
+import { useTheme } from "@/contextHooks/useTheme";
 import { cn } from "@/lib/utils";
 
 export type ButtonVariant =
@@ -56,9 +56,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     },
     ref
   ) => {
-    const {
-      state: { currentTheme: theme },
-    } = useStoreConfigCtx();
+    const { theme } = useTheme();
 
     const muiVariant: MuiButtonProps["variant"] = (() => {
       switch (variant) {

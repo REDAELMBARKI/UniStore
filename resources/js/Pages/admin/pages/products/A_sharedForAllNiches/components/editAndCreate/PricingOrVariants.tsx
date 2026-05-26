@@ -1,5 +1,5 @@
 import { useProductDataCtx } from '@/contextHooks/product/useProductDataCtx';
-import { useStoreConfigCtx } from '@/contextHooks/useStoreConfigCtx';
+import { useAdminThemeCtx } from '@/contextHooks/useAdminThemeCtx';
 import React from 'react';
 import SwitchToggler from '@/components/ui/SwitchToggler';
 import SingleProductPricingSection from './SingleProductPricingSection';
@@ -8,7 +8,7 @@ import VariantBuilder from '../../variantBuilder/VariantBuilder';
 function PricingOrVariants() {
   const {
     state: { currentTheme },
-  } = useStoreConfigCtx();
+  } = useAdminThemeCtx();
 
   const { watch, setValue } = useProductDataCtx();
 
@@ -78,3 +78,4 @@ function PricingOrVariants() {
 }
 
 export default PricingOrVariants;
+

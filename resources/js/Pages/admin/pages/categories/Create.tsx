@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { AdminLayout } from '@/admin/components/layout/AdminLayout';
 import { usePage } from '@inertiajs/react';
-import { useStoreConfigCtx } from '@/contextHooks/useStoreConfigCtx';
+import { useAdminThemeCtx } from '@/contextHooks/useAdminThemeCtx';
 import { Search, Tag, Ticket, Check, Plus, X, Megaphone, Layers, FolderTree, AlertTriangle } from 'lucide-react';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -99,7 +99,7 @@ function HalfPanel({
   renderSub: (i: any) => React.ReactNode;
   appliedItems: any[];
 }) {
-  const { state: { currentTheme: t } } = useStoreConfigCtx();
+  const { state: { currentTheme: t } } = useAdminThemeCtx();
   const br = t.borderRadius;
 
   return (
@@ -189,7 +189,7 @@ function HalfPanel({
 // ─── Main ─────────────────────────────────────────────────────────────────────
 
 export default function Create() {
-  const { state: { currentTheme: t } } = useStoreConfigCtx();
+  const { state: { currentTheme: t } } = useAdminThemeCtx();
   const { category , niches: rawNiches, coupons: rawCoupons, promotions: rawPromotions } = usePage().props as any;
   const nich_id = category?.parent_id != null ? category?.parent_id : null ;
   console.log(category)
@@ -448,3 +448,4 @@ export default function Create() {
 }
 
 Create.layout = (page: any) => <AdminLayout>{page}</AdminLayout>;
+

@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { MoreHorizontal, Plus } from 'lucide-react';
 import type { Attribute, AttributeValue } from './types';
-import { useStoreConfigCtx } from '@/contextHooks/useStoreConfigCtx';
+import { useTheme } from '@/contextHooks/useTheme';
 
 interface AttributeSwitcherProps {
   attributes: Attribute[];
@@ -24,7 +24,7 @@ export function AttributeSwitcher({
   const MAX_VISIBLE = 5;
   const visibleAttributes = attributes.slice(0, MAX_VISIBLE);
   const hiddenAttributes = attributes.slice(MAX_VISIBLE);
-  const {state : {currentTheme}} = useStoreConfigCtx(); // color all the page using this theme
+  const { theme: currentTheme } = useTheme(); // color all the page using this theme
 
   const getValueCount = (attributeId: string) => {
     return attributes.find((v) => v.id === attributeId)?.values?.length || 0;
@@ -87,3 +87,4 @@ export function AttributeSwitcher({
     </div>
   );
 }
+

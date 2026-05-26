@@ -1,5 +1,5 @@
-import { X } from "lucide-react";
-import { useStoreConfigCtx } from "@/contextHooks/useStoreConfigCtx";
+ import { X } from "lucide-react";
+import { useTheme } from "@/contextHooks/useTheme";
 
 interface SelectedChipProps {
   label: string;
@@ -7,7 +7,7 @@ interface SelectedChipProps {
   removable?: boolean;
 }
 const SelectedChip: React.FC<SelectedChipProps> = ({ label, onRemove, removable = true }) => {
-  const {state : {currentTheme}} = useStoreConfigCtx()
+  const { theme: currentTheme } = useTheme();
   return (
     <span
       className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-all duration-200"

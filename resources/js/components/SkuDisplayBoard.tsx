@@ -1,13 +1,13 @@
 
 import React, { useState } from "react";
 import { Clipboard, Check } from "lucide-react";
-import { useStoreConfigCtx } from "@/contextHooks/useStoreConfigCtx";
+import { useTheme } from "@/contextHooks/useTheme";
 interface SkuDisplayProps {
   sku? : string;
 }
 
 const SkuDisplayBoard: React.FC<SkuDisplayProps> = ({ sku }) => {
-       const {state :{currentTheme}} = useStoreConfigCtx()
+  const { theme: currentTheme } = useTheme();
 
   const [copied, setCopied] = useState(false);
 
@@ -33,7 +33,7 @@ const SkuDisplayBoard: React.FC<SkuDisplayProps> = ({ sku }) => {
         <div
           className="flex-1 px-5 py-4 rounded-xl font-semibold shadow-sm select-all"
           style={{
-            backgroundColor: currentTheme.buttonSecondary,
+            backgroundColor: currentTheme.bgSecondary,
             color: currentTheme.text,
             borderWidth: "2px",
             borderColor: currentTheme.border,
@@ -46,7 +46,7 @@ const SkuDisplayBoard: React.FC<SkuDisplayProps> = ({ sku }) => {
           onClick={handleCopy}
           disabled={!sku}
           className="p-2 rounded-lg hover:bg-gray-200 transition-colors"
-          style={{ backgroundColor: currentTheme.buttonSecondary }}
+          style={{ backgroundColor: currentTheme.bgSecondary }}
         >
           {copied ? (
             <Check className="w-5 h-5 text-green-500" />

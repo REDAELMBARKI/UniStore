@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useProductDataCtx } from '@/contextHooks/product/useProductDataCtx';
 import { Button } from '@/components/ui/button';
-import { useStoreConfigCtx } from '@/contextHooks/useStoreConfigCtx';
+import { useAdminThemeCtx } from '@/contextHooks/useAdminThemeCtx';
 import ProductCrEdForm from './ProductCrEdForm';
 import { Save } from 'lucide-react';
 import { RightSectionComponent } from '../components/editAndCreate/RightSideSection/rightsectioncomponent';
@@ -17,7 +17,7 @@ import AppLoading from '@/components/AppLoading';
 import { useToast } from '@/contextHooks/useToasts';
 
 const ProductFormMaster: React.FC = () => {
-  const { state: { currentTheme } } = useStoreConfigCtx();
+  const { state: { currentTheme } } = useAdminThemeCtx();
   const {
     modeForm,
     draftId,
@@ -214,3 +214,4 @@ const ProductFormMaster: React.FC = () => {
 };
 
 export default ProductFormMaster;
+

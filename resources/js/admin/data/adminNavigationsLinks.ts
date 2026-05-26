@@ -6,7 +6,7 @@ import {
   Mail, Image as ImageIcon, Percent, FileText, DollarSign, PieChart, Ship,
   Map as MapIcon, Truck, Navigation, Shield, Lock as LockIcon, Settings,
   Sliders, CreditCard, Receipt, Store, Search, Bell, Settings2, FolderGit,
-  SectionIcon,
+  SectionIcon, LayoutGrid,
 } from 'lucide-react';
 
 interface SubLink {
@@ -119,6 +119,8 @@ export const menuItems: MenuItem[] = [
       { title: "Home editor", icon: SectionIcon, href: "home.editor.index", disabled: false },
       { title: "collections", icon: SectionIcon, href: "collections.index", disabled: false },
       { title: "banners", icon: SectionIcon, href: "banners.index", disabled: false },
+      { title: "theme", icon: Palette, href: "store.theme", disabled: false },
+      { title: "product cards", icon: LayoutGrid, href: "store.cards", disabled: false },
     ]
   },
   {
@@ -205,7 +207,8 @@ export const menuItems: MenuItem[] = [
     title: "Settings",
     icon: Settings,
     subLinks: [
-      { title: "Configure Store", icon: Sliders, href: "store" },  // ✅
+      { title: "Configure Store", icon: Sliders, href: "store" },  
+      { title: "Admin Theme", icon: Palette, href: "admin.theme" }, 
       { title: "Payment Methods", icon: CreditCard, href: "" },
       { title: "Tax Settings", icon: Receipt, href: "" },
       { title: "Store Settings", icon: Store, href: "" },

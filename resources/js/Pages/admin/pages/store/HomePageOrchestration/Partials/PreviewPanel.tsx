@@ -1,4 +1,4 @@
-import { useStoreConfigCtx } from '@/contextHooks/useStoreConfigCtx';
+import { useAdminThemeCtx } from '@/contextHooks/useAdminThemeCtx';
 import type { Section } from '@/types/homeEditor';
 import { ScrollRow } from '@/Pages/Home/Partials/ScrollRow';
 import BannerRenderer from '../../Banner/Partials/BannerRenderer';
@@ -11,7 +11,7 @@ type PreviewPanelProps = {
 };
 
 export function PreviewPanel({ sections, onPublish, onDiscard }: PreviewPanelProps) {
-  const { state: { currentTheme: theme } } = useStoreConfigCtx();
+  const { state: { currentTheme: theme } } = useAdminThemeCtx();
 
   return (
     <div style={{
@@ -125,3 +125,4 @@ export function PreviewPanel({ sections, onPublish, onDiscard }: PreviewPanelPro
     </div>
   );
 }
+

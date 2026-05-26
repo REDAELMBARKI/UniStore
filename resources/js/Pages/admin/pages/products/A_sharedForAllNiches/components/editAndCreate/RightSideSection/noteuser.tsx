@@ -1,4 +1,4 @@
-import { useStoreConfigCtx } from '@/contextHooks/useStoreConfigCtx';
+import { useAdminThemeCtx } from '@/contextHooks/useAdminThemeCtx';
 
 interface NoteUserProps {
   text: string;
@@ -7,7 +7,7 @@ interface NoteUserProps {
 export function NoteUser({ text }: NoteUserProps) {
   const {
     state: { currentTheme },
-  } = useStoreConfigCtx();
+  } = useAdminThemeCtx();
 
   return (
     <p
@@ -18,3 +18,4 @@ export function NoteUser({ text }: NoteUserProps) {
     </p>
   );
 }
+

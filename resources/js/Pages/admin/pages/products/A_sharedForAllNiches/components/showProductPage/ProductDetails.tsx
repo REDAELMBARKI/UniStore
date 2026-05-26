@@ -6,7 +6,7 @@ import RelatedProducts from "./RelatedProducts";
 import { router, usePage } from "@inertiajs/react";
 import { route } from "ziggy-js";
 import { VariantSchemaType } from "@/shemas/productSchema";
-import { useStoreConfigCtx } from "@/contextHooks/useStoreConfigCtx";
+import { useAdminThemeCtx } from "@/contextHooks/useAdminThemeCtx";
 import { Color } from "@/types/inventoryTypes";
 import { ThemePalette } from "@/types/ThemeTypes";
 import {
@@ -232,7 +232,7 @@ const FaqsSection = ({ faqs, theme }: { faqs: FaqItem[]; theme: ThemePalette }) 
 ───────────────────────────────────────── */
 const ProductDetails = ({ onStepChange }: ProductDetailProps) => {
   const { product } = usePage<any>().props;
-  const { state: { currentTheme: theme } } = useStoreConfigCtx();
+  const { state: { currentTheme: theme } } = useAdminThemeCtx();
   const t = theme;
   console.log(product); // never remove this line
 
@@ -465,3 +465,4 @@ const ProductDetails = ({ onStepChange }: ProductDetailProps) => {
 };
 
 export default ProductDetails;
+

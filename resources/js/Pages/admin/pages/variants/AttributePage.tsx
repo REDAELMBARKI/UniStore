@@ -8,7 +8,7 @@ import type { Attribute, AttributeValue } from './types';
 import { AddAttributeModal } from './AddAttributeModal';
 import { AddValueModal } from './AddValueModal';
 import { AdminLayout } from '@/admin/components/layout/AdminLayout';
-import { useStoreConfigCtx } from '@/contextHooks/useStoreConfigCtx';
+import { useTheme } from '@/contextHooks/useTheme';
 import {Provider, useDispatch, useSelector} from 'react-redux' ;
 import store from '@/store/store';
 import { attributesActions } from '@/store/actions/attributesActions';
@@ -31,7 +31,7 @@ function AttribueContent({attributes } : {attributes : Attribute[]} ) {
   const [isAddValueOpen, setIsAddValueOpen] = useState(false);
   const [editingAttribute, setEditingAttribute] = useState<Attribute | null>(null);
   const [editingValue, setEditingValue] = useState<AttributeValue | null>(null);
-  const {state : {currentTheme}} = useStoreConfigCtx(); // color all the page using this theme
+  const { theme: currentTheme } = useTheme(); // color all the page using this theme
   const dispatch = useDispatch() ; 
   
   const { onAddAttribute,
@@ -165,3 +165,4 @@ function AttribueContent({attributes } : {attributes : Attribute[]} ) {
     </div>
   );
 }
+

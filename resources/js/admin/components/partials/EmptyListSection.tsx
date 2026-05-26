@@ -1,4 +1,4 @@
-import { useStoreConfigCtx } from "@/contextHooks/useStoreConfigCtx";
+import { useTheme } from "@/contextHooks/useTheme";
 
 
 
@@ -11,7 +11,7 @@ interface EmptyListSectionProps {
 
 // ─── Empty State ──────────────────────────────────────────────────────────────
  function EmptyListSection({ description , Icon}: {Icon : React.ElementType, description: string }) {
-  const {state :{currentTheme} } = useStoreConfigCtx()
+  const { theme: currentTheme } = useTheme()
   return (
     <div className="flex flex-col items-center justify-center py-8 rounded-lg"
       style={{ border: `2px dashed ${currentTheme.border}`, backgroundColor: currentTheme.bg }}>

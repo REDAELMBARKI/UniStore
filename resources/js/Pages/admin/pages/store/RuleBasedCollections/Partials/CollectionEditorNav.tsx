@@ -1,4 +1,4 @@
-import { useStoreConfigCtx } from "@/contextHooks/useStoreConfigCtx";
+import { useAdminThemeCtx } from "@/contextHooks/useAdminThemeCtx";
 import { 
   ChevronRight, 
   PanelLeft, 
@@ -27,7 +27,7 @@ export default function CollectionEditorNav({
   onSelect,
   dirtyId,
 }: CollectionEditorNavProps) {
-  const { state: { currentTheme: theme } } = useStoreConfigCtx();
+  const { state: { currentTheme: theme } } = useAdminThemeCtx();
   const [menuOpenId, setMenuOpenId] = useState<number | null>(null);
 
 
@@ -115,3 +115,4 @@ export default function CollectionEditorNav({
     </aside>
   );
 }
+

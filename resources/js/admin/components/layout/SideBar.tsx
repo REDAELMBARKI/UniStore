@@ -1,5 +1,5 @@
 import { menuItems } from '@/admin/data/adminNavigationsLinks';
-import { useStoreConfigCtx } from '@/contextHooks/useStoreConfigCtx';
+import { useTheme } from '@/contextHooks/useTheme';
 import { Link, router, usePage } from '@inertiajs/react';
 import { route } from 'ziggy-js';
 import {
@@ -35,8 +35,8 @@ interface MenuItem {
 
 export function Sidebar({ collapsed, setCollapsed }: { collapsed: boolean; setCollapsed: (val: boolean) => void }) {
   const [expandedItem, setExpandedItem] = useState<string | null>('Dashboard');
-  const {url} = usePage()
-        const {state :{currentTheme}} = useStoreConfigCtx()
+  const { url } = usePage();
+  const { theme: currentTheme } = useTheme();
 
   const toggleExpanded = (itemTitle: string) => {
     if (expandedItem === itemTitle) {

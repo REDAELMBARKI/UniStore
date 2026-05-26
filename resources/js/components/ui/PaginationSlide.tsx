@@ -1,5 +1,5 @@
 
-import { useStoreConfigCtx } from "@/contextHooks/useStoreConfigCtx";
+import { useTheme } from "@/contextHooks/useTheme";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 // ===================== PAGINATION COMPONENT =====================
@@ -16,7 +16,7 @@ export const PaginationSlide = ({
   pages,
   onPageChange,
 }: PaginationProps) => {
-  const { state : {currentTheme: theme} } = useStoreConfigCtx();
+  const { theme } = useTheme();
 
   return (
     <div

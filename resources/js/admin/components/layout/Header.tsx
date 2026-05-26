@@ -3,16 +3,16 @@ import { Bell, User, LogOut } from "lucide-react";
 import { ThemeToggle } from "./ThemeToggle";
 import { useAuth } from "../../hooks/useAuth";
 import { getInitials } from "../../utils/helpers";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { useStoreConfigCtx } from "@/contextHooks/useStoreConfigCtx";
+import { useTheme } from "@/contextHooks/useTheme";
 import { router } from "@inertiajs/react";
 import { route } from "ziggy-js";
 
 export function Header({ collapsed, setCollapsed }: { collapsed: boolean; setCollapsed: (val: boolean) => void }) {
   const { admin } = useAuth();
-  const { state : {currentTheme} } = useStoreConfigCtx();
+  const { theme: currentTheme } = useTheme();
   const toggleSidebar = () => {
     setCollapsed(!collapsed);
   };

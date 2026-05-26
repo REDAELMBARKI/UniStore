@@ -1,7 +1,7 @@
 import { Edit2, Upload, MoreVertical, Copy, Trash2, Image as ImageIcon, Plus, Eye, ChevronDown } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { AdminLayout } from '@/admin/components/layout/AdminLayout';
-import { useStoreConfigCtx } from '@/contextHooks/useStoreConfigCtx';
+import { useAdminThemeCtx } from '@/contextHooks/useAdminThemeCtx';
 import { router, usePage } from '@inertiajs/react';
 import { route } from 'ziggy-js';
 import styled, { keyframes } from 'styled-components';
@@ -74,7 +74,7 @@ const SkeletonBtn = styled(SkeletonBase)`
 
 export default function Drafts() {
   const [pageLoading, setPageLoading] = useState(true);
-  const { state: { currentTheme: t } } = useStoreConfigCtx();
+  const { state: { currentTheme: t } } = useAdminThemeCtx();
   const { flash, drafts = [] } = usePage().props;
   const { addToast } = useToast();
   const { destroyDraftProduct, duplicateDraft, loading, loadingMessage } = useBackendInteraction()
@@ -280,7 +280,7 @@ export function DraftRow({ draft, onDelete, onDuplicate, isFirst }: DraftRowProp
   const [expanded, setExpanded] = useState(false);
   const [expanding, setExpanding] = useState(false);
   const [imgLoaded, setImgLoaded] = useState(false);
-  const { state: { currentTheme: t } } = useStoreConfigCtx();
+  const { state: { currentTheme: t } } = useAdminThemeCtx();
 
   // first row auto-expands with 2s skeleton
   useEffect(() => {
@@ -480,3 +480,4 @@ export function DraftRow({ draft, onDelete, onDuplicate, isFirst }: DraftRowProp
     </div>
   );
 }
+

@@ -6,7 +6,7 @@ import ColorPicker from "./ColorPicker";
 import PricePreview from "../components/editAndCreate/PricePreview";
 import { Input } from "@/components/ui/input";
 import { ProductSchemaType, variantSchema } from "@/shemas/productSchema";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import { productFilesUploaderCleaner } from "@/functions/product/productFilesUploaderCleaner";
 import { useProductDataCtx } from "@/contextHooks/product/useProductDataCtx";
 import MultiSelectDropdownForObject from "@/components/ui/MultiSelectDropdownForObject";

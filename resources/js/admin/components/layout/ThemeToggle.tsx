@@ -1,10 +1,9 @@
 import { Moon, Sun } from "lucide-react";
-
-import { Button } from "@/components/ui/button";
-import { useStoreConfigCtx } from "@/contextHooks/useStoreConfigCtx";
+import { Button } from "@/components/ui/Button";
+import { useTheme } from "@/contextHooks/useTheme";
 
 export function ThemeToggle() {
-  const {state :{currentThemeMode} , dispatch} = useStoreConfigCtx()
+  const { themeMode: currentThemeMode, dispatch } = useTheme()
 
   return (
     <Button

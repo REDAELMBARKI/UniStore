@@ -1,6 +1,6 @@
 import { Input } from "@/components/ui/input";
 import { useProductDataCtx } from "@/contextHooks/product/useProductDataCtx";
-import { useStoreConfigCtx } from "@/contextHooks/useStoreConfigCtx";
+import { useAdminThemeCtx } from "@/contextHooks/useAdminThemeCtx";
 import { Search, Loader2, Tag, Ticket, Check, Plus, X, Megaphone } from "lucide-react";
 import { useState, useEffect } from "react";
 import axios from "axios";
@@ -22,7 +22,7 @@ interface Coupon {
  
 export default function MarketingSection() {
   const { watch, setValue } = useProductDataCtx();
-  const { state: { currentTheme } } = useStoreConfigCtx();
+  const { state: { currentTheme } } = useAdminThemeCtx();
 
   const promotionIds = watch('promotion_ids') || [];
   const couponIds    = watch('coupon_ids')    || [];
@@ -383,3 +383,4 @@ export default function MarketingSection() {
     </div>
   );
 }
+

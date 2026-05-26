@@ -1,6 +1,6 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
-import { useStoreConfigCtx } from "@/contextHooks/useStoreConfigCtx";
+import { useTheme } from "@/contextHooks/useTheme";
 
 type IconPosition = "left" | "right";
 
@@ -28,7 +28,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     },
     ref
   ) => {
-    const { state: { currentTheme } } = useStoreConfigCtx();
+    const { theme: currentTheme } = useTheme();
 
     const hasIcon = !!children;
     const inputId = id ?? label?.toLowerCase().replace(/\s+/g, "-");

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Grid, List, Edit2, Trash2, Eye, Plus, Check, ChevronDown, Search } from 'lucide-react';
 
 import { DeleteConfirmationModal } from '@/components/ui/DeleteConfirmationModal';
-import { useStoreConfigCtx } from '@/contextHooks/useStoreConfigCtx';
+import { useTheme } from '@/contextHooks/useTheme';
 import { AdminLayout } from '@/admin/components/layout/AdminLayout';
 import SelectByRadix from '@/components/ui/SelectByRadix';
 import { SectionHeader } from '@/admin/components/layout/SectionHeader';
@@ -31,7 +31,7 @@ const placeholderColors: ColorType[] = [
 const productTypes = ['all' , 'pants' , 'shirts' , 'shoes' , 'anyting']
 
 export default function ManageColors() {
-  const { state: { currentTheme } } = useStoreConfigCtx();
+  const { theme: currentTheme } = useTheme();
   const [view, setView] = useState<'grid' | 'table'>('table');
   const [colors, setColors] = useState<ColorType[]>(placeholderColors);
   const [selectedColor, setSelectedColor] = useState<ColorType | null>(null);
@@ -138,7 +138,7 @@ ManageColors.layout = (page:any) => <AdminLayout children={page} />
 
 function ColorGrid(props: Readonly<{ colors: ColorType[]; onEdit: (c: ColorType) => void; onDelete: (c: ColorType) => void }>) {
   const { colors, onEdit, onDelete } = props;
-  const { state: { currentTheme } } = useStoreConfigCtx();
+  const { theme: currentTheme } = useTheme();
 
   const handleViewProducts = (color: ColorType) => {
     alert(`Show products using ${color.name}`);
@@ -193,7 +193,7 @@ function ColorGrid(props: Readonly<{ colors: ColorType[]; onEdit: (c: ColorType)
 
 function ColorTable(props: Readonly<{ colors: ColorType[]; onEdit: (c: ColorType) => void; onDelete: (c: ColorType) => void }>) {
   const { colors, onEdit, onDelete } = props;
-  const { state: { currentTheme } } = useStoreConfigCtx();
+  const { theme: currentTheme } = useTheme();
 
   return (
     <div className="rounded-xl shadow-sm overflow-hidden" style={{ background: currentTheme.card, border: `1px solid ${currentTheme.border}` }}>
@@ -428,3 +428,4 @@ function ColorModal(props: Readonly<{ color?: ColorType | null; onClose: () => v
     </div>
   );
 }
+

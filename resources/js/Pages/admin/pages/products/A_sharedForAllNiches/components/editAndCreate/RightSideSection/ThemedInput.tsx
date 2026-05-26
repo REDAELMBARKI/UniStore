@@ -1,5 +1,5 @@
 import { Input } from '@/components/ui/input';
-import { useStoreConfigCtx } from '@/contextHooks/useStoreConfigCtx';
+import { useAdminThemeCtx } from '@/contextHooks/useAdminThemeCtx';
 import { InputHTMLAttributes, SelectHTMLAttributes, TextareaHTMLAttributes } from 'react';
 
 interface ThemedInputProps extends InputHTMLAttributes<HTMLInputElement> {}
@@ -7,7 +7,7 @@ interface ThemedInputProps extends InputHTMLAttributes<HTMLInputElement> {}
 export function ThemedInput({ className = '', ...props }: ThemedInputProps) {
   const {
     state: { currentTheme },
-  } = useStoreConfigCtx();
+  } = useAdminThemeCtx();
 
   return (
     <Input
@@ -30,7 +30,7 @@ interface ThemedTextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement
 export function ThemedTextarea({ className = '', ...props }: ThemedTextareaProps) {
   const {
     state: { currentTheme },
-  } = useStoreConfigCtx();
+  } = useAdminThemeCtx();
 
   return (
     <textarea
@@ -63,7 +63,7 @@ interface ThemedLabelProps {
 export function ThemedLabel({ htmlFor, children }: ThemedLabelProps) {
   const {
     state: { currentTheme },
-  } = useStoreConfigCtx();
+  } = useAdminThemeCtx();
 
   return (
     <label
@@ -75,3 +75,4 @@ export function ThemedLabel({ htmlFor, children }: ThemedLabelProps) {
     </label>
   );
 }
+

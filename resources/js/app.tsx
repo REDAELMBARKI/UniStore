@@ -5,6 +5,7 @@ import { createInertiaApp } from '@inertiajs/react';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createRoot } from 'react-dom/client';
 import StoreConfigProvider from '@/contextProvoders/StoreConfigProvider';
+import { AdminThemeProvider } from '@/contextProvoders/AdminThemeProvider';
 import { ToastProvider } from '@/contextProvoders/ToastProvider';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
@@ -24,12 +25,15 @@ createInertiaApp({
     },
     setup({ el, App, props }) {
         const root = createRoot(el);
+        const storeConfigs = props.initialPage.props.storeConfigs;
 
         root.render(   
-            <StoreConfigProvider>
-                <ToastProvider>
-                    <App {...props} />
-                </ToastProvider>
+            <StoreConfigProvider initialStoreConfigs={storeConfigs}>
+                <AdminThemeProvider initialStoreConfigs={storeConfigs}>
+                    <ToastProvider>
+                        <App {...props} />
+                    </ToastProvider>
+                </AdminThemeProvider>
             </StoreConfigProvider>
          );
     }

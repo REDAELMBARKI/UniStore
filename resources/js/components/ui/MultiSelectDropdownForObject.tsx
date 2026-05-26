@@ -1,7 +1,7 @@
 import { Check, ChevronDown, Trash2 } from "lucide-react";
 import { CSSProperties, useEffect, useRef, useState } from "react";
 import { isObject } from "lodash";
-import { useStoreConfigCtx } from "@/contextHooks/useStoreConfigCtx";
+import { useTheme } from "@/contextHooks/useTheme";
 
 export type AllowedObjectsType = { value: string | number; label: string };
 
@@ -26,7 +26,7 @@ const MultiSelectDropdownForObject: React.FC<MultiSelectDropdownForObjectProps> 
   const [rect, setRect] = useState<DOMRect | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
-  const { state: { currentTheme } } = useStoreConfigCtx();
+  const { theme: currentTheme } = useTheme();
 
   const handleToggle = () => {
     if (!isOpen && triggerRef.current) {

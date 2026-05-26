@@ -3,14 +3,14 @@ import { Plus, Pencil, Trash2, Shield, Check, Upload, Search } from "lucide-reac
 import { DeleteConfirmationModal } from "@/components/ui/DeleteConfirmationModal";
 import { AdminLayout } from "@/admin/components/layout/AdminLayout";
 import { SectionHeader } from "@/admin/components/layout/SectionHeader";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import { createPortal } from "react-dom";
 import SelectByRadix from "@/components/ui/SelectByRadix";
 import CustomSelectForObject from "@/components/ui/CustomSelectForObject";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { useStoreConfigCtx } from "@/contextHooks/useStoreConfigCtx";
+import { useAdminThemeCtx } from "@/contextHooks/useAdminThemeCtx";
 import { Input } from "@/components/ui/input";
 import CustomSelect from "@/components/ui/CustomSelect";
 import { TableMeta } from "@/components/ui/TableMeta";
@@ -128,7 +128,7 @@ export default function AdminsList() {
         profilePhoto: null,
     });
      
-    const {state :{currentTheme : theme}} = useStoreConfigCtx()
+    const {state :{currentTheme : theme}} = useAdminThemeCtx()
 
     const handleOpenDialog = (admin?: Admin) => {
         if (admin) {
@@ -862,3 +862,4 @@ function AdminAddEditForm({
 }
 
 AdminsList.layout = (page: any) => <AdminLayout children={page} />;
+

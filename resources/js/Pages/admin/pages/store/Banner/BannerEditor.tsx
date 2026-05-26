@@ -1,6 +1,6 @@
 import React, { useState, useRef, useMemo, useEffect } from 'react';
 import { router, usePage } from '@inertiajs/react';
-import { useStoreConfigCtx } from '@/contextHooks/useStoreConfigCtx';
+import { useAdminThemeCtx } from '@/contextHooks/useAdminThemeCtx';
 import { route } from 'ziggy-js';
 import { Banner } from '@/types/bannerTypes';
 import axios from 'axios';
@@ -13,7 +13,7 @@ import { useToast } from '@/contextHooks/useToasts';
 
 
 export default function BannerEditor() {
-  const { state: { currentTheme: theme } } = useStoreConfigCtx();
+  const { state: { currentTheme: theme } } = useAdminThemeCtx();
   const { 
     banners = [], 
     app_factory_config = [], 
@@ -306,3 +306,4 @@ export default function BannerEditor() {
 }
 
 BannerEditor.layout = (page: any) => <AdminLayout>{page}</AdminLayout>;
+

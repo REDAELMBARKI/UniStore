@@ -1,7 +1,7 @@
 import { Input } from "@/components/ui/input";
 import NotifyUser from "@/components/ui/NotifyUser";
 import { useProductDataCtx } from "@/contextHooks/product/useProductDataCtx";
-import { useStoreConfigCtx } from "@/contextHooks/useStoreConfigCtx";
+import { useAdminThemeCtx } from "@/contextHooks/useAdminThemeCtx";
 
 import { getMediaSrcOrDefault } from "@/functions/product/getMediaSrcOrDefault";
 import { productFilesUploaderCleaner } from "@/functions/product/productFilesUploaderCleaner";
@@ -18,7 +18,7 @@ import "react-quill/dist/quill.snow.css";
 
 const BaseSharedForm = ({getThumbnailPreview}: {getThumbnailPreview: (thumbnail: string) => void}) => {
     const { draftId, register, control, formState: { errors }, watch, setValue } = useProductDataCtx();
-    const { state: { currentTheme } } = useStoreConfigCtx()
+    const { state: { currentTheme } } = useAdminThemeCtx()
     const thumbnailInputRef = useRef<HTMLInputElement>(null);
     const [uploadError, setUploadError] = useState<string | null>(null)
     const [thumbnailUploading, setThumbnailUploading] = useState(false)
@@ -217,3 +217,4 @@ const BaseSharedForm = ({getThumbnailPreview}: {getThumbnailPreview: (thumbnail:
 
 
 export default BaseSharedForm ;
+

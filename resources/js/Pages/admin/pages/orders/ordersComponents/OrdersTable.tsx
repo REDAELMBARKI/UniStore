@@ -15,11 +15,11 @@ import {
 } from "lucide-react";
 import { useMemo, useRef, useState } from "react";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import MoreOptions from "@/components/ui/moreOptions";
 import { Card, CardHeader } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useStoreConfigCtx } from "@/contextHooks/useStoreConfigCtx";
+import { useAdminThemeCtx } from "@/contextHooks/useAdminThemeCtx";
 import { OrderFilters } from "./OrderFilters";
 
 import {
@@ -135,7 +135,7 @@ const VISIBLE_COLUMNS = [
 export function OrdersTable({ orders }: OrdersTableProps) {
   const {
     state: { currentTheme },
-  } = useStoreConfigCtx();
+  } = useAdminThemeCtx();
   console.log(orders);
 
   /* ================= STATES ================= */
@@ -544,7 +544,7 @@ const ExpandedRow = ({
 }: ExpandedRowProps) => {
   const {
     state: { currentTheme },
-  } = useStoreConfigCtx();
+  } = useAdminThemeCtx();
 
   /* ================= DERIVED ================= */
   const isPaid = order.payment_status === "paid"; // was: order.paid (boolean)
@@ -1172,3 +1172,4 @@ const ExpandedRow = ({
     </TableRow>
   );
 };
+

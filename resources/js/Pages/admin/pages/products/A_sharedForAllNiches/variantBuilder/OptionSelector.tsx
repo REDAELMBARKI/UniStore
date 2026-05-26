@@ -1,7 +1,7 @@
 import { useRef } from "react";
 import { Upload, X } from "lucide-react";
 import { ThemePalette } from "@/types/ThemeTypes";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 
 const AVAILABLE_OPTIONS = ["Color", "Size", "Storage", "RAM", "Style", "Width", "Connectivity", "Flavor"];
 

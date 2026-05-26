@@ -1,5 +1,5 @@
 import { useProductDataCtx } from '@/contextHooks/product/useProductDataCtx';
-import { useStoreConfigCtx } from '@/contextHooks/useStoreConfigCtx';
+import { useAdminThemeCtx } from '@/contextHooks/useAdminThemeCtx';
 import {
   PackageX,
   Timer,
@@ -107,7 +107,7 @@ const TOGGLE_SETTINGS = [
 function VisibilitySettings() {
   const {
     state: { currentTheme },
-  } = useStoreConfigCtx();
+  } = useAdminThemeCtx();
  
   return (
     <div className="p-5 space-y-3">
@@ -135,3 +135,4 @@ function VisibilitySettings() {
 }
 
 export default VisibilitySettings;
+

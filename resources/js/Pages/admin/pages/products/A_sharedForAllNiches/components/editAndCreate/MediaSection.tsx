@@ -1,6 +1,6 @@
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import { useProductDataCtx } from "@/contextHooks/product/useProductDataCtx";
-import { useStoreConfigCtx } from "@/contextHooks/useStoreConfigCtx";
+import { useAdminThemeCtx } from "@/contextHooks/useAdminThemeCtx";
 import { getMediaSrcOrDefault } from "@/functions/product/getMediaSrcOrDefault";
 import { productFilesUploaderCleaner } from "@/functions/product/productFilesUploaderCleaner";
 import { Film, Image as ImageIcon, X, Upload, Plus } from "lucide-react";
@@ -86,7 +86,7 @@ export const UploadingPlaceholder = ({ src, theme }: { src: string; theme: any }
 );
 
 const MediaSection = ({ setVideoPreview, videoPreview }: MediaSectionProps) => {
-    const { state: { currentTheme: theme } } = useStoreConfigCtx();
+    const { state: { currentTheme: theme } } = useAdminThemeCtx();
     const { watch, setValue, draftId } = useProductDataCtx();
 
     const covers = watch("covers") as Cover[] || [];
@@ -355,7 +355,7 @@ interface IframeEntryModelProps {
 }
 
 const IframeEntryModel = ({ newIframeUrl, onChangeIframeUrl, onValidateUrl, onCancelUrl }: IframeEntryModelProps) => {
-    const { state: { currentTheme } } = useStoreConfigCtx();
+    const { state: { currentTheme } } = useAdminThemeCtx();
     const embedUrl = newIframeUrl ? convertYoutubeToEmbed(newIframeUrl) : "";
     const [previewLoaded, setPreviewLoaded] = useState(false);
     useEffect(() => { setPreviewLoaded(false); }, [embedUrl]);
@@ -403,3 +403,4 @@ const IframeEntryModel = ({ newIframeUrl, onChangeIframeUrl, onValidateUrl, onCa
         </div>
     );
 };
+

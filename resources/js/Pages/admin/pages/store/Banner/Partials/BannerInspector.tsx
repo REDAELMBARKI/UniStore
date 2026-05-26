@@ -1,4 +1,4 @@
-import { useStoreConfigCtx } from "@/contextHooks/useStoreConfigCtx";
+import { useAdminThemeCtx } from "@/contextHooks/useAdminThemeCtx";
 import { Banner, BannerSlot } from "@/types/bannerTypes";
 import {
   PanelRight, ChevronLeft, ChevronDown, Upload,
@@ -21,7 +21,7 @@ interface BannerInspectorProps {
 // ─── Primitives ───────────────────────────────────────────────────────────────
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
-  const { state: { currentTheme: theme } } = useStoreConfigCtx();
+  const { state: { currentTheme: theme } } = useAdminThemeCtx();
   return (
     <div style={{
       fontSize: 9, fontWeight: 800, letterSpacing: '0.16em',
@@ -34,7 +34,7 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 }
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
-  const { state: { currentTheme: theme } } = useStoreConfigCtx();
+  const { state: { currentTheme: theme } } = useAdminThemeCtx();
   return (
     <div style={{ marginBottom: 12 }}>
       <div style={{ fontSize: 10, fontWeight: 700, color: theme.textMuted, marginBottom: 5 }}>{label}</div>
@@ -44,7 +44,7 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 }
 
 function TextInput({ value, onChange }: { value: string; onChange: (v: string) => void }) {
-  const { state: { currentTheme: theme } } = useStoreConfigCtx();
+  const { state: { currentTheme: theme } } = useAdminThemeCtx();
   return (
     <input
       type="text"
@@ -65,7 +65,7 @@ function RangeInput({
 }: {
   value: string; onChange: (v: string) => void; min?: number; max?: number; unit?: string;
 }) {
-  const { state: { currentTheme: theme } } = useStoreConfigCtx();
+  const { state: { currentTheme: theme } } = useAdminThemeCtx();
   const numeric = parseInt(value) || 0;
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -109,7 +109,7 @@ function AlignmentButtons({
   onChange: (v: string) => void;
   options: { label: React.ReactNode; value: string }[];
 }) {
-  const { state: { currentTheme: theme } } = useStoreConfigCtx();
+  const { state: { currentTheme: theme } } = useAdminThemeCtx();
   return (
     <div style={{ display: 'flex', gap: 2, background: theme.bg, padding: 2, borderRadius: 6, border: `0.5px solid ${theme.border}` }}>
       {options.map(opt => {
@@ -135,7 +135,7 @@ function AlignmentButtons({
 }
 
 function UploadBox({ label, onFile }: { label: string; onFile: (f: File) => void }) {
-  const { state: { currentTheme: theme } } = useStoreConfigCtx();
+  const { state: { currentTheme: theme } } = useAdminThemeCtx();
   const ref = useRef<HTMLInputElement>(null);
   return (
     <>
@@ -182,7 +182,7 @@ function AccordionBlock({
   onSelect: () => void;
   children?: React.ReactNode;
 }) {
-  const { state: { currentTheme: theme } } = useStoreConfigCtx();
+  const { state: { currentTheme: theme } } = useAdminThemeCtx();
   const showSettings = enabled && isOpen;
 
   return (
@@ -304,7 +304,7 @@ function ActiveSlotPanel({
   onMediaChange: (slotIndex: number, file: File, isSecondary?: boolean) => void;
   onToggleSlotVisibility: (slotKey: string) => void;
 }) {
-  const { state: { currentTheme: theme } } = useStoreConfigCtx();
+  const { state: { currentTheme: theme } } = useAdminThemeCtx();
   const base = `slots.${slotIndex}`;
 
   const select = (key: string) => onElementSelect(slotKey, key);
@@ -672,7 +672,7 @@ export default function BannerInspector({
   onUpdate,
   onMediaChange,
 }: BannerInspectorProps) {
-  const { state: { currentTheme: theme } } = useStoreConfigCtx();
+  const { state: { currentTheme: theme } } = useAdminThemeCtx();
   if (!banner) return null;
 
   const activeSlotIndex = banner.slots.findIndex(s => s.slot_key === activeSlotKey);
@@ -800,3 +800,4 @@ export default function BannerInspector({
     </aside>
   );
 }
+
