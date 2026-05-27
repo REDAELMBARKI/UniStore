@@ -1,4 +1,4 @@
-import React, { useReducer, useEffect } from "react";
+import React, { useReducer, useEffect, useState } from "react";
 import { AdminThemeContext, AdminThemeType, AdminThemeAction } from "@/context/AdminThemeContext";
 import { currentThemeExample } from "@/data/currentTheme";
 import { router, usePage } from "@inertiajs/react";
@@ -37,11 +37,32 @@ const saveSetting = (key: string, value: any) => {
 };
 
 export const AdminThemeProvider = ({ children, initialStoreConfigs }: { children: React.ReactNode, initialStoreConfigs?: any }) => {
-  const { props } = usePage() || { props: {} };
-  const storeConfigs = initialStoreConfigs || (props as any).storeConfigs;
+  
+  const [storeConfigs] = useState(() => {
+        if(initialStoreConfigs){
+           localStorage.setItem('store_config' , JSON.stringify(initialStoreConfigs)) ;
+           return initialStoreConfigs;
+        }
+         const cached = localStorage.getItem('store_config')  ;
+         if(cached){
+             try{
+                  return JSON.parse(cached) ;
+             }catch(e){
+                console.log(e)
+                 return null; 
+             }
+         }
+     });
+
+    const getInitialThemeMode = () => {
+      const saved = localStorage.getItem("admin_theme_mode");
+      if (saved === "light" || saved === "dark") return saved;
+      return "light";
+   };
+
 
   const initialStyle = (storeConfigs?.admin_theme_style || "luxuryNoir") as ThemeStyle;
-  const initialMode = (storeConfigs?.admin_theme_mode || "dark") as ThemeMode;
+  const initialMode = getInitialThemeMode() as ThemeMode;
 
   const initialState: AdminThemeType = {
     currentThemeStyle: initialStyle,

@@ -6,6 +6,7 @@ use App\Http\Requests\BannerRequest;
 use App\Models\AppFactoryConfig;
 use App\Models\Banner;
 use App\Models\BannerSlot;
+use App\Models\Media;
 use App\Services\MediaService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -58,7 +59,6 @@ class BannerController extends Controller
     {
         DB::transaction(function () use ($banner, $banner_request) {
             $validated = $banner_request->validated();
-            dd($validated) ; 
             // Update main banner attributes
             $banner->update(collect($validated)->except('slots')->toArray());
 
@@ -78,7 +78,7 @@ class BannerController extends Controller
                     );
                 }
 
-                // ── Mark Media as Permanente ─────────────────────────────────────
+                // ── Mark Media as Permanente ───────────────────────────────────── 
                 $mediaIds = collect($validated['slots'])
                     ->flatMap(fn($s) => [
                         $s['main_media']['id'] ?? null,
@@ -88,7 +88,7 @@ class BannerController extends Controller
                     ->unique();
 
                 if ($mediaIds->isNotEmpty()) {
-                    \App\Models\Media::whereIn('id', $mediaIds)->update(['is_temporary' => false]);
+                     Media::whereIn('id', $mediaIds)->update(['is_temporary' => false]);
                 }
             }
         });

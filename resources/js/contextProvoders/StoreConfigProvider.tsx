@@ -2,9 +2,10 @@ import { StoreConfigContext } from "@/context/StoreConfigContext";
 import { currentThemeExample } from "@/data/currentTheme";
 import { StoreConfigAction, StoreConfigType, CardOption } from "@/types/StoreConfigTypes";
 import { ThemeMode, ThemeStyle } from "@/types/ThemeTypes";
-import { useReducer, useEffect } from "react";
-import { router, usePage } from "@inertiajs/react";
+import { useReducer, useEffect, useRef, useState } from "react";
+import { router } from "@inertiajs/react";
 import { route } from "ziggy-js";
+import { ca } from "date-fns/locale";
 
 const saveSetting = (key: string, value: any) => {
    router.put(route("store.update"), { key, value }, {
@@ -49,32 +50,42 @@ const reducer = (state: StoreConfigType, action: StoreConfigAction): StoreConfig
       default: return state;
    }
 }
-
 const StoreConfigProvider = ({ children, initialStoreConfigs }: { children: React.ReactNode, initialStoreConfigs?: any }) => {
-   const { props } = usePage() || { props: {} };
-   const storeConfigs = initialStoreConfigs || (props as any).storeConfigs;
+   
+   const [storeConfigs] = useState(() => {
+      if(initialStoreConfigs){
+         localStorage.setItem('store_config' , JSON.stringify(initialStoreConfigs)) ;
+         return initialStoreConfigs;
+      }
+       const cached = localStorage.getItem('store_config')  ;
+       if(cached){
+           try{
+                return JSON.parse(cached) ;
+           }catch(e){
+              console.log(e)
+               return null; 
+           }
+       }
+   });
 
    const getInitialThemeMode = () => {
       const saved = localStorage.getItem("store_theme_mode");
       if (saved === "light" || saved === "dark") return saved;
-      return "dark";
+      return "light";
    };
 
-   const initialThemeMode = getInitialThemeMode() as ThemeMode;
-   const initialThemeStyle = (storeConfigs?.store_theme_style || "orangeNight") as ThemeStyle;
 
+  
+   const initialThemeMode = getInitialThemeMode() as ThemeMode;
+  
+   const initialThemeStyle = (storeConfigs?.store_theme_style || 'softPastel') as ThemeStyle;
+ 
    const initialState: StoreConfigType = {
       currentThemeMode: initialThemeMode,
       currentThemeStyle: initialThemeStyle,
       currentTheme: currentThemeExample[initialThemeStyle][initialThemeMode],
-      currentLayoutStyle: storeConfigs?.store_layout_style || 'grid',
-      currentCardConf: storeConfigs?.store_card_config || {
-         cardId: 'card-2',
-         showPrice: true,
-         showRating: true,
-         showBorder: true,
-         isRounded: true
-      }
+      currentLayoutStyle: storeConfigs?.store_layout_style,
+      currentCardConf: storeConfigs?.store_card_config 
    };
 
    const [state, dispatch] = useReducer(reducer, initialState);

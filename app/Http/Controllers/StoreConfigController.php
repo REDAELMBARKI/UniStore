@@ -10,6 +10,7 @@ class StoreConfigController extends Controller
     public function index() {
         return redirect()->route('store.theme');
     }
+    
 
     public function theme() {
         return Inertia::render("admin/pages/store/ThemeConfigPage");
