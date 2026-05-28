@@ -8,11 +8,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Store, DollarSign, Mail } from "lucide-react";
+import { Store, DollarSign, Mail, Palette } from "lucide-react";
 import type { StoreSettings } from "@shared/schema";
 import { CURRENCIES } from "../../utils/constants";
 import { useToast } from "../../hooks/useToast";
 import { queryClient, apiRequest } from "@/lib/queryClient";
+import { AdminLayout } from "@/admin/components/layout/AdminLayout";
+import ThemeConfig from "./configStore/themeConfig/ThemeConfig";
 
 export function StoreSettingsPage() {
   const { toast } = useToast();
@@ -106,6 +108,10 @@ export function StoreSettingsPage() {
           <TabsTrigger value="email">
             <Mail className="mr-2 h-4 w-4" />
             Email Templates
+          </TabsTrigger>
+          <TabsTrigger value="appearance">
+            <Palette className="mr-2 h-4 w-4" />
+            Admin Appearance
           </TabsTrigger>
         </TabsList>
 
@@ -243,8 +249,21 @@ export function StoreSettingsPage() {
               </CardContent>
             </Card>
           </TabsContent>
+          <TabsContent value="appearance">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg font-semibold">Admin Appearance Settings</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ThemeConfig contextType="admin" />
+              </CardContent>
+            </Card>
+          </TabsContent>
         </form>
       </Tabs>
     </div>
   );
 }
+
+StoreSettingsPage.layout = (page: any) => <AdminLayout children={page} />;
+export default StoreSettingsPage;

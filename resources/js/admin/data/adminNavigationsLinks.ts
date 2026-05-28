@@ -207,7 +207,7 @@ export const menuItems: MenuItem[] = [
     title: "Settings",
     icon: Settings,
     subLinks: [
-      { title: "Configure Store", icon: Sliders, href: "store" },  
+      { title: "Configure Store", icon: Sliders, href: "admin.settings" },  
       { title: "Admin Theme", icon: Palette, href: "admin.theme" }, 
       { title: "Payment Methods", icon: CreditCard, href: "" },
       { title: "Tax Settings", icon: Receipt, href: "" },

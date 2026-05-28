@@ -200,6 +200,10 @@ Route::prefix('attributes')->group(function(){
 
 // settings
 
+Route::get("/admin/settings" , function() {
+    return Inertia::render("admin/pages/settings/StoreSettings");
+})->name("admin.settings");
+
 Route::get("/admin/theme" , function() {
     return Inertia::render("admin/pages/settings/AdminThemeConfig");
 })->name("admin.theme");
