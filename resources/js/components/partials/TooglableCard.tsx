@@ -1,11 +1,11 @@
 import { useStoreConfigCtx } from "@/contextHooks/useStoreConfigCtx";
 import {
-    LayoutStyle  , 
-    NicheItem as NicheItemStyle,
+    LayoutStyle,
+    ThemeCardsDataType
 } from "@/types/StoreConfigTypes";
 import { ThemeStyle } from "@/types/ThemeTypes";
 
-export type TogglableOption = NicheItemStyle | LayoutStyle | ThemeStyle;
+export type TogglableOption = LayoutStyle | ThemeStyle | any;
 
 interface TogglableCardProps<T extends TogglableOption > {
     handleOptionToggle: (style: T) => void;
@@ -13,6 +13,7 @@ interface TogglableCardProps<T extends TogglableOption > {
     isCurrent: boolean;
     changeToggledStyle: (style: T) => void;
     option: any;
+    children?: React.ReactNode;
 }
 const TogglableCard = <T extends TogglableOption>({
     changeToggledStyle,
@@ -20,6 +21,7 @@ const TogglableCard = <T extends TogglableOption>({
     isPreview,
     isCurrent,
     handleOptionToggle,
+    children
 }:TogglableCardProps<T>) => {
     const {
         state: { currentTheme },
@@ -67,11 +69,17 @@ const TogglableCard = <T extends TogglableOption>({
                 </button>
             </div>
 
-            <img
-                src={option.image}
-                alt={option.label}
-                className="w-full h-32 object-cover cursor-pointer"
-            />
+            {children ? (
+                <div className="p-2 transition-transform duration-300 transform group-hover:scale-105">
+                    {children}
+                </div>
+            ) : (
+                <img
+                    src={option.image}
+                    alt={option.label}
+                    className="w-full h-32 object-cover cursor-pointer"
+                />
+            )}
 
             {isCurrent && (
                 <div className="absolute inset-0 bg-black/20 flex items-start justify-start p-2 rounded-b-xl">

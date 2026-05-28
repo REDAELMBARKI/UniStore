@@ -41,12 +41,54 @@ export type StoreConfigAction =
 
 export type CardOption = "card-1" | "card-2" | "card-3" | "card-4" | "card-5" | "card-6" 
 export type CardConfig = {
-  cardId : CardOption 
-  showPrice : boolean 
-  showRating : boolean 
-  isRounded : boolean 
-  showBorder : boolean
-}
+  cardId: CardOption;
+  
+  // 1. Card Container Settings
+  internalPadding: 'tight' | 'normal' | 'loose' | string;
+  borderCornerStyle: 'sharp' | 'slightly-rounded' | 'extra-rounded';
+  borderThickness: 'none' | 'thin' | 'thick';
+  shadow: 'none' | 'subtle' | 'deep';
+  hoverAnimation: 'none' | 'lift' | 'zoom' | 'shadow';
+  textAlignment: 'left' | 'center' | 'right';
+
+  // 2. Media (Image) Settings
+  imageVisibility: boolean;
+  aspectRatio: '1:1' | '3:4' | '4:3' | string;
+  imageFitting: 'cover' | 'contain';
+  imageCornerRounding: 'match' | 'sharp' | 'circle';
+  imageHoverEffect: 'none' | 'zoom';
+
+  // 3. Component Ordering & Visibility
+  // Array of component keys in order
+  visibleComponents: string[];
+
+  // 4. Typography & Sizing Scales
+  titleScale: 'small' | 'medium' | 'large';
+  titleWeight: 'normal' | 'medium' | 'bold';
+  titleLineLimit: number; // 0 for full, 1, 2
+  priceSize: 'normal' | 'large' | 'extra-large';
+
+  // 5. Overlays & Floating Elements
+  showBadges: boolean;
+  badgePlacement: 'top-left' | 'top-right' | 'bottom-left';
+  badgeStyle: 'solid' | 'pill' | 'outline';
+  showWishlist: boolean;
+  wishlistPlacement: 'top-right' | 'top-left';
+  wishlistIcon: 'heart' | 'star' | 'ribbon';
+
+  // 6. Primary Action Button Settings
+  buttonPresence: 'always' | 'hover' | 'hide';
+  buttonWidth: 'full' | 'auto';
+  buttonTheme: 'primary' | 'secondary' | 'outline';
+  buttonIconBehavior: 'text' | 'icon' | 'both';
+  buttonClickAction: 'cart' | 'quick-view' | 'page';
+
+  // Legacy fields (keeping for compatibility during transition if needed)
+  showPrice: boolean;
+  showRating: boolean;
+  isRounded: boolean;
+  showBorder: boolean;
+};
 
 
 

@@ -1,8 +1,8 @@
 import React from 'react';
-import { useColorsCtx } from '@/contextHooks/useColorsCtx';
+import { useStoreConfigCtx } from '@/contextHooks/useStoreConfigCtx';
 
 const SkeletonProductCard: React.FC = () => {
-  const { currentTheme } = useColorsCtx();
+  const { state: { currentTheme } } = useStoreConfigCtx();
 
   return (
     <div
@@ -19,7 +19,8 @@ const SkeletonProductCard: React.FC = () => {
           width: '100%',
           height: '200px',
           borderRadius: '8px',
-          background: currentTheme.gray200,
+          background: currentTheme.border,
+          opacity: 0.2,
           marginBottom: '12px',
         }}
       />
@@ -30,7 +31,8 @@ const SkeletonProductCard: React.FC = () => {
           width: '80%',
           height: '12px',
           borderRadius: '4px',
-          background: currentTheme.gray300,
+          background: currentTheme.textMuted,
+          opacity: 0.3,
           marginBottom: '8px',
         }}
       />
@@ -41,7 +43,8 @@ const SkeletonProductCard: React.FC = () => {
           width: '60%',
           height: '10px',
           borderRadius: '4px',
-          background: currentTheme.gray200,
+          background: currentTheme.border,
+          opacity: 0.2,
           marginBottom: '12px',
         }}
       />
@@ -52,7 +55,7 @@ const SkeletonProductCard: React.FC = () => {
           width: '100%',
           height: '36px',
           borderRadius: '6px',
-          background: currentTheme.buttonSecondary,
+          background: currentTheme.secondary,
         }}
       />
     </div>

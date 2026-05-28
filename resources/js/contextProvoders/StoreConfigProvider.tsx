@@ -7,6 +7,41 @@ import { router } from "@inertiajs/react";
 import { route } from "ziggy-js";
 import { ca } from "date-fns/locale";
 
+const DEFAULT_CARD_CONFIG: any = {
+   cardId: 'card-1',
+   internalPadding: 'normal',
+   borderCornerStyle: 'slightly-rounded',
+   borderThickness: 'thin',
+   shadow: 'subtle',
+   hoverAnimation: 'lift',
+   textAlignment: 'left',
+   imageVisibility: true,
+   aspectRatio: '1:1',
+   imageFitting: 'cover',
+   imageCornerRounding: 'match',
+   imageHoverEffect: 'zoom',
+   visibleComponents: ['brand', 'title', 'rating', 'price', 'button'],
+   titleScale: 'medium',
+   titleWeight: 'medium',
+   titleLineLimit: 2,
+   priceSize: 'large',
+   showBadges: true,
+   badgePlacement: 'top-left',
+   badgeStyle: 'solid',
+   showWishlist: true,
+   wishlistPlacement: 'top-right',
+   wishlistIcon: 'heart',
+   buttonPresence: 'always',
+   buttonWidth: 'full',
+   buttonTheme: 'primary',
+   buttonIconBehavior: 'both',
+   buttonClickAction: 'cart',
+   showPrice: true,
+   showRating: true,
+   isRounded: true,
+   showBorder: true,
+};
+
 const saveSetting = (key: string, value: any) => {
    router.put(route("store.update"), { key, value }, {
       preserveScroll: true,
@@ -85,7 +120,7 @@ const StoreConfigProvider = ({ children, initialStoreConfigs }: { children: Reac
       currentThemeStyle: initialThemeStyle,
       currentTheme: currentThemeExample[initialThemeStyle][initialThemeMode],
       currentLayoutStyle: storeConfigs?.store_layout_style,
-      currentCardConf: storeConfigs?.store_card_config 
+      currentCardConf: { ...DEFAULT_CARD_CONFIG, ...(storeConfigs?.store_card_config || {}) }
    };
 
    const [state, dispatch] = useReducer(reducer, initialState);

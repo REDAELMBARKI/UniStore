@@ -1,6 +1,3 @@
-
-
-
 import { useStoreConfigCtx } from '@/contextHooks/useStoreConfigCtx'
 import Card1 from '@/Pages/admin/pages/settings/configStore/cardsConfig/cardsPrototypes/Card1'
 import Card2 from '@/Pages/admin/pages/settings/configStore/cardsConfig/cardsPrototypes/Card2'
@@ -12,9 +9,11 @@ import { ProductClient } from '@/types/clientSideTypes'
 import {  CardOption } from '@/types/StoreConfigTypes'
 import { router } from '@inertiajs/react'
 import { useToast } from '@/contextHooks/useToasts'
+import { route } from 'ziggy-js'
 
 export default function ProductCardMaster({product}:{product : any}) {
-  const {state : {currentCardConf : {cardId}}} = useStoreConfigCtx()
+  const {state : {currentCardConf}} = useStoreConfigCtx()
+  const { cardId } = currentCardConf;
   const { addToast } = useToast()
 
   const handleAddToCart = (e?: React.MouseEvent) => {
@@ -71,10 +70,12 @@ export default function ProductCardMaster({product}:{product : any}) {
   }
 
   const Card = cardsMap[cardId] ;
+  
   return (
     <div className="h-full">
       <Card 
         product={product} 
+        config={currentCardConf}
         onAddToCart={handleAddToCart} 
         onViewDetails={handleViewDetails} 
       />
