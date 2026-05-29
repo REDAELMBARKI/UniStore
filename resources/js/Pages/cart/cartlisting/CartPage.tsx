@@ -1,8 +1,8 @@
 // Pages/Cart/CartPage.tsx
 import { useStoreConfigCtx } from "@/contextHooks/useStoreConfigCtx";
 import Layout from "@/Layouts/Layout";
-import { useState } from "react";
-import { router } from "@inertiajs/react";
+import { useEffect, useState } from "react";
+import { router, usePage } from "@inertiajs/react";
 import StoreConfigProvider from "@/contextProvoders/StoreConfigProvider";
 import { ArrowLeft } from "lucide-react";
 import { route } from "ziggy-js";
@@ -14,17 +14,24 @@ import axios from "axios";
 import { Trash2 } from "lucide-react";
 
 interface CartPageProps {
-    items: any[];
+
     onStepChange : (action : 'prev' | 'next' ) => void
 }
 
 
-export default function CartPage({ items = [], onStepChange }: CartPageProps) {
+interface CartProps {
+        items: any[];
+    defaultShippingAmount :  number ;
+}
+
+
+export default function CartPage({ onStepChange }: CartPageProps) {
     const {
         state: { currentTheme: theme },
     } = useStoreConfigCtx();
+    const {items , defaultShippingAmount} = usePage().props  as  CartProps;
 
-
+    const [bestGoalForuser , setBestGoalForuser] =  useState<null|number>(null);
     const [coupon_code, setCoupon_code] = useState("");
     const {addToast} = useToast() ; 
     // Calculate totals
@@ -32,8 +39,11 @@ export default function CartPage({ items = [], onStepChange }: CartPageProps) {
         (sum, item) => sum + item.price_snapshot * item.quantity,
         0
     );
-    const shipping = subtotal >= 50 ? 0 : 15.94;
 
+
+    // get all promotions check the promotion that gives the best discount for the user invite the user to be qualified for the promotions discount 
+    const shipping: number = defaultShippingAmount === 0 || (bestGoalForuser !== null && subtotal >= bestGoalForuser) ? 0 : defaultShippingAmount;
+    
     const handleQuantityChange = (itemId: number, newQuantity: number) => {
         if (newQuantity < 1) return;
         router.patch(
@@ -90,6 +100,24 @@ export default function CartPage({ items = [], onStepChange }: CartPageProps) {
         onStepChange('next');
     };
 
+
+
+
+
+
+    useEffect(() => {
+       const getBestGoalForUser = async () => {
+            const res = await axios.get(route('shipping.calculateBestGoalForUser'))
+            if (res.data) {
+                setBestGoalForuser(res.data.bestGoalForUser);
+            }
+       }
+
+       if(subtotal > 0) {
+        getBestGoalForUser();
+       }
+    }, [subtotal]);
+
     return (
             <div  className="min-h-screen py-6">
                 <div className="container mx-auto px-4 max-w-7xl">
@@ -143,7 +171,9 @@ export default function CartPage({ items = [], onStepChange }: CartPageProps) {
                         <div className="lg:col-span-1">
                             <CartSummary
                                 subtotal={subtotal}
-                                shipping={shipping}
+                                shipping={subtotal > 0 ? shipping : 0 }
+                                bestGoalForuser={bestGoalForuser}
+                                isFreeShipping={shipping == 0}
                                 itemCount={items.length}
                                 theme={theme}
                                 onProceedToCheckout={handleProceedToCheckout}

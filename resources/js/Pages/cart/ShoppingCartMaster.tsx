@@ -57,7 +57,7 @@ export default function ShoppingCartMaster({ items = [] , tax = 0 }: ShoppingCar
         };
 
         const urlSteps: Record<string, number> = {
-            '/cart':          0,
+            '/cart':    0,
             'shipping': 1,
             'payment':  2,
         };

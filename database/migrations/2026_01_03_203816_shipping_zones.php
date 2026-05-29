@@ -15,7 +15,7 @@ return new class extends Migration
         $table->id();
         $table->string('name');
         $table->enum('type', ['fixed', 'calculated'])->default('fixed');
-        $table->decimal('price', 10, 2);          // used for both — base price for calculated, final price for fixed
+        $table->decimal('price', 10, 2);      
         $table->integer('estimated_days')->nullable();
         $table->boolean('is_active')->default(true);
         $table->timestamps();

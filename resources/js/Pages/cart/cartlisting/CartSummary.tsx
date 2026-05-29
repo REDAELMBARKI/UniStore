@@ -4,9 +4,11 @@ import { ThemePalette } from "@/types/ThemeTypes";
 interface CartSummaryProps {
     subtotal: number;
     shipping: number;
+    bestGoalForuser : number | null ;
     itemCount: number;
     theme: ThemePalette;
     onProceedToCheckout: () => void;
+    isFreeShipping : boolean 
 }
 
 export default function CartSummary({
@@ -14,11 +16,12 @@ export default function CartSummary({
     shipping,
     itemCount,
     theme,
+    isFreeShipping ,
+    bestGoalForuser ,
     onProceedToCheckout,
 }: CartSummaryProps) {
-    const total = subtotal + shipping;
-    const isFreeShipping = subtotal >= 50;
-
+    const total = (subtotal ?? 0) + (shipping ?? 0);
+    
     return (
         <div
             style={{
@@ -40,14 +43,14 @@ export default function CartSummary({
                         Subtotal ({itemCount} item{itemCount !== 1 ? "s" : ""}):
                     </span>
                     <span style={{ color: theme.text }} className="font-semibold">
-                        ${subtotal.toFixed(2)}
+                        ${(subtotal ?? 0).toFixed(2)}
                     </span>
                 </div>
 
                 <div className="flex justify-between text-sm">
                     <span style={{ color: theme.textSecondary }}>Shipping:</span>
                     <span style={{ color: theme.text }} className="font-semibold">
-                        ${shipping.toFixed(2)}
+                        ${(shipping ?? 0).toFixed(2)}
                     </span>
                 </div>
 
@@ -72,7 +75,10 @@ export default function CartSummary({
                         }}
                         className="text-xs p-2"
                     >
-                        Add ${(50 - subtotal).toFixed(2)} more for FREE shipping!
+                      {bestGoalForuser !== null && subtotal > 0 && subtotal < bestGoalForuser ? 
+                             `Add ${Math.max(0, bestGoalForuser - subtotal).toFixed(2)} more for FREE shipping! `:
+                              ''
+                      }
                     </div>
                 )}
             </div>
@@ -84,7 +90,7 @@ export default function CartSummary({
                         TOTAL:
                     </span>
                     <span style={{ color: theme.primary }} className="font-bold text-2xl">
-                        ${total.toFixed(2)}
+                        ${(total ?? 0).toFixed(2)}
                     </span>
                 </div>
                 {isFreeShipping && (

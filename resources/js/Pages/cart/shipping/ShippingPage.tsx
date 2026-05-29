@@ -38,9 +38,7 @@ export default function ShippingPage({items = [], tax  , shippingData, setShippi
     ) ; 
 
     const [shippingCities , setShippingCities] =  useState([]); 
-    useEffect(()=>{
-        console.log(backendErrors)
-    },[backendErrors])
+ 
 
    
     useEffect(()=> {
@@ -87,11 +85,13 @@ export default function ShippingPage({items = [], tax  , shippingData, setShippi
     };
 
 
-    const onCityChange = async (cityId :string) => {
+    const onCityChange = async (cityName :string) => {
         try{
-          const res = await axios.post(route('shipping.calculate' , {id: cityId}), {
+          const res = await axios.post(route('shipping.calculate' , {name: cityName}), {
               items: items
           })
+
+          console.log(res)
 
           if(res.status === 200){
               // We merge the calculated cost into the zone object so the UI remains consistent

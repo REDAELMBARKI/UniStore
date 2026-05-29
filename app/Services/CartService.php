@@ -18,7 +18,6 @@ use Illuminate\Support\Str;
 
 class CartService
 {
-
     public function __construct(private ItemEligibilityService $itemEligibilityService){}
 
     public function addToCart(array $data)
@@ -57,7 +56,7 @@ class CartService
         Cart::where('user_id', $userId)->delete();
     }
 
-    public function getCartItems($wiThCategories = false){
+    public function getCartItems($withCategories = false){
 
         try{
 
@@ -65,12 +64,12 @@ class CartService
         
         return Cart::query()
             ->where('user_id', $userId)
-            ->with(['productVariant' => function($q) use($wiThCategories) {
+            ->with(['productVariant' => function($q) use($withCategories) {
                     $q->select('id', 'product_id', 'attrs', 'stock');
-                    $q->with(['product' => function($q2) use($wiThCategories){
+                    $q->with(['product' => function($q2) use($withCategories){
                         $q2->select('id', 'name', 'description');
                         $q2->with('thumbnail') ;
-                        $q2->when($wiThCategories, function($q3){
+                        $q2->when($withCategories, function($q3){
                                $q3->with('subCategories', 'nichCategory') ;
                         });
                     }]);
@@ -96,7 +95,6 @@ class CartService
       });
     }
 
-
     public  function calculateCartItemsSubtotal(array $items){
             return  (int) collect($items)->sum(function ($item) {
                         if (is_array($item)) {
@@ -105,7 +103,6 @@ class CartService
                         return $item->subtotal;
                      });
     }
-
 
     public function getCartEligibility(Coupon | Promotion $discount , array $items){
            $eligibility = [] ;
@@ -125,7 +122,6 @@ class CartService
 
            return $eligibility;
     }
- 
 
     // public function clearCart(?User $user): void
     // {

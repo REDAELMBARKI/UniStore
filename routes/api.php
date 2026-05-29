@@ -2,6 +2,7 @@
 //file name routes/ajax 
 
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ShippingController;
 use App\Http\Controllers\StripeWebhookController;
 use App\Http\Controllers\TagController;
 use Illuminate\Support\Facades\Route;
@@ -12,3 +13,7 @@ Route::get('/products/suggest', [ProductController::class, 'suggest'])->name('pr
 
 Route::post('api/webhook/stripe', [StripeWebhookController::class, 'handle']);
 
+
+Route::match(['get', 'post'], '/shipping/calculate/{name}', [ShippingController::class, 'calculate'])->name('shipping.calculate');
+
+Route::get('/shipping/calculateBestGoalForUser', [ShippingController::class, 'calculateBestShippingDiscount'])->name('shipping.calculateBestGoalForUser');

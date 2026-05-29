@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\CartResource;
 use App\Models\Cart;
+use App\Models\ShippingZone;
 use App\Services\CartService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -18,7 +19,14 @@ class CartController extends Controller
     public function index()
     {
         $items = $this->cartService->getCartItems(false);
-        return Inertia::render('cart/ShoppingCartMaster', compact('items'));
+        $defaultShippingAmount = (float) ShippingZone::where('is_active', true)->min('price');
+        return Inertia::render('cart/ShoppingCartMaster', [
+              'items' => $items , 
+              'defaultShippingAmount' => $defaultShippingAmount
+
+              ]
+            
+            );
     }
 
     public function store(Request $request)

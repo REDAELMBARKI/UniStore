@@ -81,14 +81,14 @@ class ShippingService
      }
     
     
-    public function calculateShipping(array $items ,string $city , ?int $promotion_id = null): float
+    public function calculateShipping(array $items ,ShippingZoneCity $city , ?int $promotion_id = null): float
     {
-               $zoneShippingInfo = $this->getZoneShippingInfo($city);
+               $zone = $city->shipping_zone()->first(['id' , 'price' , 'type' , 'is_active']);
                $settings = $this->getShippingSettings();
                
-               $this->checkAvailableShippingInZone($zoneShippingInfo);
+               $this->checkAvailableShippingInZone($zone);
                // if shipping is free initialy
-               if($zoneShippingInfo &&( $zoneShippingInfo->price == 0)) {
+               if($zone &&( $zone->price == 0)) {
                     return 0 ;
                }
 
@@ -106,11 +106,11 @@ class ShippingService
                }
 
                // if has fixed price no matter quantity
-               if($zoneShippingInfo->type === 'fixed'){
-                    return $zoneShippingInfo->price ;
+               if($zone->type === 'fixed'){
+                    return $zone->price ;
                }
 
-               return $this->calculateWeightBased($items, $zoneShippingInfo , $settings);
+               return $this->calculateWeightBased($items, $zone , $settings);
 
     }
 
@@ -120,7 +120,7 @@ class ShippingService
      {
      $totalWeight = collect($items)->sum(function ($item) {
           $weight = ($item->product_variant->product->shipping['weight'] ?? 0);
-          return $weight * $item->quantity;
+          return $weight * $item['quantity'];
      });
 
      if ($totalWeight <= $settings->base_weight_kg) {
@@ -141,7 +141,7 @@ class ShippingService
           }
 
           if (!$zone->is_active) {
-               throw new ShippingException('Shipping is currently unavailable for this region.');
+               throw new ShippingException('Shipping is currently unavailable for this region.' . $zone->is_active);
           }
      }
 }

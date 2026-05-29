@@ -16,7 +16,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->enum('type', ['percentage', 'fixed', 'free_shipping']);
-            $table->decimal('value', 10, 2)->default(0); // null if free_shipping
+            $table->decimal('value', 10, 2)->default(0);
             $table->decimal('minimum_order_amount', 10, 2)->nullable();
             $table->integer('minimum_items')->nullable();
             $table->integer('max_uses')->nullable();

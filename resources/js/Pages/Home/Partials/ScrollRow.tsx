@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { ProductCardMaster } from './ProductCardMaster';
+import ProductCardMaster from '@/components/partials/ProductCardMaster';
+
 import { useStoreConfigCtx } from '@/contextHooks/useStoreConfigCtx';
 import { ProductSection } from '@/types/HomeFeedTypes';
 
@@ -174,7 +175,7 @@ export const ScrollRow: React.FC<ScrollRowProps> = ({
               }}
             >
               <div className="sr-card-inner">
-                <ProductCardMaster product={product} />
+                <ProductCardMaster key={product.id}  product={product} />
               </div>
             </div>
           ))}
