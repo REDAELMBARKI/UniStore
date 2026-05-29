@@ -13,12 +13,16 @@ class PromotionRequest extends FormRequest
 
     public function rules(): array
     {
-        $id = $this->route('promotion');
         return [
             'name' => 'required|string',
             'type' => 'required|in:percentage,fixed,free_shipping',
             'value' => 'required_if:type,percentage,fixed|numeric|min:0',
-            'minimum_order_amount' => 'nullable|numeric|min:0',
+            'minimum_order_amount' => [
+                'nullable',
+                'numeric',
+                'min:0',
+                'unique:promotions,minimum_order_amount,' 
+            ],
             'minimum_items' => 'nullable|integer|min:0',
             'max_uses' => 'nullable|integer|min:0',
             'valid_from' => 'nullable|date',

@@ -5,6 +5,8 @@ namespace App\Services\Discount;
 use App\Context\Order\CheckoutContext;
 use App\Exceptions\PromotionException;
 use App\Models\Promotion;
+use App\Models\ShippingZone;
+use App\Services\ShippingService;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -16,6 +18,7 @@ class PromotionService extends DiscountService
 {
     public function __construct(
         protected CartService $cartService,
+        protected ShippingService $shippingService,
         private PromotionRepository $promotionRepository
     ) {
         parent::__construct($cartService);
@@ -138,5 +141,37 @@ class PromotionService extends DiscountService
         if ($updated === 0) {
             throw new PromotionException('Promotion no longer valid or has reached its usage limit.');
         }
+    }
+
+
+
+    public function getPromotionMillestones()
+    {
+        $promos = $this->promotionRepository->getPromotionsSetForAmount();
+        $defaultShippingAmount = $this->shippingService->minShippingCost();
+
+
+        return $promos->map(function ($promo) use ($defaultShippingAmount) {
+            $estimatedValue = 0 ;
+            if($promo->type === 'percentage'){
+                $estimatedValue = $promo->minimum_order_amount * ($promo->value / 100) ;
+            }elseif($promo->type === 'fixed'){
+                $estimatedValue = $promo->value ;
+            }elseif($promo->type === 'free_shipping'){
+                // free shipiing 
+                $estimatedValue =  $defaultShippingAmount;
+            }
+            else{
+                $estimatedValue = 0;
+            }
+
+            return [
+                'goal' => (float) $promo->minimum_order_amount,
+                'label' => $promo->type === 'percentage' ? $promo->value . '%' : $promo->value . ' MAD',
+                'type' => $promo->type === 'free_shipping' ? 'free_shipping' : 'discount',
+                'estimated_value' => (float) $estimatedValue,
+            ];
+        });
+
     }
 }

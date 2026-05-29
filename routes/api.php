@@ -16,4 +16,4 @@ Route::post('api/webhook/stripe', [StripeWebhookController::class, 'handle']);
 
 Route::match(['get', 'post'], '/shipping/calculate/{name}', [ShippingController::class, 'calculate'])->name('shipping.calculate');
 
-Route::get('/shipping/calculateBestGoalForUser', [ShippingController::class, 'calculateBestShippingDiscount'])->name('shipping.calculateBestGoalForUser');
+Route::get('/shipping/calculateBestRewardForUser', [ShippingController::class, 'calculateBestRewardForUser'])->name('shipping.calculateBestRewardForUser');

@@ -144,4 +144,9 @@ class ShippingService
                throw new ShippingException('Shipping is currently unavailable for this region.' . $zone->is_active);
           }
      }
+
+
+   public function minShippingCost(){
+       return (float) ShippingZone::where('is_active', true)->min('price');
+   }
 }

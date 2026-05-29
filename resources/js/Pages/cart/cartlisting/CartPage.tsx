@@ -12,6 +12,8 @@ import CartSummary from "./CartSummary";
 import { useToast } from "@/contextHooks/useToasts";
 import axios from "axios";
 import { Trash2 } from "lucide-react";
+import CartRoadmap from "./CartRoadmap";
+import { milliseconds } from "date-fns";
 
 interface CartPageProps {
 
@@ -21,28 +23,46 @@ interface CartPageProps {
 
 interface CartProps {
         items: any[];
-    defaultShippingAmount :  number ;
+        defaultShippingAmount : number ,        
+        milestones : Milestone[] 
+        
+
 }
 
+export interface Reward {
+    goal: number;
+    remaining: number;
+    reward_type: 'free_shipping' | 'discount';
+    message: string;
+}
+
+export interface Milestone {
+    goal: number;
+    label: string;
+    type: 'discount' | 'free_shipping';
+}
 
 export default function CartPage({ onStepChange }: CartPageProps) {
     const {
         state: { currentTheme: theme },
     } = useStoreConfigCtx();
-    const {items , defaultShippingAmount} = usePage().props  as  CartProps;
-
-    const [bestGoalForuser , setBestGoalForuser] =  useState<null|number>(null);
+    const { items, milestones: initialMilestones , defaultShippingAmount } = usePage().props as CartProps;
+    const [bestRewardForUser, setBestRewardForUser] = useState<null | Reward>(null);
+    const [milestones, setMilestones] = useState<Milestone[]>(initialMilestones || []);
+    
     const [coupon_code, setCoupon_code] = useState("");
-    const {addToast} = useToast() ; 
+    const [isRoadmapVisible, setIsRoadmapVisible] = useState(true);
+    const [prevReachedCount, setPrevReachedCount] = useState(0);
+    const { addToast } = useToast();
     // Calculate totals
     const subtotal = items.reduce(
         (sum, item) => sum + item.price_snapshot * item.quantity,
         0
     );
-
-
+    
+    
     // get all promotions check the promotion that gives the best discount for the user invite the user to be qualified for the promotions discount 
-    const shipping: number = defaultShippingAmount === 0 || (bestGoalForuser !== null && subtotal >= bestGoalForuser) ? 0 : defaultShippingAmount;
+    const shipping : number = defaultShippingAmount === 0 || (bestRewardForUser !== null && subtotal >= bestRewardForUser.goal) ? 0 : defaultShippingAmount;
     
     const handleQuantityChange = (itemId: number, newQuantity: number) => {
         if (newQuantity < 1) return;
@@ -55,7 +75,7 @@ export default function CartPage({ onStepChange }: CartPageProps) {
             }
         );
     };
-
+    
     const handleRemoveItem = (id: number) => {
         router.delete(route("cart.destroy", { id }), {
             preserveScroll: true,
@@ -74,7 +94,7 @@ export default function CartPage({ onStepChange }: CartPageProps) {
             }
         });
     };
-
+    
     const handleClearCart = () => {
         if (!confirm("Are you sure you want to clear your cart?")) return;
         
@@ -95,28 +115,44 @@ export default function CartPage({ onStepChange }: CartPageProps) {
             }
         });
     };
-
+    
     const handleProceedToCheckout = () => {
         onStepChange('next');
     };
+    
+    
+    
+    
+    
+    
+    useEffect(() => {
+        const getBestRewardForUser = async () => {
+            const res = await axios.get(route('shipping.calculateBestRewardForUser'))
+            if (res.data) {
+                setBestRewardForUser(res.data.bestRewardForUser);
+                if (res.data.milestones) {
+                    setMilestones(res.data.milestones);
+                }
+            }
+        }
+        
+        if (subtotal > 0) {
+            getBestRewardForUser();
+        }
+    }, [subtotal]);
 
-
-
-
-
+    
+    useEffect(() => {
+        const currentReachedCount = milestones.filter(m => subtotal >= m.goal).length;
+        if (currentReachedCount > prevReachedCount) {
+            setIsRoadmapVisible(true);
+            setPrevReachedCount(currentReachedCount);
+        }
+    }, [subtotal, milestones, prevReachedCount]);
 
     useEffect(() => {
-       const getBestGoalForUser = async () => {
-            const res = await axios.get(route('shipping.calculateBestGoalForUser'))
-            if (res.data) {
-                setBestGoalForuser(res.data.bestGoalForUser);
-            }
-       }
-
-       if(subtotal > 0) {
-        getBestGoalForUser();
-       }
-    }, [subtotal]);
+      console.log( 'millestones' ,  milestones)
+    }, [milestones]);
 
     return (
             <div  className="min-h-screen py-6">
@@ -132,6 +168,17 @@ export default function CartPage({ onStepChange }: CartPageProps) {
                                 <ArrowLeft size={16} />
                                 CONTINUE SHOPPING
                             </button>
+
+                    {isRoadmapVisible && (
+                        <div className="mb-8">
+                            <CartRoadmap 
+                                subtotal={subtotal} 
+                                milestones={milestones} 
+                                theme={theme} 
+                                onClose={() => setIsRoadmapVisible(false)}
+                            />
+                        </div>
+                    )}
 
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                         {/* Left Column - Cart Items */}
@@ -171,9 +218,9 @@ export default function CartPage({ onStepChange }: CartPageProps) {
                         <div className="lg:col-span-1">
                             <CartSummary
                                 subtotal={subtotal}
-                                shipping={subtotal > 0 ? shipping : 0 }
-                                bestGoalForuser={bestGoalForuser}
-                                isFreeShipping={shipping == 0}
+                                shipping={subtotal > 0 ? shipping : 0}
+                                bestRewardForUser={bestRewardForUser}
+                                isFreeShipping={shipping === 0}
                                 itemCount={items.length}
                                 theme={theme}
                                 onProceedToCheckout={handleProceedToCheckout}

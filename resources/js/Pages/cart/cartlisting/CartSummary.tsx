@@ -1,10 +1,11 @@
-// Pages/Cart/components/CartSummary.tsx
 import { ThemePalette } from "@/types/ThemeTypes";
+import { Reward } from "./CartPage";
+import { Gift, Truck } from "lucide-react";
 
 interface CartSummaryProps {
     subtotal: number;
     shipping: number;
-    bestGoalForuser : number | null ;
+    bestRewardForUser : Reward | null ;
     itemCount: number;
     theme: ThemePalette;
     onProceedToCheckout: () => void;
@@ -17,7 +18,7 @@ export default function CartSummary({
     itemCount,
     theme,
     isFreeShipping ,
-    bestGoalForuser ,
+    bestRewardForUser ,
     onProceedToCheckout,
 }: CartSummaryProps) {
     const total = (subtotal ?? 0) + (shipping ?? 0);
@@ -75,8 +76,8 @@ export default function CartSummary({
                         }}
                         className="text-xs p-2"
                     >
-                      {bestGoalForuser !== null && subtotal > 0 && subtotal < bestGoalForuser ? 
-                             `Add ${Math.max(0, bestGoalForuser - subtotal).toFixed(2)} more for FREE shipping! `:
+                      {bestRewardForUser !== null && subtotal > 0 && subtotal < bestRewardForUser.goal ? 
+                               bestRewardForUser.message :
                               ''
                       }
                     </div>

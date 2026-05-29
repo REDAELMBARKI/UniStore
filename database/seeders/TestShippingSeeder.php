@@ -12,50 +12,82 @@ class TestShippingSeeder extends Seeder
 {
     public function run(): void
     {
-        // 1. Clear existing data to avoid confusion
-        ShippingSetting::truncate();
-        Promotion::where('type', 'free_shipping')->delete();
+        // 1. Update Global Shipping Setting
+        ShippingSetting::updateOrCreate(
+            ['id' => 1], // Assuming single setting
+            [
+                'free_shipping_type' => 'amount',
+                'free_shipping_threshold_amount' => 500.00,
+                'base_weight_kg' => 2.00,
+                'extra_kg_price' => 5.00,
+                'shipping_class' => ['standard' => 15.00, 'express' => 30.00]
+            ]
+        );
 
-        // 2. Create Global Shipping Setting
-        // Global policy: Free shipping at 500 MAD
-        ShippingSetting::create([
-            'free_shipping_type' => 'amount',
-            'free_shipping_threshold_amount' => 500.00,
-            'base_weight_kg' => 2.00,
-            'extra_kg_price' => 5.00,
-            'shipping_class' => ['standard' => 15.00, 'express' => 30.00]
-        ]);
+        // 2. Clear old test promotions (safely)
+        // We only delete promotions that aren't linked to orders if possible, 
+        // but for a test seeder, we can just delete and recreate.
+        // To avoid FK issues, we won't delete all, just the ones we manage.
+        $testPromoNames = ['Starter Discount', 'Fixed Savings', 'Big Spender %', 'VIP Reward'];
+        Promotion::whereIn('name', $testPromoNames)->delete();
 
-        // 3. Create a Targeted Promotion
-        // Special Campaign: Free shipping at 300 MAD (Limited time)
-        Promotion::create([
-            'name' => 'Flash Sale Free Shipping',
-            'type' => 'free_shipping',
-            'minimum_order_amount' => 300.00,
-            'is_active' => true,
-            'priority' => 10,
-            'valid_from' => now(),
-            'valid_until' => now()->addDays(7),
-        ]);
-
-        // 4. Ensure at least one Shipping Zone exists
-        if (ShippingZone::count() === 0) {
-            $zone = ShippingZone::create([
-                'name' => 'Default Zone',
+        // 3. Ensure a default Shipping Zone
+        $zone = ShippingZone::updateOrCreate(
+            ['name' => 'Default Zone'],
+            [
                 'price' => 25.00,
                 'is_active' => true,
                 'type' => 'fixed'
-            ]);
+            ]
+        );
 
-            ShippingZoneCity::create([
-                'shipping_zone_id' => $zone->id,
-                'city' => 'Test City'
-            ]);
-        }
+        ShippingZoneCity::updateOrCreate(
+            ['city' => 'Casablanca'],
+            ['shipping_zone_id' => $zone->id]
+        );
 
-        echo "Test data seeded successfully!\n";
-        echo "Global Threshold: 500 MAD\n";
-        echo "Promotion Threshold: 300 MAD\n";
-        echo "Best Goal should be: 300 MAD\n";
+        // 4. Create Diverse Promotions with UNIQUE goals
+        
+        // Goal 100: 10% off (Value: 10)
+        Promotion::create([
+            'name' => 'Starter Discount',
+            'type' => 'percentage',
+            'value' => 10,
+            'minimum_order_amount' => 100.00,
+            'is_active' => true,
+            'priority' => 1,
+        ]);
+
+        // Goal 200: 25 MAD off (Value: 25)
+        Promotion::create([
+            'name' => 'Fixed Savings',
+            'type' => 'fixed',
+            'value' => 25,
+            'minimum_order_amount' => 200.00,
+            'is_active' => true,
+            'priority' => 2,
+        ]);
+
+        // Goal 350: 15% off (Value: 52.5)
+        Promotion::create([
+            'name' => 'Big Spender %',
+            'type' => 'percentage',
+            'value' => 15,
+            'minimum_order_amount' => 350.00,
+            'is_active' => true,
+            'priority' => 3,
+        ]);
+
+        // Goal 600: 100 MAD off (Value: 100)
+        Promotion::create([
+            'name' => 'VIP Reward',
+            'type' => 'fixed',
+            'value' => 100,
+            'minimum_order_amount' => 600.00,
+            'is_active' => true,
+            'priority' => 4,
+        ]);
+
+        echo "Test data updated successfully!\n";
     }
 }
