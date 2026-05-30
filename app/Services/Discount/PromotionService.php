@@ -7,6 +7,7 @@ use App\Exceptions\PromotionException;
 use App\Models\Promotion;
 use App\Models\ShippingZone;
 use App\Services\ShippingService;
+use App\Services\StoreSettingService;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -16,12 +17,15 @@ use App\Services\CartService;
 
 class PromotionService extends DiscountService
 {
+    private $store_currency ;
     public function __construct(
         protected CartService $cartService,
         protected ShippingService $shippingService,
-        private PromotionRepository $promotionRepository
+        private PromotionRepository $promotionRepository,
+        private StoreSettingService $storeSettingsService
     ) {
         parent::__construct($cartService);
+        $this->store_currency = $storeSettingsService->getStoreCurrency();
     }
 
     public function getAllPromotions()
@@ -105,18 +109,19 @@ class PromotionService extends DiscountService
 
                 // calculate discount on eligible subtotal only
                 $eligibleSubtotal = $this->cartService->calculateCartItemsSubtotal($eligibleItems);
-                $discount = $this->calculateDiscount($promotion , $eligibleSubtotal);
+                $discount = $this->calculateDiscount($promotion, $eligibleSubtotal);
 
                 $qualified[] = [
                     'promotion_id' => $promotion->id,
-                    'discount'  => $discount,
+                    'discount' => $discount,
                 ];
             } catch (Exception $e) {
                 continue;
             }
         }
 
-        if (empty($qualified)) return null;
+        if (empty($qualified))
+            return null;
 
         return collect($qualified)->sortByDesc('discount')->first();
     }
@@ -132,10 +137,10 @@ class PromotionService extends DiscountService
 
         $updated = Promotion::where('id', $promotion_id)
             ->where(fn($q) => $q->whereNull('max_uses')
-                                ->orWhereColumn('times_used', '<', 'max_uses'))
+                ->orWhereColumn('times_used', '<', 'max_uses'))
             ->update([
                 'times_used' => DB::raw('times_used + 1'),
-                'is_active'  => DB::raw('CASE WHEN max_uses IS NOT NULL AND times_used + 1 >= max_uses THEN 0 ELSE 1 END'),
+                'is_active' => DB::raw('CASE WHEN max_uses IS NOT NULL AND times_used + 1 >= max_uses THEN 0 ELSE 1 END'),
             ]);
 
         if ($updated === 0) {
@@ -149,27 +154,34 @@ class PromotionService extends DiscountService
     {
         $promos = $this->promotionRepository->getPromotionsSetForAmount();
         $defaultShippingAmount = $this->shippingService->minShippingCost();
+        $items = $this->cartService->getCartItems();
+        $cartTotal = $this->cartService->calculateCartItemsSubtotal($items->toArray());
 
+        return $promos->map(function ($promo) use ($defaultShippingAmount, $cartTotal) {
+            $estimatedValue = 0;
+            $message = '';
+            $remaining = $promo->minimum_order_amount - $cartTotal;
+            if ($promo->type === 'percentage') {
+                $estimatedValue = $promo->minimum_order_amount * ($promo->value / 100);
+                $message = 'Add ' . $remaining . " " .$this->store_currency . ' and save ' . $estimatedValue . ' ' . $this->store_currency;
 
-        return $promos->map(function ($promo) use ($defaultShippingAmount) {
-            $estimatedValue = 0 ;
-            if($promo->type === 'percentage'){
-                $estimatedValue = $promo->minimum_order_amount * ($promo->value / 100) ;
-            }elseif($promo->type === 'fixed'){
-                $estimatedValue = $promo->value ;
-            }elseif($promo->type === 'free_shipping'){
+            } elseif ($promo->type === 'fixed') {
+                $estimatedValue = $promo->value;
+                $message = 'Add ' . $remaining . " " .$this->store_currency  . ' and save ' . $estimatedValue . ' ' . $this->store_currency;
+            } elseif ($promo->type === 'free_shipping') {
                 // free shipiing 
-                $estimatedValue =  $defaultShippingAmount;
-            }
-            else{
+                $estimatedValue = $defaultShippingAmount;
+                $message = 'Add ' . $remaining . " " .$this->store_currency  . ' and get a Free Shipping ';
+            } else {
                 $estimatedValue = 0;
             }
 
             return [
                 'goal' => (float) $promo->minimum_order_amount,
-                'label' => $promo->type === 'percentage' ? $promo->value . '%' : $promo->value . ' MAD',
+                'label' => $promo->type === 'percentage' ? $promo->value . '%' : $promo->value . ' ' . $this->store_currency,
                 'type' => $promo->type === 'free_shipping' ? 'free_shipping' : 'discount',
                 'estimated_value' => (float) $estimatedValue,
+                'message' => $message
             ];
         });
 

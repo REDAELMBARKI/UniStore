@@ -7,6 +7,7 @@ use App\Models\Cart;
 use App\Models\ShippingZone;
 use App\Services\CartService;
 use App\Services\ShippingService;
+use App\Services\StoreSettingService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
@@ -15,18 +16,19 @@ use Inertia\Inertia;
 class CartController extends Controller
 {
     
-    public function __construct(private CartService $cartService , private ShippingService $shippingService) {}
+    public function __construct(
+        private CartService $cartService , 
+      private ShippingService $shippingService , 
+      private StoreSettingService $storeSettingsService) {}
 
     public function index()
     {
         $items = $this->cartService->getCartItems(false);
         $defaultShippingAmount = $this->shippingService->minShippingCost();
-        $milestones = [] ;
         return Inertia::render('cart/ShoppingCartMaster', [
-              'items' => $items , 
-              'milestones' => $milestones ,
+              'items' => $items ,
+              'currency' =>  $this->storeSettingsService->getStoreCurrency() , 
               'defaultShippingAmount' => $defaultShippingAmount
-
               ]
             
             );

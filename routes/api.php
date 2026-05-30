@@ -2,6 +2,7 @@
 //file name routes/ajax 
 
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\PromotionController;
 use App\Http\Controllers\ShippingController;
 use App\Http\Controllers\StripeWebhookController;
 use App\Http\Controllers\TagController;
@@ -16,4 +17,4 @@ Route::post('api/webhook/stripe', [StripeWebhookController::class, 'handle']);
 
 Route::match(['get', 'post'], '/shipping/calculate/{name}', [ShippingController::class, 'calculate'])->name('shipping.calculate');
 
-Route::get('/shipping/calculateBestRewardForUser', [ShippingController::class, 'calculateBestRewardForUser'])->name('shipping.calculateBestRewardForUser');
+Route::get('/reward/calculateBestRewardForUser', [PromotionController::class, 'calculateBestRewardForUser'])->name('shipping.calculateBestRewardForUser');

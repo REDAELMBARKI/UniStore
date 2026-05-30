@@ -3,15 +3,29 @@
 namespace App\Http\Controllers;
 
 use App\Models\Promotion;
+use App\Models\ShippingSetting;
+use App\Services\CartService;
 use App\Services\Discount\PromotionService;
+use App\Services\ShippingService;
+use App\Services\StoreSettingService;
 use Illuminate\Http\Request;
 
 class PromotionController extends Controller
 {
 
 
-    public function __construct(private PromotionService $promotionService)
+    private $store_currency ;
+
+
+    public function __construct(
+        private PromotionService $promotionService ,
+        private CartService $cartService, 
+        private StoreSettingService $storeSettingsService  , 
+        private ShippingService $shippingService
+        )
     {
+        $this->store_currency = $storeSettingsService->getStoreCurrency();
+
     }
       public function getAll()
     {
@@ -27,6 +41,70 @@ class PromotionController extends Controller
         });
 
         return response()->json($transformed);
+    }
+
+
+      public function calculateBestRewardForUser()
+    {
+        $items = $this->cartService->getCartItems();
+        $cartTotal = $this->cartService->calculateCartItemsSubtotal($items->toArray());
+        
+        if ($cartTotal == 0) {
+            return response()->json([
+                'bestRewardForUser' => null,
+                'milestones' => []
+            ], 200);
+        }
+
+        $globalShipping = ShippingSetting::where('free_shipping_type' , 'amount')->first();
+        $milestones = $this->promotionService->getPromotionMillestones();
+        $goal = (float) $globalShipping->free_shipping_threshold_amount ;
+        $remaining = $goal - $cartTotal ;
+        if ($globalShipping && $globalShipping->free_shipping_threshold_amount > 0) {
+            $milestones->push([
+                'goal' => $goal,
+                'label' => 'FREE SHIPPING',
+                'type' => 'free_shipping',
+                'estimated_value' => (float) $this->shippingService->minShippingCost(),
+                'message' => "Add " .$remaining . " " .$this->store_currency  ." and get a Free Shipping " 
+            ]);
+        }
+
+
+        // 2. Process milestones: Group by goal (keep best reward per goal) and sort
+        $sortedMilestones = $milestones
+                            ->groupBy('goal')
+                            ->map(fn($group) => $group->sortByDesc("estimated_value")->first())
+                            ->sortBy('goal')
+                            ->values();
+
+        // 3. Strictly Upward: Filter out any higher-goal milestone that offers a worse reward
+        $finalMilestones = collect();
+        $currentMaxValue = -1;
+
+        foreach ($sortedMilestones as $m) {
+            if ($m['estimated_value'] > $currentMaxValue) {
+                $finalMilestones->push($m);
+                $currentMaxValue = $m['estimated_value'];
+            }
+        }
+
+        // 4. Recalculate next milestone from the filtered set
+        $nextMilestone = $finalMilestones->first(fn($m) => $m['goal'] > $cartTotal);
+        $currentMilestone = $finalMilestones->last(fn($m) => $m['goal'] <= $cartTotal);
+        return response()->json([
+            'nextMilestone' => $nextMilestone,
+            'currentMilestone' => $currentMilestone ,
+            'milestones' => $finalMilestones->values()
+        ], 200);
+    }
+
+
+
+
+    public function validateScalling(){ // befreo store or update validation the scalling
+    // Higher goal => Higher estimated reward.
+    // Lower goal => Lower estimated reward.
     }
 
 }

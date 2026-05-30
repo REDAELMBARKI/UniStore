@@ -1,15 +1,17 @@
 import { ThemePalette } from "@/types/ThemeTypes";
-import { Reward } from "./CartPage";
 import { Gift, Truck } from "lucide-react";
+import { Milestone } from "./CartPage";
 
 interface CartSummaryProps {
     subtotal: number;
     shipping: number;
-    bestRewardForUser : Reward | null ;
     itemCount: number;
     theme: ThemePalette;
+    nextMilestone: Milestone | null;
+    currReachedMilestone : Milestone | null;
     onProceedToCheckout: () => void;
-    isFreeShipping : boolean 
+    isFreeShipping : boolean;
+    currency: string;
 }
 
 export default function CartSummary({
@@ -17,12 +19,14 @@ export default function CartSummary({
     shipping,
     itemCount,
     theme,
-    isFreeShipping ,
-    bestRewardForUser ,
+    nextMilestone,
+    currReachedMilestone ,    
+    isFreeShipping ,   
+    currency,
     onProceedToCheckout,
 }: CartSummaryProps) {
     const total = (subtotal ?? 0) + (shipping ?? 0);
-    
+   
     return (
         <div
             style={{
@@ -44,68 +48,73 @@ export default function CartSummary({
                         Subtotal ({itemCount} item{itemCount !== 1 ? "s" : ""}):
                     </span>
                     <span style={{ color: theme.text }} className="font-semibold">
-                        ${(subtotal ?? 0).toFixed(2)}
+                        {(subtotal ?? 0).toFixed(2)} {currency}
                     </span>
                 </div>
 
                 <div className="flex justify-between text-sm">
                     <span style={{ color: theme.textSecondary }}>Shipping:</span>
-                    <span style={{ color: theme.text }} className="font-semibold">
-                        ${(shipping ?? 0).toFixed(2)}
+                    <span style={{ color: isFreeShipping ? theme.success : theme.text }} className="font-semibold">
+                        {isFreeShipping ? "FREE" : `${(shipping ?? 0).toFixed(2)} ${currency}`}
                     </span>
                 </div>
 
-                {/* Free Shipping Progress */}
-                {isFreeShipping ? (
-                    <div
-                        style={{
-                            backgroundColor: theme.success + "20",
-                            color: theme.success,
-                            borderRadius: theme.borderRadius,
-                        }}
-                        className="text-xs p-2 font-medium"
-                    >
-                        ✓ You've qualified for FREE shipping!
+                {currReachedMilestone?.type === 'discount' && (
+                    <div className="flex justify-between text-sm">
+                        <span style={{ color: theme.textSecondary }}>Discount:</span>
+                        <span style={{ color: theme.success }} className="font-semibold">
+                            - {(currReachedMilestone?.estimated_value ?? 0).toFixed(2)} {currency}
+                        </span>
                     </div>
-                ) : (
+                )}
+
+                {/* Free Shipping Progress */}
+                {!isFreeShipping && (
                     <div
                         style={{
                             backgroundColor: theme.warning + "20",
                             color: theme.warning,
                             borderRadius: theme.borderRadius,
                         }}
-                        className="text-xs p-2"
+                        className="text-xs p-2 font-medium flex items-center gap-2 mt-2"
                     >
-                      {bestRewardForUser !== null && subtotal > 0 && subtotal < bestRewardForUser.goal ? 
-                               bestRewardForUser.message :
-                              ''
-                      }
+                        <Gift size={14} className="shrink-0" />
+                        <span>{nextMilestone?.message || "Keep shopping to unlock rewards!"}</span>
                     </div>
                 )}
             </div>
 
             {/* Total */}
-            <div style={{ borderColor: theme.border }} className="border-t pt-4 mb-6">
+            <div style={{ borderColor: theme.border }} className="border-t pt-4 mb-6 space-y-2">
+                {currReachedMilestone?.type === 'discount' && (
+                    <div className="flex justify-between items-center opacity-60">
+                        <span style={{ color: theme.text }} className="text-sm">
+                            Original Total:
+                        </span>
+                        <span style={{ color: theme.text }} className="text-sm line-through">
+                            {(subtotal + (isFreeShipping ? 0 : shipping)).toFixed(2)} {currency}
+                        </span>
+                    </div>
+                )}
+                
                 <div className="flex justify-between items-center">
                     <span style={{ color: theme.text }} className="font-bold text-lg">
                         TOTAL:
                     </span>
-                    <span style={{ color: theme.primary }} className="font-bold text-2xl">
-                        ${(total ?? 0).toFixed(2)}
-                    </span>
-                </div>
-                {isFreeShipping && (
-                    <div
-                        style={{
-                            backgroundColor: theme.success,
-                            color: theme.textInverse,
-                            borderRadius: theme.borderRadius,
-                        }}
-                        className="text-xs font-semibold px-2 py-1 inline-block mt-2"
-                    >
-                        FREE SHIPPING!
+                    <div className="text-right">
+                        <span style={{ color: theme.primary }} className="font-bold text-2xl block">
+                            {(subtotal + (isFreeShipping ? 0 : shipping) - (currReachedMilestone?.type === 'discount' ? currReachedMilestone.estimated_value : 0)).toFixed(2)} {currency}
+                        </span>
+                        {isFreeShipping && (
+                            <span 
+                                style={{ color: theme.success }} 
+                                className="text-[10px] font-bold uppercase tracking-wider"
+                            >
+                                + Free Shipping
+                            </span>
+                        )}
                     </div>
-                )}
+                </div>
             </div>
 
             {/* Proceed to Checkout Button */}

@@ -24,31 +24,31 @@ interface CartPageProps {
 interface CartProps {
         items: any[];
         defaultShippingAmount : number ,        
-        milestones : Milestone[] 
-        
-
+        milestones : Milestone[],
+        currency : string
+    
 }
 
-export interface Reward {
-    goal: number;
-    remaining: number;
-    reward_type: 'free_shipping' | 'discount';
-    message: string;
-}
+
 
 export interface Milestone {
     goal: number;
     label: string;
     type: 'discount' | 'free_shipping';
+    estimated_value: number;
+    message: string;
 }
 
 export default function CartPage({ onStepChange }: CartPageProps) {
     const {
         state: { currentTheme: theme },
     } = useStoreConfigCtx();
-    const { items, milestones: initialMilestones , defaultShippingAmount } = usePage().props as CartProps;
-    const [bestRewardForUser, setBestRewardForUser] = useState<null | Reward>(null);
-    const [milestones, setMilestones] = useState<Milestone[]>(initialMilestones || []);
+    const { items , defaultShippingAmount , currency } = usePage().props as CartProps;
+    const [currAndNextMilestone, setCurrAndNextMilestone] = useState<{
+        curr : Milestone | null , 
+        next : Milestone
+    }|null>(null);
+    const [milestones, setMilestones] = useState<Milestone[]>([]);
     
     const [coupon_code, setCoupon_code] = useState("");
     const [isRoadmapVisible, setIsRoadmapVisible] = useState(true);
@@ -62,7 +62,7 @@ export default function CartPage({ onStepChange }: CartPageProps) {
     
     
     // get all promotions check the promotion that gives the best discount for the user invite the user to be qualified for the promotions discount 
-    const shipping : number = defaultShippingAmount === 0 || (bestRewardForUser !== null && subtotal >= bestRewardForUser.goal) ? 0 : defaultShippingAmount;
+    const shipping : number = defaultShippingAmount ;
     
     const handleQuantityChange = (itemId: number, newQuantity: number) => {
         if (newQuantity < 1) return;
@@ -124,14 +124,25 @@ export default function CartPage({ onStepChange }: CartPageProps) {
     
     
     
-    
+    useEffect(() => {
+        const currentReachedCount = milestones.filter(m => subtotal >= m.goal).length;
+        if (currentReachedCount > prevReachedCount) {
+            setIsRoadmapVisible(true);
+            setPrevReachedCount(currentReachedCount);
+        }
+    }, [subtotal, milestones, prevReachedCount]);
+
+
     useEffect(() => {
         const getBestRewardForUser = async () => {
             const res = await axios.get(route('shipping.calculateBestRewardForUser'))
             if (res.data) {
-                setBestRewardForUser(res.data.bestRewardForUser);
                 if (res.data.milestones) {
                     setMilestones(res.data.milestones);
+                    setCurrAndNextMilestone({
+                        curr : res.data.currentMilestone || null, 
+                        next : res.data.nextMilestone
+                   })
                 }
             }
         }
@@ -142,17 +153,11 @@ export default function CartPage({ onStepChange }: CartPageProps) {
     }, [subtotal]);
 
     
-    useEffect(() => {
-        const currentReachedCount = milestones.filter(m => subtotal >= m.goal).length;
-        if (currentReachedCount > prevReachedCount) {
-            setIsRoadmapVisible(true);
-            setPrevReachedCount(currentReachedCount);
-        }
-    }, [subtotal, milestones, prevReachedCount]);
 
-    useEffect(() => {
-      console.log( 'millestones' ,  milestones)
-    }, [milestones]);
+
+   useEffect(() => {
+      console.log("millestones" , milestones)
+   }, [milestones]);
 
     return (
             <div  className="min-h-screen py-6">
@@ -187,11 +192,7 @@ export default function CartPage({ onStepChange }: CartPageProps) {
 
                             {/* Cart Header */}
                             <div className="mb-6 flex items-center justify-between">
-                                <h1 style={{ color: theme.text }} className="text-2xl font-bold">
-                                    Shopping Cart ({items.length} Item
-                                    {items.length !== 1 ? "s" : ""}): $
-                                    {(subtotal + shipping).toFixed(2)}
-                                </h1>
+                          
                                 {items.length > 0 && (
                                     <button 
                                         onClick={handleClearCart}
@@ -216,15 +217,22 @@ export default function CartPage({ onStepChange }: CartPageProps) {
 
                         {/* Right Column - Order Summary */}
                         <div className="lg:col-span-1">
-                            <CartSummary
-                                subtotal={subtotal}
-                                shipping={subtotal > 0 ? shipping : 0}
-                                bestRewardForUser={bestRewardForUser}
-                                isFreeShipping={shipping === 0}
-                                itemCount={items.length}
-                                theme={theme}
-                                onProceedToCheckout={handleProceedToCheckout}
-                            />
+                            {(() => {
+                                const isFreeShippingReached = currAndNextMilestone?.curr?.type === 'free_shipping' || shipping === 0;
+                                return (
+                                    <CartSummary
+                                        subtotal={subtotal}
+                                        shipping={subtotal > 0 ? shipping : 0}
+                                        nextMilestone={currAndNextMilestone?.next ?? null}
+                                        currReachedMilestone={currAndNextMilestone?.curr ?? null}
+                                        isFreeShipping={isFreeShippingReached}
+                                        itemCount={items.length}
+                                        theme={theme}
+                                        currency={currency}
+                                        onProceedToCheckout={handleProceedToCheckout}
+                                    />
+                                );
+                            })()}
                         </div>
                     </div>
                 </div>
