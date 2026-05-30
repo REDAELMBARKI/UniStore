@@ -16,9 +16,9 @@ class PromotionSeeder extends Seeder
         Promotion::factory(10)->active()->create();
         Promotion::factory(5)->expired()->create();
         Promotion::factory(3)->freeShipping()->active()->create();
-        Promotion::factory(5)->highPriority()->active()->create();
+        Promotion::factory(5)->active()->create();
 
         // Chain states together
-        Promotion::factory(3)->percentage()->highPriority()->active()->create();
+        Promotion::factory(3)->percentage()->active()->create();
     }
 }

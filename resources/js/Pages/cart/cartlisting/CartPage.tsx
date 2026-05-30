@@ -48,6 +48,8 @@ export default function CartPage({ onStepChange }: CartPageProps) {
         curr : Milestone | null , 
         next : Milestone
     }|null>(null);
+
+    
     const [milestones, setMilestones] = useState<Milestone[]>([]);
     
     const [coupon_code, setCoupon_code] = useState("");

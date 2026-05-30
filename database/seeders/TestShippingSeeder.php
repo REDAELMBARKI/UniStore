@@ -54,18 +54,18 @@ class TestShippingSeeder extends Seeder
             'type' => 'percentage',
             'value' => 10,
             'minimum_order_amount' => 100.00,
+            'max_discount_amount' => 50.00,
             'is_active' => true,
-            'priority' => 1,
         ]);
 
-        // Goal 200: 25 MAD off (Value: 25)
+        // Goal 200: 10% off
         Promotion::create([
             'name' => 'Fixed Savings',
-            'type' => 'fixed',
-            'value' => 25,
+            'type' => 'percentage',
+            'value' => 10,
             'minimum_order_amount' => 200.00,
+            'max_discount_amount' => 50.00,
             'is_active' => true,
-            'priority' => 2,
         ]);
 
         // Goal 350: 15% off (Value: 52.5)
@@ -74,18 +74,18 @@ class TestShippingSeeder extends Seeder
             'type' => 'percentage',
             'value' => 15,
             'minimum_order_amount' => 350.00,
+            'max_discount_amount' => 100.00,
             'is_active' => true,
-            'priority' => 3,
         ]);
 
-        // Goal 600: 100 MAD off (Value: 100)
+        // Goal 600: 20% off
         Promotion::create([
             'name' => 'VIP Reward',
-            'type' => 'fixed',
-            'value' => 100,
+            'type' => 'percentage',
+            'value' => 20,
             'minimum_order_amount' => 600.00,
+            'max_discount_amount' => 200.00,
             'is_active' => true,
-            'priority' => 4,
         ]);
 
         echo "Test data updated successfully!\n";

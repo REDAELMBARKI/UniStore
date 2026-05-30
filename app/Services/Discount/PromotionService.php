@@ -17,7 +17,7 @@ use App\Services\CartService;
 
 class PromotionService extends DiscountService
 {
-    private $store_currency ;
+    private $store_currency;
     public function __construct(
         protected CartService $cartService,
         protected ShippingService $shippingService,
@@ -160,25 +160,30 @@ class PromotionService extends DiscountService
         return $promos->map(function ($promo) use ($defaultShippingAmount, $cartTotal) {
             $estimatedValue = 0;
             $message = '';
-            $remaining = $promo->minimum_order_amount - $cartTotal;
+            $remaining = max(0, $promo->minimum_order_amount - $cartTotal);
+            $discount_label = "get " . $promo->value . "% off";
+            if ($promo->max_discount_amount) {
+                $discount_label .= " (up to " . $promo->max_discount_amount . " " . $this->store_currency . ")";
+            }
             if ($promo->type === 'percentage') {
-                $estimatedValue = $promo->minimum_order_amount * ($promo->value / 100);
-                $message = 'Add ' . $remaining . " " .$this->store_currency . ' and save ' . $estimatedValue . ' ' . $this->store_currency;
+                $leakedDiscount = $cartTotal * ($promo->value / 100);
+                
+                // Only cap if max_discount_amount is set and leakedDiscount exceeds it
+                $estimatedValue = ($promo->max_discount_amount && $leakedDiscount > $promo->max_discount_amount) 
+                    ? $promo->max_discount_amount 
+                    : $leakedDiscount;
 
-            } elseif ($promo->type === 'fixed') {
-                $estimatedValue = $promo->value;
-                $message = 'Add ' . $remaining . " " .$this->store_currency  . ' and save ' . $estimatedValue . ' ' . $this->store_currency;
+                $message = 'Add ' . $remaining . " " . $this->store_currency . " and " . $discount_label;
+
             } elseif ($promo->type === 'free_shipping') {
-                // free shipiing 
                 $estimatedValue = $defaultShippingAmount;
-                $message = 'Add ' . $remaining . " " .$this->store_currency  . ' and get a Free Shipping ';
-            } else {
-                $estimatedValue = 0;
+                $message = 'Add ' . $remaining . " " . $this->store_currency . ' and get Free Shipping';
             }
 
             return [
+                'max' => $promo->max_discount_amount ,
                 'goal' => (float) $promo->minimum_order_amount,
-                'label' => $promo->type === 'percentage' ? $promo->value . '%' : $promo->value . ' ' . $this->store_currency,
+                'label' => $promo->type === 'percentage' ? $promo->value . '%' : "FREE SHIPPING",
                 'type' => $promo->type === 'free_shipping' ? 'free_shipping' : 'discount',
                 'estimated_value' => (float) $estimatedValue,
                 'message' => $message

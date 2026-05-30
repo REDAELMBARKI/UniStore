@@ -11,10 +11,9 @@ class PromotionFactory extends Factory
 {
     public function definition(): array
     {
-        $type  = $this->faker->randomElement(['percentage', 'fixed', 'free_shipping']);
+        $type  = $this->faker->randomElement(['percentage', 'free_shipping']);
         $value = match ($type) {
             'percentage'   => $this->faker->randomElement([5, 10, 15, 20, 25, 30, 50]),
-            'fixed'        => $this->faker->randomElement([10, 20, 30, 50, 100]),
             'free_shipping'=> 0,
         };
 
@@ -26,19 +25,16 @@ class PromotionFactory extends Factory
             ]),
             'type'                        => $type,
             'value'                       => $value,
-            'minimum_order_amount'        => $this->faker->optional(0.5)->randomElement([50, 100, 150, 200, 300]),
+            'minimum_order_amount'        => $this->faker->unique()->numberBetween(1, 1000) * 10,
             'minimum_items'               => $this->faker->optional(0.3)->numberBetween(1, 5),
+            'max_discount_amount'         => $type === 'percentage' ? $this->faker->randomElement([50, 100, null]) : null,
             'max_uses'                    => $this->faker->optional(0.6)->numberBetween(50, 1000),
             'times_used'                  => $this->faker->numberBetween(0, 100),
             'valid_from'                  => $this->faker->dateTimeBetween('-1 month', 'now'),
             'valid_until'                 => $this->faker->boolean(70)
                 ? $this->faker->dateTimeBetween('now', '+6 months')
                 : null,
-            'applicable_product_ids'      => null,
-            'applicable_category_ids'     => null,
-            'applicable_sub_category_ids' => null,
             'is_active'                   => $this->faker->boolean(80),
-            'priority'                    => $this->faker->numberBetween(0, 10),
         ];
     }
 
@@ -70,29 +66,12 @@ class PromotionFactory extends Factory
         ]);
     }
 
-    // State: fixed amount only
-    public function fixed(): static
-    {
-        return $this->state(fn() => [
-            'type'  => 'fixed',
-            'value' => $this->faker->randomElement([10, 20, 50, 100]),
-        ]);
-    }
-
     // State: free shipping
     public function freeShipping(): static
     {
         return $this->state(fn() => [
             'type'  => 'free_shipping',
             'value' => 0,
-        ]);
-    }
-
-    // State: high priority (wins over others)
-    public function highPriority(): static
-    {
-        return $this->state(fn() => [
-            'priority' => $this->faker->numberBetween(8, 10),
         ]);
     }
 }

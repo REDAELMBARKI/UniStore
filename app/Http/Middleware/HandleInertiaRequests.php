@@ -47,7 +47,7 @@ class HandleInertiaRequests extends Middleware
             'storeConfigs' => [
                 'store_theme_style' => $settings['store_theme_style'] ?? 'softPastel',
                 'store_layout_style' => $settings['store_layout_style'] ?? 'grid',
-                'store_card_config' => isset($settings['store_card_config']) ? json_decode($settings['store_card_config'], true) : [
+                'store_card_config' => isset($settings['store_card_config']) ? $settings['store_card_config'] : [
                     'cardId' => 'card-6',
                     'showPrice' => true,
                     'showRating' => true,

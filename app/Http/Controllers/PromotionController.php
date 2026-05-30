@@ -35,7 +35,7 @@ class PromotionController extends Controller
             return [
                 'id' => $promo->id,
                 'name' => $promo->name,
-                'discount' => $promo->type === 'percentage' ? "{$promo->value}%" : "{$promo->value} " . config('app.currency', 'MAD'),
+                'discount' => $promo->type === 'percentage' ? "{$promo->value}%" : "FREE",
                 'expiry' => $promo->valid_until ? $promo->valid_until->format('Y-m-d') : null,
             ];
         });
@@ -59,7 +59,7 @@ class PromotionController extends Controller
         $globalShipping = ShippingSetting::where('free_shipping_type' , 'amount')->first();
         $milestones = $this->promotionService->getPromotionMillestones();
         $goal = (float) $globalShipping->free_shipping_threshold_amount ;
-        $remaining = $goal - $cartTotal ;
+        $remaining = max(0, $goal - $cartTotal) ;
         if ($globalShipping && $globalShipping->free_shipping_threshold_amount > 0) {
             $milestones->push([
                 'goal' => $goal,

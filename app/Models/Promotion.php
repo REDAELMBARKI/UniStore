@@ -11,20 +11,16 @@ class Promotion extends Model
     use HasFactory;
     protected $guarded = [];
 
-     protected $casts = [
-        'applicable_product_ids'  => 'array',
-        'applicable_category_ids' => 'array',
-        'applicable_sub_category_ids' => 'array'
+    protected $casts = [
+        'valid_from'  => 'datetime',
+        'valid_until' => 'datetime',
+        'is_active'   => 'boolean'
     ];
+
     protected $hidden = [
         'created_at',
         'updated_at',
     ];
-
-    public function products(){
-         return $this->hasMany(Promotion::class);
-    }
-
 
     public function homeLayoutOrcs()
     {
