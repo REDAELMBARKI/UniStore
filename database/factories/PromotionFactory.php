@@ -5,6 +5,7 @@
 // ─────────────────────────────────────────────────────
 namespace Database\Factories;
 
+use App\Models\Store;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class PromotionFactory extends Factory
@@ -18,6 +19,7 @@ class PromotionFactory extends Factory
         };
 
         return [
+            'store_id' => Store::factory(),
             'name' => $this->faker->randomElement([
                 'Summer Sale',
                 'Flash Deal',

@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Models\Badge;
 use App\Models\Category;
+use App\Models\Store;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
@@ -12,6 +13,7 @@ class ProductFactory extends Factory
     public function definition(): array
 {
     return [
+        'store_id'          => Store::factory(),
         'name'              => $this->faker->words(4, true),
         'brand'             => $this->faker->company(),
         'product_attributes' => [

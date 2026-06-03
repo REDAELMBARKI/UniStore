@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Store;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -11,6 +12,14 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        // Create a default store if none exists
+        if (Store::count() === 0) {
+            Store::create([
+                'name' => 'Default Store',
+                'slug' => 'default',
+            ]);
+        }
+
         $this->call([
             SliderSeeder::class , 
             AppFactoryConfigSeeder::class,
@@ -36,8 +45,8 @@ class DatabaseSeeder extends Seeder
             TestShippingSeeder::class ,
             OrderSeeder::class,
             CartSeeder::class,
-            ShippingSettingSeeder::class,
-            ShippingZoneSeeder::class,
+            // ShippingSettingSeeder::class,
+            // ShippingZoneSeeder::class,
             VariantOptionSeeder::class,
             ReviewSeeder::class,
         ]);

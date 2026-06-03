@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Store;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -31,6 +32,7 @@ class CategoryFactory extends Factory
         return [
             "name"=> $this->faker->name,
             "slug"=> $this->faker->slug,
+            'store_id' => Store::factory(),
         ];
     }
 }

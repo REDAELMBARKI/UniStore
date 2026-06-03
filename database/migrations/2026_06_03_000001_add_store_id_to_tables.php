@@ -1,0 +1,65 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        $tables = [
+            'users',
+            'categories',
+            'products',
+            'orders',
+            'coupons',
+            'promotions',
+            'banners',
+            'shipping_settings',
+            'reviews',
+            'tags',
+            'rule_based_collections',
+            'sliders',
+            'store_settings'
+        ];
+
+        foreach ($tables as $tableName) {
+            Schema::table($tableName, function (Blueprint $table) {
+                $table->foreignId('store_id')->nullable()->constrained()->onDelete('cascade');
+            });
+        }
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        $tables = [
+            'users',
+            'categories',
+            'products',
+            'orders',
+            'coupons',
+            'promotions',
+            'banners',
+            'shipping_settings',
+            'reviews',
+            'tags',
+            'rule_based_collections',
+            'sliders',
+            'store_settings'
+        ];
+
+        foreach ($tables as $tableName) {
+            Schema::table($tableName, function (Blueprint $table) {
+                $table->dropForeign(['store_id']);
+                $table->dropColumn('store_id');
+            });
+        }
+    }
+};

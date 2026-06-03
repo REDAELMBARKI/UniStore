@@ -5,6 +5,7 @@
 // ─────────────────────────────────────────────────────
 namespace Database\Factories;
 
+use App\Models\Store;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class CouponFactory extends Factory
@@ -22,6 +23,7 @@ class CouponFactory extends Factory
             : null;
 
         return [
+            'store_id'                    => Store::factory(),
             'code'                        => strtoupper($this->faker->unique()->lexify('????') . $this->faker->numberBetween(5, 75)),
             'description'                 => $this->faker->optional()->sentence(),
             'type'                        => $type,

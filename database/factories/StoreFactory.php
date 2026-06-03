@@ -2,14 +2,13 @@
 
 namespace Database\Factories;
 
-use App\Models\Store;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Tag>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Store>
  */
-class TagFactory extends Factory
+class StoreFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -18,10 +17,10 @@ class TagFactory extends Factory
      */
     public function definition(): array
     {
+        $name = $this->faker->company();
         return [
-            'store_id' => Store::factory(),
-            "name"=> $name =  $this->faker->name,
-            "slug"=>Str::slug($name),
+            'name' => $name,
+            'slug' => Str::slug($name),
         ];
     }
 }

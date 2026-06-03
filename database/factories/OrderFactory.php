@@ -6,6 +6,7 @@ use App\Models\Order;
 use App\Models\User;
 use App\Models\Coupon;
 use App\Models\Promotion;
+use App\Models\Store;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
@@ -29,6 +30,7 @@ class OrderFactory extends Factory
         }
 
         return [
+            'store_id'          => Store::factory(),
             'order_number'      => 'ORD-' . strtoupper(Str::random(8)),
             'user_id'           => User::factory(),
             'coupon_id'         => null,

@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Store;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class ShippingSettingFactory extends Factory
@@ -9,6 +10,7 @@ class ShippingSettingFactory extends Factory
     public function definition(): array
     {
         return [
+            'store_id'                       => Store::factory(),
             'free_shipping_type'             => 'amount',
             'free_shipping_threshold_amount' => 500,
             'free_shipping_threshold_items'  => null,
