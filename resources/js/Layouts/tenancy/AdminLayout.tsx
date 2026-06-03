@@ -1,13 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, usePage } from '@inertiajs/react';
 import { 
-    LayoutDashboard, 
-    Store, 
-    Users, 
     LogOut, 
     Menu,
-    ChevronRight
+    ChevronRight,
+    ChevronDown,
+    Search
 } from 'lucide-react';
+import { tenancyNavigationLinks } from '@/admin/data/tenancyNavigationLinks';
 
 interface AdminLayoutProps {
     children: React.ReactNode;
@@ -15,12 +15,15 @@ interface AdminLayoutProps {
 
 const AdminLayout = ({ children }: AdminLayoutProps) => {
     const { url } = usePage();
+    const [openMenus, setOpenMenus] = useState<string[]>([]);
 
-    const navigation = [
-        { name: 'Dashboard', href: '/tenancy/dashboard', icon: LayoutDashboard },
-        { name: 'Stores', href: '/tenancy/stores', icon: Store },
-        { name: 'Roles', href: '/tenancy/roles', icon: Users },
-    ];
+    const toggleMenu = (title: string) => {
+        setOpenMenus(prev => 
+            prev.includes(title) 
+                ? prev.filter(t => t !== title) 
+                : [...prev, title]
+        );
+    };
 
     return (
         <div className="flex h-screen overflow-hidden bg-white">
@@ -31,23 +34,61 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
                         <span className="text-xl font-bold text-blue-600">UniStore Tenancy</span>
                     </div>
                     <div className="flex flex-col flex-1 overflow-y-auto">
-                        <nav className="flex-1 px-4 py-4 space-y-1">
-                            {navigation.map((item) => {
-                                const isActive = url.startsWith(item.href);
+                        <nav className="flex-1 px-4 py-4 space-y-4">
+                            {tenancyNavigationLinks.map((item, idx) => {
+                                if (item.section) {
+                                    return (
+                                        <div key={`section-${idx}`} className="px-3 pt-4 pb-2">
+                                            <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                                                {item.sectionTitle}
+                                            </p>
+                                        </div>
+                                    );
+                                }
+
+                                const hasSubLinks = item.subLinks && item.subLinks.length > 0;
+                                const isOpen = openMenus.includes(item.title);
+                                const isActive = item.href ? url.startsWith(item.href) : false;
+
                                 return (
-                                    <Link
-                                        key={item.name}
-                                        href={item.href}
-                                        className={`flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors ${
-                                            isActive 
-                                                ? 'bg-blue-50 text-blue-600' 
-                                                : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-                                        }`}
-                                    >
-                                        <item.icon className={`mr-3 h-5 w-5 ${isActive ? 'text-blue-600' : 'text-slate-400'}`} />
-                                        {item.name}
-                                        {isActive && <ChevronRight className="ml-auto h-4 w-4" />}
-                                    </Link>
+                                    <div key={item.title} className="space-y-1">
+                                        <button
+                                            onClick={() => hasSubLinks && toggleMenu(item.title)}
+                                            className={`w-full flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+                                                isActive 
+                                                    ? 'bg-blue-50 text-blue-600' 
+                                                    : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                                            }`}
+                                        >
+                                            <item.icon className={`mr-3 h-5 w-5 ${isActive ? 'text-blue-600' : 'text-slate-400'}`} />
+                                            <span className="flex-1 text-left">{item.title}</span>
+                                            {hasSubLinks && (
+                                                isOpen ? <ChevronDown className="ml-auto h-4 w-4" /> : <ChevronRight className="ml-auto h-4 w-4" />
+                                            )}
+                                        </button>
+
+                                        {hasSubLinks && isOpen && (
+                                            <div className="ml-8 space-y-1">
+                                                {item.subLinks?.map((sub) => {
+                                                    const isSubActive = url.includes(sub.href);
+                                                    return (
+                                                        <Link
+                                                            key={sub.title}
+                                                            href={sub.href.includes('.') ? '#' : sub.href} // Temporary fix for route names vs paths
+                                                            className={`flex items-center px-3 py-2 text-xs font-medium rounded-md transition-colors ${
+                                                                isSubActive 
+                                                                    ? 'text-blue-600 bg-blue-50/50' 
+                                                                    : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50'
+                                                            }`}
+                                                        >
+                                                            <sub.icon className="mr-3 h-4 w-4" />
+                                                            {sub.title}
+                                                        </Link>
+                                                    );
+                                                })}
+                                            </div>
+                                        )}
+                                    </div>
                                 );
                             })}
                         </nav>
@@ -74,10 +115,9 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
                     </button>
                     <div className="flex justify-between flex-1 px-4 sm:px-6 lg:px-8">
                         <div className="flex flex-1 items-center">
-                            <h1 className="text-lg font-semibold text-slate-900">Admin Panel</h1>
+                            <h1 className="text-lg font-semibold text-slate-900">Tenancy Admin</h1>
                         </div>
                         <div className="flex items-center ml-4 md:ml-6">
-                            {/* Profile dropdown could go here */}
                             <div className="flex items-center space-x-3">
                                 <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-sm">
                                     A
