@@ -24,7 +24,7 @@ class CartController extends Controller
     public function index()
     {
         $items = $this->cartService->getCartItems(false);
-        $defaultShippingAmount = $this->shippingService->minShippingCost();
+        $defaultShippingAmount = $this->shippingService->avgShippingCost();
         return Inertia::render('cart/ShoppingCartMaster', [
               'items' => $items ,
               'currency' =>  $this->storeSettingsService->getStoreCurrency() , 

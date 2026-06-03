@@ -32,7 +32,8 @@ class DatabaseSeeder extends Seeder
             
             // Other settings/support
             CouponSeeder::class,
-            PromotionSeeder::class,
+            // PromotionSeeder::class,
+            TestShippingSeeder::class ,
             OrderSeeder::class,
             CartSeeder::class,
             ShippingSettingSeeder::class,

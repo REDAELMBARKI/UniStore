@@ -42,10 +42,7 @@ class PromotionRepository
 
 
     public function getPromotionsSetForAmount() : Collection {
-        return   Promotion::where('is_active', true)
-                        ->whereNotNull('minimum_order_amount')
-                        ->orderBy('minimum_order_amount', 'asc')
-                        ->get();
+        return   Promotion::where('is_active', true)->get();
     }
 
 

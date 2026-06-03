@@ -78,6 +78,21 @@ class TestShippingSeeder extends Seeder
             'is_active' => true,
         ]);
 
+
+
+        
+        // Goal 600: 20% off
+        Promotion::create([
+            'name' => 'VIP Reward',
+            'type' => 'free_shipping',
+            'value' => 20,
+            'minimum_order_amount' => 500.00,
+            'max_discount_amount' => null,
+            'is_active' => true,
+        ]);
+
+
+
         // Goal 600: 20% off
         Promotion::create([
             'name' => 'VIP Reward',

@@ -60,12 +60,16 @@ class PromotionController extends Controller
         $milestones = $this->promotionService->getPromotionMillestones();
         $goal = (float) $globalShipping->free_shipping_threshold_amount ;
         $remaining = max(0, $goal - $cartTotal) ;
-        if ($globalShipping && $globalShipping->free_shipping_threshold_amount > 0) {
+        if ($globalShipping 
+            && $globalShipping->free_shipping_threshold_amount > 0
+            && !$milestones->contains(fn($m) => $m['type']  === 'free_shipping')
+            ) {
             $milestones->push([
                 'goal' => $goal,
                 'label' => 'FREE SHIPPING',
+                'percentage' => null ,
                 'type' => 'free_shipping',
-                'estimated_value' => (float) $this->shippingService->minShippingCost(),
+                'estimated_value' => (float) $this->shippingService->avgShippingCost(),
                 'message' => "Add " .$remaining . " " .$this->store_currency  ." and get a Free Shipping " 
             ]);
         }
@@ -82,6 +86,7 @@ class PromotionController extends Controller
         $finalMilestones = collect();
         $currentMaxValue = -1;
 
+        //   keep th scalling of the reward gos up only keep if has estiimatedsave biger then the previous
         foreach ($sortedMilestones as $m) {
             if ($m['estimated_value'] > $currentMaxValue) {
                 $finalMilestones->push($m);
@@ -95,7 +100,7 @@ class PromotionController extends Controller
         return response()->json([
             'nextMilestone' => $nextMilestone,
             'currentMilestone' => $currentMilestone ,
-            'milestones' => $finalMilestones->values()
+            'milestones' => $finalMilestones
         ], 200);
     }
 

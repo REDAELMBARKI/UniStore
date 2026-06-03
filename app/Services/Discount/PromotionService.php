@@ -153,37 +153,60 @@ class PromotionService extends DiscountService
     public function getPromotionMillestones()
     {
         $promos = $this->promotionRepository->getPromotionsSetForAmount();
-        $defaultShippingAmount = $this->shippingService->minShippingCost();
+        $defaultShippingAmount = $this->shippingService->avgShippingCost();
         $items = $this->cartService->getCartItems();
         $cartTotal = $this->cartService->calculateCartItemsSubtotal($items->toArray());
-
-        return $promos->map(function ($promo) use ($defaultShippingAmount, $cartTotal) {
+        $globalShippingSettings = $this->shippingService->getShippingSettings();
+        return $promos
+            ->filter(function($promo) use ($globalShippingSettings){ 
+                return  ($promo->type === 'free_shipping' 
+                        && $globalShippingSettings->free_shipping_threshold_amount > 0 
+                        && $promo->minimum_order_amount > $globalShippingSettings->free_shipping_threshold_amount )? 
+                        false :
+                        true;
+            })
+            ->pipe(function($collection) { 
+                //  handlee prevent duplicate iif we have  many free_shipping promotions bellow the global thresold 
+                $freeShippings = $collection->filter(fn($p) => $p->type === 'free_shipping');
+                
+                if ($freeShippings->count() > 1) {
+                    $best = $freeShippings->sortBy('minimum_order_amount')->first();
+                    return $collection
+                        ->filter(fn($p) => $p->type !== 'free_shipping')
+                        ->push($best);
+                }
+                return $collection;
+            })
+            ->map(function ($promo) use ($defaultShippingAmount, $cartTotal) {
             $estimatedValue = 0;
             $message = '';
             $remaining = max(0, $promo->minimum_order_amount - $cartTotal);
             $discount_label = "get " . $promo->value . "% off";
+
+         
             if ($promo->max_discount_amount) {
                 $discount_label .= " (up to " . $promo->max_discount_amount . " " . $this->store_currency . ")";
             }
             if ($promo->type === 'percentage') {
-                $leakedDiscount = $cartTotal * ($promo->value / 100);
-                
+                $leakedDiscount = $promo->minimum_order_amount * ($promo->value / 100);
+
                 // Only cap if max_discount_amount is set and leakedDiscount exceeds it
-                $estimatedValue = ($promo->max_discount_amount && $leakedDiscount > $promo->max_discount_amount) 
-                    ? $promo->max_discount_amount 
+                $estimatedValue = ($promo->max_discount_amount && $leakedDiscount > $promo->max_discount_amount)
+                    ? $promo->max_discount_amount
                     : $leakedDiscount;
 
                 $message = 'Add ' . $remaining . " " . $this->store_currency . " and " . $discount_label;
 
-            } elseif ($promo->type === 'free_shipping') {
+            } elseif ($promo->type === 'free_shipping' ) {
                 $estimatedValue = $defaultShippingAmount;
                 $message = 'Add ' . $remaining . " " . $this->store_currency . ' and get Free Shipping';
             }
 
             return [
-                'max' => $promo->max_discount_amount ,
+                'max' => $promo->max_discount_amount,
                 'goal' => (float) $promo->minimum_order_amount,
                 'label' => $promo->type === 'percentage' ? $promo->value . '%' : "FREE SHIPPING",
+                'percentage' => $promo->value ,
                 'type' => $promo->type === 'free_shipping' ? 'free_shipping' : 'discount',
                 'estimated_value' => (float) $estimatedValue,
                 'message' => $message

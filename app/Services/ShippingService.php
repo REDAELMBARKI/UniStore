@@ -29,7 +29,7 @@ class ShippingService
      }
 
 
-    private function getShippingSettings(){
+    public function getShippingSettings(){
          return ShippingSetting::first();
     }
 
@@ -146,7 +146,7 @@ class ShippingService
      }
 
 
-   public function minShippingCost(){
-       return (float) ShippingZone::where('is_active', true)->min('price');
+   public function avgShippingCost(){
+       return (float) ShippingZone::where('is_active', true)->avg('price');
    }
 }
