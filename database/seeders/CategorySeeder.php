@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Category;
+use App\Models\Store;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
@@ -121,17 +122,25 @@ class CategorySeeder extends Seeder
     
      public function run(): void
     {
+        $storeId = Store::first()->id;
+
+        \Illuminate\Support\Facades\Schema::disableForeignKeyConstraints();
+        Category::query()->delete();
+        \Illuminate\Support\Facades\Schema::enableForeignKeyConstraints();
+
         foreach($this->categeries as $c){
             $cat = Category::firstOrCreate([
                 'name' => $c,
                 'slug' => Str::slug($c),
                 'parent_id' => null ,
+                'store_id' => $storeId,
             ]);
             foreach($this->subCategories[$c] as $sub){
                 Category::firstOrCreate([
                     'name' => $sub,
                     'slug' => Str::slug($sub),
                     'parent_id' => $cat->id ,
+                    'store_id' => $storeId,
                ]);
             } ;
             

@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Models\Badge;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
 
 class BadgeSeeder extends Seeder
 {
@@ -19,6 +19,8 @@ class BadgeSeeder extends Seeder
             ['name' => 'test', 'color' => '#405a14ff',     'icon' => 'Plus'],
         ];
 
-        DB::table('badges')->insertOrIgnore($badges);
+        foreach ($badges as $badge) {
+            Badge::updateOrCreate(['name' => $badge['name']], $badge);
+        }
     }
 }

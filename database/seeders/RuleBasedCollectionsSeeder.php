@@ -3,12 +3,15 @@
 namespace Database\Seeders;
 
 use App\Models\RuleBasedCollection;
+use App\Models\Store;
 use Illuminate\Database\Seeder;
 
 class RuleBasedCollectionsSeeder extends Seeder
 {
     public function run(): void
     {
+        $storeId = Store::first()->id;
+
         \Illuminate\Support\Facades\Schema::disableForeignKeyConstraints();
         RuleBasedCollection::query()->delete();
         \Illuminate\Support\Facades\Schema::enableForeignKeyConstraints();
@@ -109,6 +112,7 @@ class RuleBasedCollectionsSeeder extends Seeder
         ];
 
         foreach ($collections as $cData) {
+            $cData['store_id'] = $storeId;
             RuleBasedCollection::create($cData);
         }
     }

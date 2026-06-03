@@ -6,9 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class PAttr extends Model
 {
+    use \App\Traits\BelongsToStore;
     
     protected $table = 'product_attributes' ;
     protected $fillable = [
+        'store_id',
         'name',
         'slug',
         'type',

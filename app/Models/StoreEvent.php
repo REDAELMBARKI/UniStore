@@ -8,5 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class StoreEvent extends Model
 {
     /** @use HasFactory<\Database\Factories\StoreEventFactory> */
-    use HasFactory;
+    use HasFactory, \App\Traits\BelongsToStore;
+
+    protected $fillable = ['store_id', 'event_name', 'payload'];
 }

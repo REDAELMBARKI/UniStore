@@ -4,13 +4,17 @@ namespace Database\Seeders;
 
 use App\Models\Slider;
 use App\Models\Slide;
+use App\Models\Store;
 use Illuminate\Database\Seeder;
 
 class SliderSeeder extends Seeder
 {
     public function run(): void
     {
+        $storeId = Store::first()->id;
+
         $slider = Slider::create([
+            'store_id' => $storeId,
             'name' => 'Home Hero Slider',
             'is_active' => true,
             'autoplay_speed' => 5000,

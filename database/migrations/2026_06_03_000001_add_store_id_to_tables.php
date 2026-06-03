@@ -24,7 +24,17 @@ return new class extends Migration
             'tags',
             'rule_based_collections',
             'sliders',
-            'store_settings'
+            'store_settings',
+            'shipping_zones',
+            'products_cart',
+            'wish_lists',
+            'badges',
+            'store_events',
+            'invitations',
+            'home_layout_orcs',
+            'product_attributes',
+            'materials',
+            'google_sheets'
         ];
 
         foreach ($tables as $tableName) {

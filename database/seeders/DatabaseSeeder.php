@@ -45,8 +45,8 @@ class DatabaseSeeder extends Seeder
             TestShippingSeeder::class ,
             OrderSeeder::class,
             CartSeeder::class,
-            // ShippingSettingSeeder::class,
-            // ShippingZoneSeeder::class,
+            ShippingSettingSeeder::class,
+            ShippingZoneSeeder::class,
             VariantOptionSeeder::class,
             ReviewSeeder::class,
         ]);

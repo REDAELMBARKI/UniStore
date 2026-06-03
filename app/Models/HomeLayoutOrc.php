@@ -6,7 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class HomeLayoutOrc extends Model
 {
-    protected $fillable = ['sortable_id', 'sortable_type', 'order'];
+    use \App\Traits\BelongsToStore;
+
+    protected $fillable = ['store_id', 'sortable_id', 'sortable_type', 'order'];
 
     public function sortable()
     {

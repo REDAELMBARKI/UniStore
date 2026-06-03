@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Tag;
+use App\Models\Store;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -13,7 +14,9 @@ class TagSeeder extends Seeder
      */
     public function run(): void
     {
-        Tag::factory()->count(10)->create();
+        $storeId = Store::first()->id;
+        Tag::query()->delete();
+        Tag::factory()->count(10)->create(['store_id' => $storeId]);
         
     }
 }

@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class ShippingSetting extends Model
 {
- use HasFactory;
+ use HasFactory, \App\Traits\BelongsToStore;
 
  protected $guarded = [];
 

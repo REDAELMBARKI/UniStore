@@ -8,9 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class Category extends Model
 {
     /** @use HasFactory<\Database\Factories\CategoryFactory> */
-    use HasFactory;
+    use HasFactory, \App\Traits\BelongsToStore;
 
-    protected $fillable = ['name' , 'slug'];
+    protected $fillable = ['name' , 'slug', 'store_id'];
 
     public function products(){
           return $this->hasMany(Product::class, 'category_niche_id');

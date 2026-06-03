@@ -4,14 +4,22 @@ namespace Database\Seeders;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\OrderAddress;
+use App\Models\Store;
 use Illuminate\Database\Seeder;
 
 class OrderSeeder extends Seeder
 {
     public function run()
     {        
-           
-            Order::factory(12)->create()->each(function ($order) {
+            $storeId = Store::first()->id;
+
+            \Illuminate\Support\Facades\Schema::disableForeignKeyConstraints();
+            OrderItem::query()->delete();
+            OrderAddress::query()->delete();
+            Order::query()->delete();
+            \Illuminate\Support\Facades\Schema::enableForeignKeyConstraints();
+
+            Order::factory(12)->create(['store_id' => $storeId])->each(function ($order) {
 
             // 1️⃣ Create items
             $itemsCount = rand(1, 4); // single product OR checkout

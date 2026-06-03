@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Coupon extends Model
 {
     /** @use HasFactory<\Database\Factories\CouponFactory> */
-    use HasFactory;
+    use HasFactory, \App\Traits\BelongsToStore;
     protected $hidden = [
         'created_at',
         'updated_at',

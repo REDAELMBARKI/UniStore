@@ -8,8 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class Material extends Model
 {
     /** @use HasFactory<\Database\Factories\MaterialFactory> */
-    use HasFactory;
-    protected $fillable = ['name', 'slug'];
+    use HasFactory, \App\Traits\BelongsToStore;
+    protected $fillable = ['name', 'slug', 'store_id'];
 
     public  function inventories()
     {

@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 
 use App\Models\PAttr;
+use App\Models\Store;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
@@ -16,29 +17,32 @@ class AttributesSeeder extends Seeder
      */
     public function run(): void
     {
+        $storeId = Store::first()->id;
+
         $attributes = [
             [
-                'key' => 'Color',
+                'name' => 'Color',
+                'slug' => 'color',
                 'type' => 'button',
+                'store_id' => $storeId,
             ],
             [
-                'key' => 'Size',
+                'name' => 'Size',
+                'slug' => 'size',
                 'type' => 'radio',
+                'store_id' => $storeId,
             ],
             [
-                'key' => 'Material',
+                'name' => 'Material',
+                'slug' => 'material',
                 'type' => 'button',
+                'store_id' => $storeId,
             ],
            
         ];
 
-        // Add timestamps
-        $now = Carbon::now();
-        foreach ($attributes as &$attr) {
-            $attr['created_at'] = $now;
-            $attr['updated_at'] = $now;
+        foreach ($attributes as $attr) {
+            PAttr::updateOrCreate(['slug' => $attr['slug'], 'store_id' => $storeId], $attr);
         }
-
-        PAttr::insert($attributes);
     }
 }

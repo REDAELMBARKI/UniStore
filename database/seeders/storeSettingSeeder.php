@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Store;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -10,6 +11,8 @@ class storeSettingSeeder extends Seeder
 {
     public function run(): void
     {
+        $storeId = Store::first()->id;
+
         $defaultSettings = [
             // Tax
             ['key' => 'tva_enabled',     'value' => false],
@@ -41,7 +44,10 @@ class storeSettingSeeder extends Seeder
 
         foreach ($defaultSettings as $setting) {
             \App\Models\StoreSetting::updateOrCreate(
-                ['key' => $setting['key']],
+                [
+                    'key' => $setting['key'],
+                    'store_id' => $storeId,
+                ],
                 ['value' => $setting['value']]
             );
         }

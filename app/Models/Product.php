@@ -12,9 +12,10 @@ use Illuminate\Support\Collection;
 class Product extends Model
 {
     /** @use HasFactory<\Database\Factories\ProductFactory> */
-    use HasFactory;
+    use HasFactory, \App\Traits\BelongsToStore;
 
     protected $fillable = [
+        'store_id',
         'name',
         'slug',
         'brand',

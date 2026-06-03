@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Review;
+use App\Models\Store;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -13,7 +14,9 @@ class ReviewSeeder extends Seeder
      */
     public function run(): void
     {
-        Review::factory()->count(10)->create();
+        $storeId = Store::first()->id;
+        Review::query()->delete();
+        Review::factory()->count(10)->create(['store_id' => $storeId]);
     
     }
 }

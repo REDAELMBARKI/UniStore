@@ -7,8 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class RuleBasedCollection extends Model
 {
+   use \App\Traits\BelongsToStore;
    protected $table = 'rule_based_collections';
    protected $fillable = [
+       'store_id',
        'name',
        'key',
        'slug',

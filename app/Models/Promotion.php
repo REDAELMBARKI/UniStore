@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Promotion extends Model
 {
     /** @use HasFactory<\Database\Factories\PromotionFactory> */
-    use HasFactory;
+    use HasFactory, \App\Traits\BelongsToStore;
     protected $guarded = [];
 
     protected $casts = [

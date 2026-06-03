@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\User;
+use App\Models\Store;
 use Illuminate\Database\Seeder;
 
 
@@ -10,6 +11,13 @@ class UserSeeder extends Seeder{
 
     public function run()
     {
+        $storeId = Store::first()->id;
+
+        \Illuminate\Support\Facades\Schema::disableForeignKeyConstraints();
+        User::query()->delete();
+        \App\Models\Role::query()->delete();
+        \Illuminate\Support\Facades\Schema::enableForeignKeyConstraints();
+
         // Ensure roles exist with verb-based claims
         $superAdminRole = \App\Models\Role::updateOrCreate(
             ['name' => 'super admin'],
@@ -44,6 +52,7 @@ class UserSeeder extends Seeder{
                 'name' => 'Admin User',
                 'password' => \Illuminate\Support\Facades\Hash::make('password'),
                 'email_verified_at' => now(),
+                'store_id' => $storeId,
             ]
         );
 
@@ -52,7 +61,7 @@ class UserSeeder extends Seeder{
             $admin->roles()->attach($adminRole);
         }
 
-        User::factory()->count(10)->create();
+        User::factory()->count(10)->create(['store_id' => $storeId]);
     }
 
      

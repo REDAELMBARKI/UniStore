@@ -6,7 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class Invitation extends Model
 {
+    use \App\Traits\BelongsToStore;
+
     protected $fillable = [
+        'store_id',
         'email',
         'role_id',
         'token',

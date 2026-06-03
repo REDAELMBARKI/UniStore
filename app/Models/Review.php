@@ -8,8 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class Review extends Model
 {
     /** @use HasFactory<\Database\Factories\ReviewFactory> */
-    use HasFactory;
-    protected $fillable = ['user_id' , 'product_id', 'text' , 'rating'];
+    use HasFactory, \App\Traits\BelongsToStore;
+    protected $fillable = ['user_id' , 'product_id', 'text' , 'rating', 'store_id'];
     protected  $hidden =["updated_at" , "created_at"] ;
     public function product()  {
         return $this->belongsTo(Product::class);

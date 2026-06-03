@@ -7,9 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class Slider extends Model
 {
-    use HasFactory;
+    use HasFactory, \App\Traits\BelongsToStore;
 
     protected $fillable = [
+        'store_id',
         'name',
         'is_active',
         'autoplay_speed',

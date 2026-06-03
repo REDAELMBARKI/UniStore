@@ -48,7 +48,7 @@ app/Http/Controllers/*
 !app/Http/Controllers/Auth/
 !app/Http/Controllers/Tenancy/
 !app/Http/Controllers/RoleController.php
-!app/Http/Controllers/MarketplaceController.php
+
 
 app/Services/*
 

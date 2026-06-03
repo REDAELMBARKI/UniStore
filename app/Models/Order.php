@@ -7,8 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 class Order extends Model
 {
     /** @use HasFactory<\Database\Factories\OrderFactory> */
-    use HasFactory;
+    use HasFactory, \App\Traits\BelongsToStore;
     protected $fillable = [
+        'store_id',
         'order_number',
         'user_id',
         'status',

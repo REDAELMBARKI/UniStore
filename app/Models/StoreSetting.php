@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class StoreSetting extends Model
 {
-    use HasFactory;
+    use HasFactory, \App\Traits\BelongsToStore;
     protected $guarded  = [];
 
     protected $casts = [

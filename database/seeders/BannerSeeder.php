@@ -5,12 +5,15 @@ namespace Database\Seeders;
 use App\Models\Banner;
 use App\Models\BannerSlot;
 use App\Models\Media;
+use App\Models\Store;
 use Illuminate\Database\Seeder;
 
 class BannerSeeder extends Seeder
 {
     public function run(): void
     {
+        $storeId = Store::first()->id;
+
         \Illuminate\Support\Facades\Schema::disableForeignKeyConstraints();
         BannerSlot::query()->delete();
         Banner::query()->delete();
@@ -143,7 +146,9 @@ class BannerSeeder extends Seeder
         ];
 
         foreach ($data as $item) {
-            $banner = Banner::create($item['banner']);
+            $bannerData = $item['banner'];
+            $bannerData['store_id'] = $storeId;
+            $banner = Banner::create($bannerData);
             foreach ($item['slots'] as $slotData) {
                 if (isset($slotData['image'])) {
                     $media = Media::create([

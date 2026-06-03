@@ -6,8 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class Banner extends Model
 {
+    use \App\Traits\BelongsToStore;
    
     protected $fillable = [
+        'store_id',
         'key',
         'slug',
         'name',

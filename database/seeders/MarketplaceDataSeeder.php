@@ -10,6 +10,7 @@ use App\Models\Tag;
 use App\Models\User;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\Store;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
 
@@ -17,13 +18,15 @@ class MarketplaceDataSeeder extends Seeder
 {
     public function run(): void
     {
+        $storeId = Store::first()->id;
+
         // 1. Ensure we have a few categories
         $categories = [
-            ['name' => 'Laptops', 'slug' => 'laptops'],
-            ['name' => 'Smartphones', 'slug' => 'smartphones'],
-            ['name' => 'Accessories', 'slug' => 'accessories'],
-            ['name' => 'Audio', 'slug' => 'audio'],
-            ['name' => 'Wearables', 'slug' => 'wearables'],
+            ['name' => 'Laptops', 'slug' => 'laptops', 'store_id' => $storeId],
+            ['name' => 'Smartphones', 'slug' => 'smartphones', 'store_id' => $storeId],
+            ['name' => 'Accessories', 'slug' => 'accessories', 'store_id' => $storeId],
+            ['name' => 'Audio', 'slug' => 'audio', 'store_id' => $storeId],
+            ['name' => 'Wearables', 'slug' => 'wearables', 'store_id' => $storeId],
         ];
 
         foreach ($categories as $cat) {
@@ -49,12 +52,12 @@ class MarketplaceDataSeeder extends Seeder
         // 3. Create Tags
         $tags = ['Tech', 'Apple', 'Gaming', 'Office', 'Portable'];
         foreach ($tags as $tagName) {
-            Tag::updateOrCreate(['name' => $tagName], ['slug' => Str::slug($tagName)]);
+            Tag::updateOrCreate(['name' => $tagName], ['slug' => Str::slug($tagName), 'store_id' => $storeId]);
         }
         $allTags = Tag::all();
 
         // 4. Create Users for Orders
-        $user = User::first() ?? User::factory()->create();
+        $user = User::where('store_id', $storeId)->first() ?? User::factory()->create(['store_id' => $storeId]);
 
         // 5. Create Products
         $productsData = [
@@ -121,6 +124,7 @@ class MarketplaceDataSeeder extends Seeder
             $product = Product::updateOrCreate(
                 ['slug' => $slug],
                 [
+                    'store_id' => $storeId,
                     'name' => $data['name'],
                     'brand' => $data['brand'],
                     'description' => $data['description'],
@@ -176,6 +180,7 @@ class MarketplaceDataSeeder extends Seeder
             if ($product->orders_count < 5) {
                 for ($i = 0; $i < rand(1, 3); $i++) {
                     $order = Order::factory()->create([
+                        'store_id' => $storeId,
                         'user_id' => $user->id,
                         'order_status' => 'delivered'
                     ]);

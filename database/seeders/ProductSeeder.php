@@ -7,6 +7,7 @@ use App\Models\ProductVariant;
 use App\Models\Category;
 use App\Models\Badge;
 use App\Models\Media;
+use App\Models\Store;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
@@ -16,10 +17,12 @@ class ProductSeeder extends Seeder
 {
     public function run(): void
     {
+        $storeId = Store::first()->id;
+
         Schema::disableForeignKeyConstraints();
-        DB::table('product_variants')->delete();
-        DB::table('products')->delete();
-        DB::table('media')->whereIn('collection', ['thumbnail', 'gallery'])->delete();
+        ProductVariant::truncate();
+        Product::truncate();
+        Media::whereIn('collection', ['thumbnail', 'gallery'])->delete();
         Schema::enableForeignKeyConstraints();
 
         $men = 2; $women = 3; $shoes = 5; $watches = 63;
@@ -77,6 +80,7 @@ class ProductSeeder extends Seeder
 
         foreach ($productPool as $data) {
             $product = Product::create([
+                'store_id' => $storeId,
                 'name' => $data['name'],
                 'slug' => Str::slug($data['name']) . '-' . Str::random(4),
                 'brand' => $data['brand'],

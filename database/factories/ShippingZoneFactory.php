@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Store;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class ShippingZoneFactory extends Factory
@@ -9,8 +10,9 @@ class ShippingZoneFactory extends Factory
     public function definition(): array
     {
         return [
+            'store_id'       => Store::factory(),
             'name'           => $this->faker->word(),
-            'type' => $this->faker->randomElement(['fixed' , 'calculated']) ,
+            'type'           => $this->faker->randomElement(['fixed', 'calculated']),
             'price'          => $this->faker->randomElement([30, 40, 50, 60]),
             'estimated_days' => $this->faker->randomElement([1, 2, 3, 5]),
             'is_active'      => true,
