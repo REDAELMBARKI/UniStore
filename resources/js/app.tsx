@@ -16,11 +16,11 @@ createInertiaApp({
         const pages = import.meta.glob('./Pages/**/*.{tsx,jsx}');
         const nameLower = name.toLowerCase().replace(/\\/g, '/');
         const key = Object.keys(pages).find(k => k.toLowerCase().replace('./pages/', '').replace(/\.(tsx|jsx)$/, '') === nameLower);
-        
+
         if (!key) {
             throw new Error(`Page not found: ${name}`);
         }
-        
+
         return resolvePageComponent(key, pages);
     },
     setup({ el, App, props }) {
