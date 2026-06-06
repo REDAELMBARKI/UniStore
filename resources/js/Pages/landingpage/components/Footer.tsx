@@ -14,7 +14,7 @@ const Footer = () => {
             </a>
             <p className="text-gray-400 mb-4">
               Transform your business with our cutting-edge SaaS solution
-              designed for modern companies.
+              used for small business.
             </p>
             <div className="flex space-x-4">
               <a
